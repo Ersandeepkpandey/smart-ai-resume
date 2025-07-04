@@ -1,0 +1,128 @@
+export interface ATSScore {
+  score: number
+  suggestions: string[]
+  keywords: string[]
+  missingKeywords: string[]
+}
+
+export interface ResumeContent {
+  personalInfo: {
+    name: string
+    email: string
+    phone: string
+    location: string
+  }
+  summary: string
+  experience: Array<{
+    title: string
+    company: string
+    duration: string
+    description: string
+  }>
+  education: Array<{
+    degree: string
+    institution: string
+    year: string
+  }>
+  skills: string[]
+  certifications: string[]
+}
+
+// Common ATS keywords by industry
+const COMMON_KEYWORDS = {
+  technical: [
+    'javascript', 'python', 'java', 'react', 'node.js', 'sql', 'aws', 'docker',
+    'kubernetes', 'git', 'agile', 'scrum', 'api', 'rest', 'graphql', 'typescript',
+    'html', 'css', 'mongodb', 'postgresql', 'redis', 'elasticsearch', 'machine learning',
+    'ai', 'data analysis', 'statistics', 'excel', 'tableau', 'power bi'
+  ],
+  business: [
+    'project management', 'leadership', 'strategy', 'analysis', 'marketing',
+    'sales', 'customer service', 'communication', 'teamwork', 'problem solving',
+    'budgeting', 'forecasting', 'negotiation', 'presentation', 'research'
+  ],
+  general: [
+    'management', 'coordination', 'planning', 'organization', 'multitasking',
+    'attention to detail', 'time management', 'collaboration', 'innovation',
+    'adaptability', 'flexibility', 'initiative', 'results-oriented'
+  ]
+}
+
+export function calculateATSScore(content: ResumeContent, jobKeywords: string[] = []): ATSScore {
+  const suggestions: string[] = []
+  const foundKeywords: string[] = []
+  const missingKeywords: string[] = []
+
+  // Combine all text content for analysis
+  const allText = [
+    content.personalInfo.name,
+    content.personalInfo.email,
+    content.personalInfo.location,
+    content.summary,
+    ...content.experience.map(exp => `${exp.title} ${exp.company} ${exp.description}`),
+    ...content.education.map(edu => `${edu.degree} ${edu.institution}`),
+    ...content.skills,
+    ...content.certifications
+  ].join(' ').toLowerCase()
+
+  // Check for common keywords
+  const allKeywords = [...COMMON_KEYWORDS.technical, ...COMMON_KEYWORDS.business, ...COMMON_KEYWORDS.general, ...jobKeywords]
+
+  allKeywords.forEach(keyword => {
+    if (allText.includes(keyword.toLowerCase())) {
+      foundKeywords.push(keyword)
+    } else if (jobKeywords.includes(keyword)) {
+      missingKeywords.push(keyword)
+    }
+  })
+
+  // Calculate score based on various factors
+  let score = 0
+  const maxScore = 100
+
+  // Keyword match (40 points)
+  const keywordScore = Math.min((foundKeywords.length / Math.max(jobKeywords.length, 10)) * 40, 40)
+  score += keywordScore
+
+  // Content completeness (30 points)
+  if (content.summary.length > 50) score += 10
+  if (content.experience.length > 0) score += 10
+  if (content.education.length > 0) score += 5
+  if (content.skills.length > 5) score += 5
+
+  // Format and structure (20 points)
+  if (content.personalInfo.name && content.personalInfo.email) score += 10
+  if (content.experience.some(exp => exp.description.length > 50)) score += 10
+
+  // Action verbs and achievements (10 points)
+  const actionVerbs = ['developed', 'implemented', 'managed', 'led', 'created', 'designed', 'improved', 'increased', 'reduced', 'achieved']
+  const hasActionVerbs = actionVerbs.some(verb => allText.includes(verb))
+  if (hasActionVerbs) score += 10
+
+  // Generate suggestions
+  if (score < 70) {
+    suggestions.push('Consider adding more relevant keywords from the job description')
+  }
+  if (content.summary.length < 50) {
+    suggestions.push('Add a more detailed professional summary')
+  }
+  if (content.experience.length === 0) {
+    suggestions.push('Include relevant work experience')
+  }
+  if (content.skills.length < 5) {
+    suggestions.push('Add more relevant skills')
+  }
+  if (!hasActionVerbs) {
+    suggestions.push('Use action verbs to describe your achievements')
+  }
+  if (missingKeywords.length > 0) {
+    suggestions.push(`Consider adding these keywords: ${missingKeywords.slice(0, 5).join(', ')}`)
+  }
+
+  return {
+    score: Math.round(score),
+    suggestions,
+    keywords: foundKeywords,
+    missingKeywords
+  }
+}

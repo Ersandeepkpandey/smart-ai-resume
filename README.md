@@ -1,36 +1,205 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Rezume - Professional Resume Builder
 
-## Getting Started
+A modern, ATS-friendly resume builder built with Next.js, React, Tailwind CSS, and Supabase. Create professional resumes with real-time ATS scoring and multiple template options.
 
-First, run the development server:
+## ✨ Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Professional Templates**: Multiple ATS-friendly resume templates
+- **Real-time ATS Scoring**: Get instant feedback on your resume's compatibility
+- **Live Preview**: See changes as you type
+- **PDF Export**: Download your resume as a professional PDF
+- **Authentication**: Secure sign-up/sign-in with Google and LinkedIn OAuth
+- **Responsive Design**: Works perfectly on all devices
+- **SEO Optimized**: Optimized for search engines
+
+## 🚀 Tech Stack
+
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS
+- **Backend**: Supabase (Database, Authentication, Storage)
+- **PDF Generation**: jsPDF, html2canvas
+- **Icons**: Lucide React
+- **Forms**: React Hook Form with Zod validation
+
+## 📋 Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- Supabase account
+
+## 🛠️ Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd resume-maker
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up Supabase**
+   - Create a new project at [supabase.com](https://supabase.com)
+   - Go to Settings > API to get your project URL and anon key
+   - Create the following tables in your Supabase database:
+
+   ```sql
+   -- Create profiles table
+   CREATE TABLE profiles (
+     id UUID REFERENCES auth.users(id) PRIMARY KEY,
+     email TEXT NOT NULL,
+     full_name TEXT,
+     avatar_url TEXT,
+     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+   );
+
+   -- Create resumes table
+   CREATE TABLE resumes (
+     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+     user_id UUID REFERENCES auth.users(id) NOT NULL,
+     title TEXT NOT NULL,
+     template_id TEXT NOT NULL,
+     content JSONB NOT NULL,
+     ats_score INTEGER DEFAULT 0,
+     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+   );
+
+   -- Enable Row Level Security
+   ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+   ALTER TABLE resumes ENABLE ROW LEVEL SECURITY;
+
+   -- Create policies
+   CREATE POLICY "Users can view own profile" ON profiles
+     FOR SELECT USING (auth.uid() = id);
+
+   CREATE POLICY "Users can update own profile" ON profiles
+     FOR UPDATE USING (auth.uid() = id);
+
+   CREATE POLICY "Users can view own resumes" ON resumes
+     FOR SELECT USING (auth.uid() = user_id);
+
+   CREATE POLICY "Users can insert own resumes" ON resumes
+     FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+   CREATE POLICY "Users can update own resumes" ON resumes
+     FOR UPDATE USING (auth.uid() = user_id);
+
+   CREATE POLICY "Users can delete own resumes" ON resumes
+     FOR DELETE USING (auth.uid() = user_id);
+   ```
+
+4. **Configure environment variables**
+   Create a `.env.local` file in the root directory:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   ```
+
+5. **Set up OAuth providers (optional)**
+   - **Google OAuth**: Configure in Supabase Dashboard > Authentication > Providers
+   - **LinkedIn OAuth**: Configure in Supabase Dashboard > Authentication > Providers
+
+6. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+
+7. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## 📁 Project Structure
+
+```
+resume-maker/
+├── src/
+│   ├── app/                    # Next.js app directory
+│   │   ├── auth/              # Authentication pages
+│   │   ├── dashboard/         # User dashboard
+│   │   ├── resume/           # Resume creation/editing
+│   │   ├── globals.css       # Global styles
+│   │   ├── layout.tsx        # Root layout
+│   │   └── page.tsx          # Landing page
+│   ├── components/           # React components
+│   │   ├── templates/        # Resume templates
+│   │   ├── ATSScore.tsx      # ATS scoring component
+│   │   ├── ResumeForm.tsx    # Resume form component
+│   │   └── TemplateSelector.tsx
+│   ├── contexts/             # React contexts
+│   │   └── AuthContext.tsx   # Authentication context
+│   └── lib/                  # Utility functions
+│       ├── supabase.ts       # Supabase client
+│       ├── ats-scorer.ts     # ATS scoring logic
+│       └── pdf-export.ts     # PDF export utilities
+├── public/                   # Static assets
+└── package.json
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎨 Templates
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The app includes three professional resume templates:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Professional Classic**: Clean and traditional design with blue accents
+2. **Modern Sidebar**: Contemporary layout with sidebar for skills
+3. **Minimalist**: Simple and elegant centered design
 
-## Learn More
+## 🔍 ATS Scoring
 
-To learn more about Next.js, take a look at the following resources:
+The ATS (Applicant Tracking System) scoring algorithm evaluates:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Keyword matching** (40 points)
+- **Content completeness** (30 points)
+- **Format and structure** (20 points)
+- **Action verbs and achievements** (10 points)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Deployment
 
-## Deploy on Vercel
+### Vercel (Recommended)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add environment variables in Vercel dashboard
+4. Deploy!
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Other Platforms
+
+The app can be deployed to any platform that supports Next.js:
+- Netlify
+- Railway
+- DigitalOcean App Platform
+- AWS Amplify
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+If you encounter any issues or have questions:
+
+1. Check the [Issues](https://github.com/your-repo/issues) page
+2. Create a new issue with detailed information
+3. Contact support at support@rezume.com
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org/) for the amazing React framework
+- [Supabase](https://supabase.com/) for the backend infrastructure
+- [Tailwind CSS](https://tailwindcss.com/) for the styling system
+- [Lucide](https://lucide.dev/) for the beautiful icons
+
+---
+
+Made with ❤️ by the Rezume team

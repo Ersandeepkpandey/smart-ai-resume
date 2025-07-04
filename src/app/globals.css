@@ -24,3 +24,18 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .resume-print-area, .resume-print-area * {
+    visibility: visible;
+  }
+  .resume-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+  }
+}
