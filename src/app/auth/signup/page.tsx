@@ -2,13 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { supabase, isSupabaseAvailable } from '@/lib/supabase'
-import { Auth } from '@supabase/auth-ui-react'
-import { ThemeSupa } from '@supabase/auth-ui-shared'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+import CustomSignUp from '@/components/CustomSignUp'
 
 export default function SignUp() {
-  const [loading, setLoading] = useState(false)
   const [origin, setOrigin] = useState('')
 
   useEffect(() => {
@@ -48,34 +46,31 @@ export default function SignUp() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          {isSupabaseAvailable() && supabase ? (
-            <Auth
-              supabaseClient={supabase}
-              appearance={{
-                theme: ThemeSupa,
-                variables: {
-                  default: {
-                    colors: {
-                      brand: '#3B82F6',
-                      brandAccent: '#2563EB',
-                    },
-                  },
-                },
-              }}
-              providers={['google', 'linkedin']}
-              redirectTo={`${origin}/dashboard`}
-              showLinks={false}
-              view="sign_up"
-            />
+          <div className="space-y-2 mb-4">
+            <button
+              className="w-full flex items-center justify-center border rounded px-4 py-2 bg-gray-100 text-gray-400 cursor-not-allowed"
+              disabled
+              title="Coming Soon"
+            >
+              <img src="/google.svg" alt="Google" className="w-5 h-5 mr-2" />
+              Sign up with Google (Coming Soon)
+            </button>
+            <button
+              className="w-full flex items-center justify-center border rounded px-4 py-2 bg-gray-100 text-gray-400 cursor-not-allowed"
+              disabled
+              title="Coming Soon"
+            >
+              <img src="/linkedin.svg" alt="LinkedIn" className="w-5 h-5 mr-2" />
+              Sign up with LinkedIn (Coming Soon)
+            </button>
+          </div>
+          {isSupabaseAvailable() ? (
+            <CustomSignUp redirectTo={`${origin}/dashboard`} />
           ) : (
             <div className="text-center py-8">
-              <p className="text-gray-600 mb-4">Supabase is not configured for authentication.</p>
-              <Link
-                href="/"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-              >
-                Back to Home
-              </Link>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading authentication...</p>
+              <p className="text-sm text-red-600 mt-2">Make sure your Supabase credentials are configured in .env.local</p>
             </div>
           )}
         </div>

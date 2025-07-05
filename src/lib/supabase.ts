@@ -11,12 +11,15 @@ const isSupabaseConfigured = supabaseUrl &&
                             supabaseAnonKey.length > 50
 
 // Client-side Supabase client
-export const supabase = isSupabaseConfigured
-  ? createBrowserClient(supabaseUrl, supabaseAnonKey)
-  : null
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
 
 // Helper function to check if Supabase is available
-export const isSupabaseAvailable = () => supabase !== null
+export const isSupabaseAvailable = () => {
+  return supabaseUrl &&
+         supabaseAnonKey &&
+         supabaseUrl.includes('supabase.co') &&
+         supabaseAnonKey.length > 50
+}
 
 // Server-side Supabase client
 export const createServerClient = () => {
@@ -33,6 +36,9 @@ export interface Database {
           email: string
           full_name: string | null
           avatar_url: string | null
+          role: string
+          status: string
+          last_login: string | null
           created_at: string
           updated_at: string
         }
@@ -41,6 +47,9 @@ export interface Database {
           email: string
           full_name?: string | null
           avatar_url?: string | null
+          role?: string
+          status?: string
+          last_login?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -49,6 +58,9 @@ export interface Database {
           email?: string
           full_name?: string | null
           avatar_url?: string | null
+          role?: string
+          status?: string
+          last_login?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -81,6 +93,50 @@ export interface Database {
           template_id?: string
           content?: any
           ats_score?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      templates: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          category: string
+          status: string
+          html_content: string
+          css_styles: string | null
+          preview_image: string | null
+          usage_count: number
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          category?: string
+          status?: string
+          html_content: string
+          css_styles?: string | null
+          preview_image?: string | null
+          usage_count?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          category?: string
+          status?: string
+          html_content?: string
+          css_styles?: string | null
+          preview_image?: string | null
+          usage_count?: number
+          created_by?: string | null
           created_at?: string
           updated_at?: string
         }

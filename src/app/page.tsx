@@ -1,7 +1,22 @@
+"use client";
 import Link from 'next/link'
 import { Check, Star, Download, Eye, Zap } from 'lucide-react'
+import { useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
 
 export default function Home() {
+  useEffect(() => {
+    const testSupabase = async () => {
+      try {
+        const result = await supabase.from('profiles').select('*')
+        console.log('Supabase connection test:', result)
+      } catch (err) {
+        console.error('Supabase error:', err)
+      }
+    }
+    testSupabase()
+  }, [])
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -188,7 +203,7 @@ export default function Home() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+          <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
             <p>&copy; 2024 Rezume. All rights reserved.</p>
           </div>
         </div>

@@ -21,12 +21,24 @@ export default function Dashboard() {
   const { user, loading } = useAuth()
   const [resumes, setResumes] = useState<Resume[]>([])
   const [loadingResumes, setLoadingResumes] = useState(true)
+  const [profile, setProfile] = useState<any>(null)
 
   useEffect(() => {
     if (user) {
+      fetchProfile()
       fetchResumes()
     }
   }, [user])
+
+  const fetchProfile = async () => {
+    if (!user) return
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single()
+    if (!error) setProfile(data)
+  }
 
   const fetchResumes = async () => {
     if (!isSupabaseAvailable() || !supabase) {
@@ -122,13 +134,23 @@ export default function Dashboard() {
                 Create and manage your professional resumes
               </p>
             </div>
-            <Link
-              href="/resume/new"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create New Resume
-            </Link>
+            <div className="flex items-center space-x-4">
+              {profile?.role === 'admin' && (
+                <Link
+                  href="/admin"
+                  className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50"
+                >
+                  Admin Panel
+                </Link>
+              )}
+              <Link
+                href="/resume/new"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create New Resume
+              </Link>
+            </div>
           </div>
         </div>
       </div>
