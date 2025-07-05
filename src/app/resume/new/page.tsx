@@ -18,16 +18,35 @@ import { downloadResumeAsPDF } from '@/lib/pdf-export'
 
 const defaultContent: ResumeContent = {
   personalInfo: {
-    name: '',
-    email: '',
-    phone: '',
-    location: ''
+    name: 'John Doe',
+    email: 'john.doe@email.com',
+    phone: '(555) 123-4567',
+    location: 'New York, NY'
   },
-  summary: '',
-  experience: [],
-  education: [],
-  skills: [],
-  certifications: []
+  summary: 'Experienced software engineer with 5+ years in full-stack development, specializing in React, Node.js, and cloud technologies. Proven track record of delivering scalable solutions and leading development teams.',
+  experience: [
+    {
+      title: 'Senior Software Engineer',
+      company: 'Tech Company Inc.',
+      duration: '2020 - Present',
+      description: 'Led development of microservices architecture. Mentored junior developers. Improved system performance by 40%.'
+    },
+    {
+      title: 'Software Engineer',
+      company: 'Web Solutions LLC',
+      duration: '2017 - 2020',
+      description: 'Built and maintained web applications. Collaborated with cross-functional teams. Enhanced UI/UX for client projects.'
+    }
+  ],
+  education: [
+    {
+      degree: 'B.Sc. in Computer Science',
+      institution: 'University of Technology',
+      year: '2015 - 2019'
+    }
+  ],
+  skills: ['JavaScript', 'React', 'Node.js', 'SQL', 'AWS'],
+  certifications: ['AWS Certified Developer', 'Scrum Master Certified']
 }
 
 const templates = {
