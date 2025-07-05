@@ -39,9 +39,9 @@ ALTER TABLE templates ENABLE ROW LEVEL SECURITY;
 -- Step 8: Grant permissions
 GRANT ALL ON public.templates TO anon, authenticated;
 
--- Step 9: Update role for a specific user
-UPDATE profiles
-SET role = 'admin'
-WHERE email = 'sandeepp1819@gmail.com';
+-- Step 9: Make the first user an admin (optional - you can also use the web interface)
+-- Uncomment the line below if you want to make the first user an admin automatically
+-- UPDATE profiles SET role = 'admin' WHERE id = (SELECT id FROM profiles ORDER BY created_at ASC LIMIT 1);
 
-SELECT id, email, role FROM profiles WHERE email = 'sandeepp1819@gmail.com';
+-- Check current profiles and their roles
+SELECT id, email, role, created_at FROM profiles ORDER BY created_at ASC;

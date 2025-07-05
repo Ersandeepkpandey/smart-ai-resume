@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase, isSupabaseAvailable } from '@/lib/supabase'
 import { ResumeContent } from '@/lib/ats-scorer'
-import { Plus, FileText, Edit, Trash2, Download, Eye } from 'lucide-react'
+import { Plus, FileText, Edit, Trash2, Download, Eye, Globe } from 'lucide-react'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 

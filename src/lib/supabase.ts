@@ -21,8 +21,26 @@ export const isSupabaseAvailable = () => {
          supabaseAnonKey.length > 50
 }
 
-// Server-side Supabase client
-export const createServerClient = () => {
+// Server-side Supabase client (supports cookies for Next.js App Router)
+export const createServerClient = (options?: { cookies?: () => any }) => {
+  if (options && typeof options.cookies === 'function') {
+    // For Next.js App Router: pass cookies getter for SSR session support
+    return createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        storage: {
+          getItem: async (key: string) => {
+            const cookieStore = options.cookies && options.cookies()
+            return cookieStore?.get(key)?.value || null
+          },
+          setItem: async () => {},
+          removeItem: async () => {},
+        },
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    })
+  }
+  // Default: no cookies
   return createClient(supabaseUrl, supabaseAnonKey)
 }
 

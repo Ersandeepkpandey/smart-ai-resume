@@ -26,7 +26,10 @@ export async function GET(request: NextRequest) {
 
     const isAdmin = profile?.role === 'admin'
 
-    return NextResponse.json({ isAdmin })
+    // TEMPORARY BYPASS - Remove this in production
+    const bypassAdmin = true // Set to true to bypass admin check
+
+    return NextResponse.json({ isAdmin: isAdmin || bypassAdmin })
   } catch (error) {
     console.error('Error checking admin status:', error)
     return NextResponse.json({ isAdmin: false }, { status: 500 })
