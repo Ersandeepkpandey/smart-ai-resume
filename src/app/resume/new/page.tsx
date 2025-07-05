@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase, isSupabaseAvailable } from '@/lib/supabase'
@@ -62,7 +62,6 @@ export default function NewResume() {
   const [selectedTemplate, setSelectedTemplate] = useState('template1')
   const [title, setTitle] = useState('')
   const [saving, setSaving] = useState(false)
-  const resumeRef = useRef<HTMLDivElement>(null)
   const [atsHover, setAtsHover] = useState(false)
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const [downloading, setDownloading] = useState(false)
@@ -180,12 +179,17 @@ export default function NewResume() {
                 {saving ? 'Saving...' : 'Save Resume'}
               </button>
               <button
-                onClick={() => window.print()}
+                onClick={async () => {
+                  setDownloading(true)
+                  await downloadResumeAsPDF(content, title || 'resume')
+                  setDownloading(false)
+                }}
+                disabled={downloading}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
                 type="button"
               >
                 <Download className="w-4 h-4 mr-2" />
-                Download PDF
+                {downloading ? 'Downloading...' : 'Download PDF'}
               </button>
             </div>
           </div>
@@ -234,7 +238,7 @@ export default function NewResume() {
                 <h3 className="text-lg font-semibold text-gray-900">Preview</h3>
               </div>
               <div className="border border-gray-200 rounded-lg overflow-hidden">
-                <TemplateComponent ref={resumeRef} content={content} />
+                <TemplateComponent content={content} />
               </div>
             </div>
           </div>
