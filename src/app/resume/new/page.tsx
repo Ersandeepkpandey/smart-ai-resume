@@ -1,9 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase, isSupabaseAvailable } from '@/lib/supabase'
 import { ResumeContent, calculateATSScore } from '@/lib/ats-scorer'
 import TemplateSelector from '@/components/TemplateSelector'
 import ResumeForm from '@/components/ResumeForm'
@@ -57,6 +56,7 @@ const templates = {
 
 export default function NewResume() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user } = useAuth()
   const [content, setContent] = useState<ResumeContent>(defaultContent)
   const [selectedTemplate, setSelectedTemplate] = useState('template1')
@@ -66,6 +66,20 @@ export default function NewResume() {
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const [downloading, setDownloading] = useState(false)
 
+  // Handle template selection from URL parameters or sessionStorage
+  useEffect(() => {
+    const templateFromUrl = searchParams.get('template')
+    const templateFromStorage = sessionStorage.getItem('selectedTemplate')
+
+    if (templateFromUrl) {
+      setSelectedTemplate(`template${templateFromUrl}`)
+      sessionStorage.removeItem('selectedTemplate') // Clean up
+    } else if (templateFromStorage) {
+      setSelectedTemplate(`template${templateFromStorage}`)
+      sessionStorage.removeItem('selectedTemplate') // Clean up
+    }
+  }, [searchParams])
+
   const atsScore = calculateATSScore(content)
 
   if (!user) {
@@ -73,7 +87,7 @@ export default function NewResume() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Please sign in to create a resume.</h2>
-          <p className="text-gray-600 mb-6">You must be signed in with Supabase authentication to use this feature.</p>
+          <p className="text-gray-600 mb-6">You must be signed in to use this feature.</p>
           <div className="space-y-4">
             <Link
               href="/auth/signin"
@@ -99,25 +113,28 @@ export default function NewResume() {
       alert('Please enter a title for your resume')
       return
     }
-    if (!isSupabaseAvailable() || !supabase) {
-      alert('Supabase is not configured. Please contact support.')
-      return
-    }
+
     setSaving(true)
     try {
-      const { data, error } = await supabase
-        .from('resumes')
-        .insert({
-          user_id: user.id,
+      const response = await fetch('/api/resumes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
           title: title.trim(),
           template_id: selectedTemplate,
           content: content,
           ats_score: atsScore.score
         })
-        .select()
-        .single()
-      if (error) throw error
-      router.push(`/resume/${data.id}`)
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        router.push(`/resume/${data.resume.id}`)
+      } else {
+        throw new Error('Failed to save resume')
+      }
     } catch (error) {
       console.error('Error saving resume:', error)
       alert('Failed to save resume. Please try again.')
@@ -198,8 +215,8 @@ export default function NewResume() {
               <TemplateSelector
                 selectedTemplate={selectedTemplate}
                 onTemplateSelect={(id) => {
-                  setSelectedTemplate(id);
-                  setShowTemplateSelector(false);
+                  setSelectedTemplate(id)
+                  setShowTemplateSelector(false)
                 }}
               />
             </div>
@@ -207,35 +224,35 @@ export default function NewResume() {
         </div>
       </div>
 
+      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* First Column - Resume Form */}
-          <div className="space-y-6">
-            <ResumeForm content={content} onChange={setContent} />
+          {/* Form Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-8">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Resume Builder</h2>
+              <ResumeForm content={content} onChange={setContent} />
+
+              {/* ATS Score */}
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <ATSScore score={atsScore} />
+              </div>
+            </div>
           </div>
 
-          {/* ATS Score spanning columns 2 and 3 */}
-          <div className="lg:col-span-2 space-y-6">
-            <div
-              onMouseEnter={() => setAtsHover(true)}
-              onMouseLeave={() => setAtsHover(false)}
-              style={{ transition: 'all 0.2s', cursor: 'pointer' }}
-            >
-              {atsHover ? (
-                <ATSScore score={atsScore} />
-              ) : (
-                <div className="flex flex-col items-center justify-center bg-white rounded-lg shadow-sm border border-gray-200 p-4 text-center">
-                  <span className="text-xs font-semibold text-gray-500 mb-1">ATS Score</span>
-                  <span className={`text-lg font-bold ${atsScore.score < 60 ? 'text-red-500' : 'text-green-600'}`}>{atsScore.score}/100</span>
-                  <span className="text-[10px] text-gray-400 mt-1">Hover for details</span>
-                </div>
-              )}
-            </div>
-
-            {/* Resume Preview below ATS Score - always visible */}
-            <div className="resume-print-area bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Preview</h3>
+          {/* Preview */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-gray-900">Preview</h2>
+                <button
+                  className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
+                  onMouseEnter={() => setAtsHover(true)}
+                  onMouseLeave={() => setAtsHover(false)}
+                >
+                  <Eye className="w-3 h-3 mr-1" />
+                  Preview
+                </button>
               </div>
               <div className="border border-gray-200 rounded-lg overflow-hidden">
                 <TemplateComponent content={content} />

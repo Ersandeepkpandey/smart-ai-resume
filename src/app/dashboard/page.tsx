@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase, isSupabaseAvailable } from '@/lib/supabase'
-import { ResumeContent } from '@/lib/ats-scorer'
 import { Plus, FileText, Edit, Trash2, Download, Eye, Globe } from 'lucide-react'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
@@ -21,40 +19,23 @@ export default function Dashboard() {
   const { user, loading } = useAuth()
   const [resumes, setResumes] = useState<Resume[]>([])
   const [loadingResumes, setLoadingResumes] = useState(true)
-  const [profile, setProfile] = useState<any>(null)
 
   useEffect(() => {
     if (user) {
-      fetchProfile()
       fetchResumes()
     }
   }, [user])
 
-  const fetchProfile = async () => {
-    if (!user) return
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single()
-    if (!error) setProfile(data)
-  }
-
   const fetchResumes = async () => {
-    if (!isSupabaseAvailable() || !supabase) {
-      setLoadingResumes(false)
-      return
-    }
-
     try {
-      const { data, error } = await supabase
-        .from('resumes')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('updated_at', { ascending: false })
+      const response = await fetch('/api/resumes')
 
-      if (error) throw error
-      setResumes(data || [])
+      if (response.ok) {
+        const data = await response.json()
+        setResumes(data.resumes || [])
+      } else {
+        console.error('Error fetching resumes')
+      }
     } catch (error) {
       console.error('Error fetching resumes:', error)
     } finally {
@@ -65,19 +46,16 @@ export default function Dashboard() {
   const deleteResume = async (id: string) => {
     if (!confirm('Are you sure you want to delete this resume?')) return
 
-    if (!isSupabaseAvailable() || !supabase) {
-      alert('Demo mode: Resume deletion not available')
-      return
-    }
-
     try {
-      const { error } = await supabase
-        .from('resumes')
-        .delete()
-        .eq('id', id)
+      const response = await fetch(`/api/resumes/${id}`, {
+        method: 'DELETE'
+      })
 
-      if (error) throw error
-      await fetchResumes()
+      if (response.ok) {
+        await fetchResumes()
+      } else {
+        console.error('Error deleting resume')
+      }
     } catch (error) {
       console.error('Error deleting resume:', error)
     }
@@ -99,7 +77,7 @@ export default function Dashboard() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Please sign in to access your dashboard.</h2>
-          <p className="text-gray-600 mb-6">You must be signed in with Supabase authentication to use this feature.</p>
+          <p className="text-gray-600 mb-6">You must be signed in to use this feature.</p>
           <div className="space-y-4">
             <Link
               href="/auth/signin"
@@ -135,14 +113,6 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              {profile?.role === 'admin' && (
-                <Link
-                  href="/admin"
-                  className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50"
-                >
-                  Admin Panel
-                </Link>
-              )}
               <Link
                 href="/resume/new"
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
@@ -225,13 +195,22 @@ export default function Dashboard() {
                       Preview
                     </Link>
                   </div>
-                  <button
-                    onClick={() => deleteResume(resume.id)}
-                    className="inline-flex items-center px-3 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-white hover:bg-red-50"
-                  >
-                    <Trash2 className="w-3 h-3 mr-1" />
-                    Delete
-                  </button>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => deleteResume(resume.id)}
+                      className="inline-flex items-center px-3 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-white hover:bg-red-50"
+                    >
+                      <Trash2 className="w-3 h-3 mr-1" />
+                      Delete
+                    </button>
+                    <Link
+                      href={`/resume/${resume.id}/download`}
+                      className="inline-flex items-center px-3 py-1.5 border border-transparent shadow-sm text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Download className="w-3 h-3 mr-1" />
+                      Download
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}

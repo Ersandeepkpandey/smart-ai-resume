@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface CustomSignInProps {
   redirectTo: string
@@ -14,6 +14,7 @@ export default function CustomSignIn({ redirectTo }: CustomSignInProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  const { signIn } = useAuth()
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,27 +22,14 @@ export default function CustomSignIn({ redirectTo }: CustomSignInProps) {
     setError(null)
 
     try {
-      console.log('Attempting sign in with:', { email, password: '***' })
+      const result = await signIn(email, password)
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      console.log('Sign in response:', { data, error })
-
-      if (error) {
-        console.error('Sign in error:', error)
-        setError(error.message)
-        return
-      }
-
-      if (data.user) {
-        console.log('Sign in successful, redirecting to:', redirectTo)
+      if (result.success) {
         router.push(redirectTo)
+      } else {
+        setError(result.error || 'Sign in failed')
       }
     } catch (err: any) {
-      console.error('Unexpected error during sign in:', err)
       setError(err.message || 'An unexpected error occurred')
     } finally {
       setLoading(false)
@@ -63,7 +51,7 @@ export default function CustomSignIn({ redirectTo }: CustomSignInProps) {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black"
             placeholder="Enter your email"
           />
         </div>
@@ -82,7 +70,7 @@ export default function CustomSignIn({ redirectTo }: CustomSignInProps) {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black"
             placeholder="Enter your password"
           />
         </div>

@@ -1,0 +1,62 @@
+import { cookies } from 'next/headers'
+import { randomBytes } from 'crypto'
+import client from './turso'
+
+const SESSION_COOKIE_NAME = 'session_id'
+const SESSION_DURATION_HOURS = 24
+
+export async function createSession(userId: string) {
+  const sessionId = randomBytes(32).toString('hex')
+  const expiresAt = new Date(Date.now() + SESSION_DURATION_HOURS * 60 * 60 * 1000).toISOString()
+  await client.execute({
+    sql: 'INSERT INTO sessions (session_id, user_id, expires_at) VALUES (?, ?, ?)',
+    args: [sessionId, userId, expiresAt]
+  })
+  return { sessionId, expiresAt }
+}
+
+export async function getSession(sessionId: string) {
+  const result = await client.execute({
+    sql: 'SELECT * FROM sessions WHERE session_id = ? AND expires_at > datetime("now")',
+    args: [sessionId]
+  })
+  return result.rows[0] || null
+}
+
+export async function deleteSession(sessionId: string) {
+  await client.execute({
+    sql: 'DELETE FROM sessions WHERE session_id = ?',
+    args: [sessionId]
+  })
+}
+
+export async function setSessionCookie(sessionId: string) {
+  const cookieStore = await cookies()
+  cookieStore.set({
+    name: SESSION_COOKIE_NAME,
+    value: sessionId,
+    httpOnly: true,
+    path: '/',
+    maxAge: SESSION_DURATION_HOURS * 60 * 60,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+  })
+}
+
+export async function clearSessionCookie() {
+  const cookieStore = await cookies()
+  cookieStore.set({
+    name: SESSION_COOKIE_NAME,
+    value: '',
+    httpOnly: true,
+    path: '/',
+    maxAge: 0,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+  })
+}
+
+export async function getSessionIdFromCookie() {
+  const cookieStore = await cookies()
+  return cookieStore.get(SESSION_COOKIE_NAME)?.value || null
+}
