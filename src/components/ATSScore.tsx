@@ -8,7 +8,7 @@ interface ATSScoreProps {
   jobKeywords?: string[]
 }
 
-export default function ATSScore({ score, jobKeywords = [] }: ATSScoreProps) {
+export default function ATSScore({ score }: ATSScoreProps) {
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600'
     if (score >= 60) return 'text-yellow-600'

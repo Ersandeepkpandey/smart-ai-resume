@@ -194,8 +194,6 @@ const PDFTemplate = ({ content }: { content: ResumeContent }) => {
 
 export async function downloadResumeAsPDF(content: ResumeContent, name: string) {
   try {
-    const filename = `${name.replace(/\s+/g, '_')}_resume.pdf`
-
     // Generate PDF blob
     const blob = await pdf(PDFTemplate({ content })).toBlob()
 
@@ -203,7 +201,7 @@ export async function downloadResumeAsPDF(content: ResumeContent, name: string) 
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = filename
+    link.download = `${name.replace(/\s+/g, '_')}_resume.pdf`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -219,7 +217,7 @@ export async function downloadResumeAsPDF(content: ResumeContent, name: string) 
 }
 
 // Legacy function for backward compatibility (keeping the same signature)
-export async function exportToPDF(element: HTMLElement, filename: string = 'resume.pdf') {
+export async function exportToPDF() {
   // This function is kept for backward compatibility but is deprecated
   console.warn('exportToPDF is deprecated. Use downloadResumeAsPDF with content instead.')
   throw new Error('exportToPDF is deprecated. Use downloadResumeAsPDF with content instead.')

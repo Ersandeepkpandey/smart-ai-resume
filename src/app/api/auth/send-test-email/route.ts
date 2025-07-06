@@ -104,29 +104,29 @@ export async function POST(request: NextRequest) {
       from: fromEmail
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('SendGrid test error:', error)
 
     // Provide more detailed error information
     let errorMessage = 'Failed to send email'
     let errorDetails = null
 
-    if (error.response) {
+    if (error instanceof Error && error.message) {
+      errorMessage = error.message
+    } else if (error instanceof Response) {
       errorDetails = {
-        statusCode: error.response.status,
-        body: error.response.body,
-        headers: error.response.headers
+        statusCode: error.status,
+        body: error.body,
+        headers: error.headers
       }
 
-      if (error.response.status === 403) {
+      if (error.status === 403) {
         errorMessage = 'SendGrid API key is invalid or sender email is not verified'
-      } else if (error.response.status === 401) {
+      } else if (error.status === 401) {
         errorMessage = 'SendGrid API key is invalid'
-      } else if (error.response.status === 400) {
+      } else if (error.status === 400) {
         errorMessage = 'Invalid email address or sender configuration'
       }
-    } else if (error.message) {
-      errorMessage = error.message
     }
 
     return NextResponse.json(

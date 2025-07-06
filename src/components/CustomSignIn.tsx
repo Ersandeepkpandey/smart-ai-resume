@@ -29,8 +29,9 @@ export default function CustomSignIn({ redirectTo }: CustomSignInProps) {
       } else {
         setError(result.error || 'Sign in failed')
       }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred')
+    } catch (err: unknown) {
+      const errorObj = err as { message?: string }
+      setError(errorObj.message || 'An unexpected error occurred')
     } finally {
       setLoading(false)
     }
@@ -95,7 +96,7 @@ export default function CustomSignIn({ redirectTo }: CustomSignInProps) {
 
       <div className="text-center">
         <p className="text-sm text-gray-600">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <a href="/auth/signup" className="font-medium text-blue-600 hover:text-blue-500">
             Sign up
           </a>

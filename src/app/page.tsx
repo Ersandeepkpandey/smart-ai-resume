@@ -182,7 +182,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">ATS Score Check</h4>
-                    <p className="text-gray-600 text-sm">Get instant feedback on your resume's ATS compatibility and optimization tips.</p>
+                    <p className="text-gray-600 text-sm">Get instant feedback on your resume&apos;s ATS compatibility and optimization tips.</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
@@ -238,7 +238,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">ATS Score Detector</h3>
               <p className="text-gray-600">
-                Get real-time feedback on your resume's ATS compatibility and optimization suggestions.
+                Get real-time feedback on your resume&apos;s ATS compatibility and optimization suggestions.
               </p>
             </div>
 

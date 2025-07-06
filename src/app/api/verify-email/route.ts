@@ -26,7 +26,8 @@ export async function GET(request: NextRequest) {
 
     // Redirect to sign-in with verified message
     return NextResponse.redirect('/auth/signin?verified=1', { status: 302 })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Verification failed.' }, { status: 500 })
+  } catch (error: unknown) {
+    const errorObj = error as { message?: string }
+    return NextResponse.json({ error: errorObj.message || 'Verification failed.' }, { status: 500 })
   }
 }

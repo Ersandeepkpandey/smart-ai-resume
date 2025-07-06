@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import client from '@/lib/turso'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Check environment variables
     const envCheck = {
@@ -17,12 +17,13 @@ export async function GET(request: NextRequest) {
     let dbError = null
 
     try {
-      const result = await client.execute({
+      await client.execute({
         sql: 'SELECT 1 as test'
       })
       dbConnection = true
-    } catch (error: any) {
-      dbError = error.message
+    } catch (error: unknown) {
+      const errorObj = error as { message: string }
+      dbError = errorObj.message
     }
 
     // Check if tables exist
@@ -34,8 +35,9 @@ export async function GET(request: NextRequest) {
         sql: "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('users', 'profiles', 'resumes', 'templates')"
       })
       tablesExist = tablesResult.rows.length === 4
-    } catch (error: any) {
-      tablesError = error.message
+    } catch (error: unknown) {
+      const errorObj = error as { message: string }
+      tablesError = errorObj.message
     }
 
     return NextResponse.json({
@@ -47,7 +49,7 @@ export async function GET(request: NextRequest) {
         tablesError
       },
       missingVariables: Object.entries(envCheck)
-        .filter(([_, exists]) => !exists)
+        .filter(([, exists]) => !exists)
         .map(([key]) => key)
     })
 

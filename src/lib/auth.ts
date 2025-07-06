@@ -38,12 +38,12 @@ export async function destroyUserSession(sessionId: string) {
   await deleteSession(sessionId)
 }
 
+import bcrypt from 'bcryptjs'
+
 export function hashPassword(password: string): Promise<string> {
-  const bcrypt = require('bcryptjs')
   return bcrypt.hash(password, 10)
 }
 
 export function comparePassword(password: string, hash: string): Promise<boolean> {
-  const bcrypt = require('bcryptjs')
   return bcrypt.compare(password, hash)
 }

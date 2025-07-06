@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import client from '@/lib/turso'
 
+interface User {
+  id: string
+  email: string
+  created_at: string
+}
+
+interface Profile {
+  id: string
+  email: string
+  created_at: string
+}
+
+interface CleanupResults {
+  usersDeleted: number
+  profilesDeleted: number
+  keptUser: User | null
+  keptProfile: Profile | null
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json()
@@ -27,16 +46,16 @@ export async function POST(request: NextRequest) {
 
     console.log(`Found ${users.rows.length} users and ${profiles.rows.length} profiles for ${email}`)
 
-    let cleanupResults = {
+    const cleanupResults: CleanupResults = {
       usersDeleted: 0,
       profilesDeleted: 0,
-      keptUser: null as any,
-      keptProfile: null as any
+      keptUser: null,
+      keptProfile: null
     }
 
     // Keep the most recent user, delete others
     if (users.rows.length > 1) {
-      const [latestUser, ...oldUsers] = users.rows
+      const [latestUser, ...oldUsers] = users.rows as unknown as User[]
       cleanupResults.keptUser = latestUser
 
       for (const oldUser of oldUsers) {
@@ -47,12 +66,12 @@ export async function POST(request: NextRequest) {
         cleanupResults.usersDeleted++
       }
     } else if (users.rows.length === 1) {
-      cleanupResults.keptUser = users.rows[0]
+      cleanupResults.keptUser = users.rows[0] as unknown as User
     }
 
     // Keep the most recent profile, delete others
     if (profiles.rows.length > 1) {
-      const [latestProfile, ...oldProfiles] = profiles.rows
+      const [latestProfile, ...oldProfiles] = profiles.rows as unknown as Profile[]
       cleanupResults.keptProfile = latestProfile
 
       for (const oldProfile of oldProfiles) {
@@ -63,7 +82,7 @@ export async function POST(request: NextRequest) {
         cleanupResults.profilesDeleted++
       }
     } else if (profiles.rows.length === 1) {
-      cleanupResults.keptProfile = profiles.rows[0]
+      cleanupResults.keptProfile = profiles.rows[0] as unknown as Profile
     }
 
     return NextResponse.json({

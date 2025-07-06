@@ -5,7 +5,11 @@ import { useState } from 'react'
 export default function TestEmail() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<any>(null)
+  const [result, setResult] = useState<{
+    success?: boolean
+    error?: string
+    details?: unknown
+  } | null>(null)
 
   const sendTestEmail = async () => {
     if (!email) return

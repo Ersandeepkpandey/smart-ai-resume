@@ -5,8 +5,9 @@ import { verifyUserSession } from '@/lib/auth'
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const sessionId = await getSessionIdFromCookie()
 
@@ -19,7 +20,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Invalid session.' }, { status: 401 })
     }
 
-    const resumeId = params.id
+    const resumeId = id
 
     // First check if the resume belongs to the user
     const checkResult = await client.execute({
@@ -39,7 +40,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Resume deleted successfully' })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Resume deletion error:', error)
     return NextResponse.json({ error: 'Failed to delete resume.' }, { status: 500 })
   }
@@ -47,8 +48,9 @@ export async function DELETE(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const sessionId = await getSessionIdFromCookie()
 
@@ -61,7 +63,7 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid session.' }, { status: 401 })
     }
 
-    const resumeId = params.id
+    const resumeId = id
 
     const result = await client.execute({
       sql: 'SELECT id, title, template_id, content, ats_score, created_at, updated_at FROM resumes WHERE id = ? AND user_id = ?',
@@ -74,7 +76,7 @@ export async function GET(
 
     return NextResponse.json({ resume: result.rows[0] })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Resume fetch error:', error)
     return NextResponse.json({ error: 'Failed to fetch resume.' }, { status: 500 })
   }
@@ -82,8 +84,9 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const sessionId = await getSessionIdFromCookie()
 
@@ -96,7 +99,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Invalid session.' }, { status: 401 })
     }
 
-    const resumeId = params.id
+    const resumeId = id
     const { title, template_id, content, ats_score } = await request.json()
 
     if (!title || !template_id || !content) {
@@ -124,7 +127,7 @@ export async function PUT(
 
     return NextResponse.json({ resume: result.rows[0] })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Resume update error:', error)
     return NextResponse.json({ error: 'Failed to update resume.' }, { status: 500 })
   }

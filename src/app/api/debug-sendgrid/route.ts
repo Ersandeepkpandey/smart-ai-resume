@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import sgMail from '@sendgrid/mail'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Check environment variables
     const apiKey = process.env.SENDGRID_API_KEY
@@ -25,9 +25,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Test SendGrid configuration
-    let sendGridTest = {
+    const sendGridTest = {
       configured: false,
-      error: null,
+      error: null as string | null,
       details: null
     }
 
@@ -35,8 +35,9 @@ export async function GET(request: NextRequest) {
       try {
         sgMail.setApiKey(apiKey)
         sendGridTest.configured = true
-      } catch (error: any) {
-        sendGridTest.error = error.message
+      } catch (error: unknown) {
+        const errorObj = error as { message: string }
+        sendGridTest.error = errorObj.message
       }
     }
 
@@ -96,20 +97,21 @@ export async function POST(request: NextRequest) {
       result: result
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('SendGrid test error:', error)
 
-    let errorInfo = {
-      message: error.message,
-      status: null,
-      body: null,
-      code: null
+    const errorObj = error as { message: string; response?: { status?: number; body?: unknown }; code?: string }
+    const errorInfo = {
+      message: errorObj.message,
+      status: null as number | null,
+      body: null as unknown | null,
+      code: null as string | null
     }
 
-    if (error.response) {
-      errorInfo.status = error.response.status
-      errorInfo.body = error.response.body
-      errorInfo.code = error.code
+    if (errorObj.response) {
+      errorInfo.status = errorObj.response.status || null
+      errorInfo.body = errorObj.response.body || null
+      errorInfo.code = errorObj.code || null
     }
 
     return NextResponse.json(
@@ -122,7 +124,11 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function getRecommendations(config: any) {
+function getRecommendations(config: {
+  apiKey: { exists: boolean; length: number; startsWithSG: boolean }
+  fromEmail: { exists: boolean; value: string }
+  appUrl: { exists: boolean; value: string }
+}) {
   const recommendations = []
 
   if (!config.apiKey.exists) {

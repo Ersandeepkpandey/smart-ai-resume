@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import {
   FileText,
   CheckCircle,
-  Download,
   LayoutTemplate,
   Star,
   Eye,
@@ -13,8 +12,7 @@ import {
   Sparkles,
   Zap,
   Award,
-  Users,
-  TrendingUp
+  Users
 } from 'lucide-react';
 import Head from 'next/head';
 
@@ -68,14 +66,7 @@ export default function TemplatesPage() {
     }
   ];
 
-  const getColorClasses = (color: string) => {
-    const colors = {
-      blue: "bg-blue-500 text-blue-600 border-blue-200 hover:bg-blue-600",
-      indigo: "bg-indigo-500 text-indigo-600 border-indigo-200 hover:bg-indigo-600",
-      purple: "bg-purple-500 text-purple-600 border-purple-200 hover:bg-purple-600"
-    };
-    return colors[color as keyof typeof colors] || colors.blue;
-  };
+
 
   const getGradientClasses = (color: string) => {
     const gradients = {

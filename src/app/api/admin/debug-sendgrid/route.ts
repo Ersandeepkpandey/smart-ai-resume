@@ -16,8 +16,19 @@ export async function GET(request: NextRequest) {
       appUrl: process.env.NEXT_PUBLIC_APP_URL
     }
 
-    let testResult = null
-    let error = null
+    let testResult: {
+      success: boolean
+      messageId?: string
+      statusCode?: number
+      timestamp: string
+    } | null = null
+
+    let error: {
+      message: string
+      status?: number
+      body?: unknown
+      code?: string
+    } | null = null
 
     if (sendTest && testEmail && process.env.SENDGRID_API_KEY && process.env.SENDGRID_FROM_EMAIL) {
       try {
@@ -89,12 +100,13 @@ export async function GET(request: NextRequest) {
           statusCode: result[0]?.statusCode,
           timestamp: new Date().toISOString()
         }
-      } catch (sendError: any) {
+      } catch (sendError: unknown) {
+        const errorObj = sendError as { message: string; response?: { status?: number; body?: unknown }; code?: string }
         error = {
-          message: sendError.message,
-          status: sendError.response?.status,
-          body: sendError.response?.body,
-          code: sendError.code
+          message: errorObj.message,
+          status: errorObj.response?.status,
+          body: errorObj.response?.body,
+          code: errorObj.code
         }
       }
     }

@@ -16,9 +16,9 @@ export class EmailService {
     this.config = config
   }
 
-  async sendVerificationEmail(to: string, verificationUrl: string, fullName: string) {
+  async sendVerificationEmail(to: string, verificationUrl: string) {
     const subject = 'Verify your email - Resume Maker'
-    const html = this.getVerificationEmailHTML(verificationUrl, fullName)
+    const html = this.getVerificationEmailHTML(verificationUrl)
     const text = `Welcome to Resume Maker! Please verify your email by clicking this link: ${verificationUrl}`
 
     if (this.config.provider === 'sendgrid') {
@@ -82,7 +82,7 @@ export class EmailService {
     return await transporter.sendMail(mailOptions)
   }
 
-  private getVerificationEmailHTML(verificationUrl: string, fullName: string): string {
+  private getVerificationEmailHTML(verificationUrl: string): string {
     return `
       <!DOCTYPE html>
       <html>

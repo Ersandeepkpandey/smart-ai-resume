@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getSessionIdFromCookie, clearSessionCookie, deleteSession } from '@/lib/session'
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const sessionId = await getSessionIdFromCookie()
 

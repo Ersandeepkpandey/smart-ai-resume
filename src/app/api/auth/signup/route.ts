@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
         `,
         args: [userId, email, fullName]
       })
-    } catch (profileError: any) {
+    } catch (profileError: unknown) {
       // If profile creation fails, clean up the user and return error
       console.error('Profile creation failed:', profileError)
       await client.execute({
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
           subject: 'Welcome to Resume Maker',
           text: `Welcome, ${fullName}! Your account has been created.`
         })
-      } catch (e) {
+      } catch {
         // Ignore email errors
       }
     }

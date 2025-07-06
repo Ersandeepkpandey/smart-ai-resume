@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { ResumeContent, calculateATSScore } from '@/lib/ats-scorer'
@@ -54,7 +54,7 @@ const templates = {
   template3: Template3
 }
 
-export default function NewResume() {
+function NewResumeContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user } = useAuth()
@@ -62,7 +62,7 @@ export default function NewResume() {
   const [selectedTemplate, setSelectedTemplate] = useState('template1')
   const [title, setTitle] = useState('')
   const [saving, setSaving] = useState(false)
-  const [atsHover, setAtsHover] = useState(false)
+
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const [downloading, setDownloading] = useState(false)
 
@@ -247,8 +247,6 @@ export default function NewResume() {
                 <h2 className="text-lg font-semibold text-gray-900">Preview</h2>
                 <button
                   className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
-                  onMouseEnter={() => setAtsHover(true)}
-                  onMouseLeave={() => setAtsHover(false)}
                 >
                   <Eye className="w-3 h-3 mr-1" />
                   Preview
@@ -262,5 +260,20 @@ export default function NewResume() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function NewResume() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <NewResumeContent />
+    </Suspense>
   )
 }

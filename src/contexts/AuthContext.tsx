@@ -42,6 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check for existing session on mount
     verifySession()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const verifySession = async () => {

@@ -57,7 +57,7 @@ export async function middleware(request: NextRequest) {
     }
 
     return NextResponse.next()
-  } catch (error) {
+  } catch {
     // Invalid session
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 })

@@ -26,7 +26,12 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const user = userResult.rows[0] as any
+    const user = userResult.rows[0] as unknown as {
+      id: string;
+      email: string;
+      verification_token: string | null;
+      created_at: string;
+    }
 
     // Check if token is expired (24 hours)
     const tokenCreatedAt = new Date(user.created_at)
@@ -69,7 +74,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.redirect(redirectUrl)
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Email verification error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },

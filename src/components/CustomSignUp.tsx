@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import CustomSignIn from './CustomSignIn'
 
@@ -15,9 +14,7 @@ export default function CustomSignUp({ redirectTo }: CustomSignUpProps) {
   const [fullName, setFullName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
   const [showSignIn, setShowSignIn] = useState(false)
-  const router = useRouter()
   const { signUp } = useAuth()
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -29,13 +26,13 @@ export default function CustomSignUp({ redirectTo }: CustomSignUpProps) {
       const result = await signUp(email, password, fullName)
 
       if (result.success) {
-        setSuccess(true)
         setShowSignIn(true)
       } else {
         setError(result.error || 'Registration failed.')
       }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred')
+    } catch (err: unknown) {
+      const errorObj = err as { message?: string }
+      setError(errorObj.message || 'An unexpected error occurred')
     } finally {
       setLoading(false)
     }

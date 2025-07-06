@@ -13,7 +13,7 @@ export default function CareersPage() {
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-extrabold text-blue-700 mb-4">Careers at Rezume</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Want to make a difference in the world of job search and resume technology? We're always looking for talented, passionate individuals to join our team.
+            Want to make a difference in the world of job search and resume technology? We&apos;re always looking for talented, passionate individuals to join our team.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">

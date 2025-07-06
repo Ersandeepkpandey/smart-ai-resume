@@ -78,7 +78,6 @@ export function calculateATSScore(content: ResumeContent, jobKeywords: string[] 
 
   // Calculate score based on various factors
   let score = 0
-  const maxScore = 100
 
   // Keyword match (40 points)
   const keywordScore = Math.min((foundKeywords.length / Math.max(jobKeywords.length, 10)) * 40, 40)

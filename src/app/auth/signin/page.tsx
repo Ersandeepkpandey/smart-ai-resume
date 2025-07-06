@@ -1,15 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
-import { useAuth } from '@/contexts/AuthContext'
 import CustomSignIn from '@/components/CustomSignIn'
 import { useSearchParams } from 'next/navigation'
 
-export default function SignIn() {
+function SignInContent() {
   const [origin, setOrigin] = useState('')
-  const { user } = useAuth()
+
   const searchParams = useSearchParams()
   const registered = searchParams.get('registered')
   const verified = searchParams.get('verified')
@@ -67,5 +66,20 @@ export default function SignIn() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SignIn() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <SignInContent />
+    </Suspense>
   )
 }

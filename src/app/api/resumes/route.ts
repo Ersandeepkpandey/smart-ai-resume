@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import client from '@/lib/turso'
 import { getSessionIdFromCookie, getSession } from '@/lib/session'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const sessionId = await getSessionIdFromCookie()
     if (!sessionId) {
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       args: [session.user_id]
     })
     return NextResponse.json({ resumes: result.rows })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Resumes fetch error:', error)
     return NextResponse.json({ error: 'Failed to fetch resumes.' }, { status: 500 })
   }
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       args: [resumeId]
     })
     return NextResponse.json({ resume: createdResume.rows[0] })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Resume creation error:', error)
     return NextResponse.json({ error: 'Failed to create resume.' }, { status: 500 })
   }

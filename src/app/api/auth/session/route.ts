@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getSessionIdFromCookie, getSession } from '@/lib/session'
 import client from '@/lib/turso'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const sessionId = await getSessionIdFromCookie()
   if (!sessionId) {
     return NextResponse.json({ user: null })

@@ -32,7 +32,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const user = userResult.rows[0] as any
+    const user = userResult.rows[0] as unknown as {
+      id: string;
+      email: string;
+      full_name: string;
+      password_hash: string;
+      role: string;
+      status: string;
+      is_verified: boolean;
+    }
 
     // Check if user is active
     if (user.status !== 'active') {
@@ -83,7 +91,17 @@ export async function POST(request: NextRequest) {
       args: [user.id]
     })
 
-    const profile = profileResult.rows[0] as any
+    const profile = profileResult.rows[0] as unknown as {
+      id: string;
+      email: string;
+      full_name: string;
+      avatar_url?: string;
+      role: string;
+      status: string;
+      last_login?: string;
+      created_at: string;
+      updated_at: string;
+    }
 
     return NextResponse.json({
       user: {
@@ -107,7 +125,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Signin error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },

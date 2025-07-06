@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import client from '@/lib/turso'
 import { getSessionIdFromCookie } from '@/lib/session'
 import { verifyUserSession } from '@/lib/auth'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const sessionId = await getSessionIdFromCookie()
 
@@ -39,7 +39,14 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const user = userResult.rows[0] as any
+    const user = userResult.rows[0] as unknown as {
+      id: string
+      email: string
+      full_name: string
+      role: string
+      status: string
+      is_verified: boolean
+    }
 
     // Get profile data
     const profileResult = await client.execute({
@@ -47,7 +54,17 @@ export async function GET(request: NextRequest) {
       args: [user.id]
     })
 
-    const profile = profileResult.rows[0] as any
+    const profile = profileResult.rows[0] as unknown as {
+      id: string
+      email: string
+      full_name: string
+      avatar_url?: string
+      role: string
+      status: string
+      last_login?: string
+      created_at: string
+      updated_at: string
+    }
 
     return NextResponse.json({
       user: {
