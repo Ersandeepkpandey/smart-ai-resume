@@ -5,27 +5,58 @@ export interface ATSScore {
   missingKeywords: string[]
 }
 
+export interface TextFormatting {
+  fontSize?: string
+  fontFamily?: string
+  color?: string
+  alignment?: string
+  bold?: boolean
+  italic?: boolean
+  underline?: boolean
+}
+
 export interface ResumeContent {
   personalInfo: {
     name: string
     email: string
     phone: string
     location: string
+    formatting?: {
+      name?: TextFormatting
+      email?: TextFormatting
+      phone?: TextFormatting
+      location?: TextFormatting
+    }
   }
   summary: string
+  summaryFormatting?: TextFormatting
   experience: Array<{
     title: string
     company: string
     duration: string
     description: string
+    formatting?: {
+      title?: TextFormatting
+      company?: TextFormatting
+      duration?: TextFormatting
+      description?: TextFormatting
+    }
   }>
   education: Array<{
     degree: string
     institution: string
     year: string
+    formatting?: {
+      degree?: TextFormatting
+      institution?: TextFormatting
+      year?: TextFormatting
+    }
   }>
   skills: string[]
   certifications: string[]
+  formatting?: TextFormatting
+  otherQualities?: string[]
+  customSections?: { heading: string, content: string }[]
 }
 
 // Common ATS keywords by industry

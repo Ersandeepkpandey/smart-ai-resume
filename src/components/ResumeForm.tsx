@@ -1,16 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import { ResumeContent } from '@/lib/ats-scorer'
+import { ResumeContent, TextFormatting } from '@/lib/ats-scorer'
 import { Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
+import FormattedInput from './FormattedInput'
 
 interface ResumeFormProps {
   content: ResumeContent
   onChange: (content: ResumeContent) => void
+  onFieldFocus?: (fieldId: string) => void
 }
 
-export default function ResumeForm({ content, onChange }: ResumeFormProps) {
+export default function ResumeForm({ content, onChange, onFieldFocus }: ResumeFormProps) {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['personal']))
+  const [newSectionHeading, setNewSectionHeading] = useState('')
+  const [showAddSection, setShowAddSection] = useState(false)
 
   const toggleSection = (section: string) => {
     const newExpanded = new Set(expandedSections)
@@ -26,12 +30,52 @@ export default function ResumeForm({ content, onChange }: ResumeFormProps) {
     onChange({ ...content, ...updates })
   }
 
+  const updatePersonalInfoFormatting = (field: string, formatting: TextFormatting) => {
+    const newPersonalInfo = {
+      ...content.personalInfo,
+      formatting: {
+        ...content.personalInfo.formatting,
+        [field]: formatting
+      }
+    }
+    updateContent({ personalInfo: newPersonalInfo })
+  }
+
+  const updateSummaryFormatting = (formatting: TextFormatting) => {
+    updateContent({ summaryFormatting: formatting })
+  }
+
+  const updateExperienceFormatting = (index: number, field: string, formatting: TextFormatting) => {
+    const newExperience = [...content.experience]
+    newExperience[index] = {
+      ...newExperience[index],
+      formatting: {
+        ...newExperience[index].formatting,
+        [field]: formatting
+      }
+    }
+    updateContent({ experience: newExperience })
+  }
+
+  const updateEducationFormatting = (index: number, field: string, formatting: TextFormatting) => {
+    const newEducation = [...content.education]
+    newEducation[index] = {
+      ...newEducation[index],
+      formatting: {
+        ...newEducation[index].formatting,
+        [field]: formatting
+      }
+    }
+    updateContent({ education: newEducation })
+  }
+
   const addExperience = () => {
     const newExperience = {
       title: '',
       company: '',
       duration: '',
-      description: ''
+      description: '',
+      formatting: {}
     }
     updateContent({
       experience: [...content.experience, newExperience]
@@ -53,7 +97,8 @@ export default function ResumeForm({ content, onChange }: ResumeFormProps) {
     const newEducation = {
       degree: '',
       institution: '',
-      year: ''
+      year: '',
+      formatting: {}
     }
     updateContent({
       education: [...content.education, newEducation]
@@ -105,6 +150,50 @@ export default function ResumeForm({ content, onChange }: ResumeFormProps) {
     updateContent({ certifications: newCertifications })
   }
 
+  const addOtherQuality = () => {
+    updateContent({ otherQualities: [...(content.otherQualities || []), ''] })
+  }
+
+  const updateOtherQuality = (index: number, value: string) => {
+    const newQualities = [...(content.otherQualities || [])]
+    newQualities[index] = value
+    updateContent({ otherQualities: newQualities })
+  }
+
+  const removeOtherQuality = (index: number) => {
+    const newQualities = (content.otherQualities || []).filter((_, i) => i !== index)
+    updateContent({ otherQualities: newQualities })
+  }
+
+  const addCustomSection = () => {
+    if (!newSectionHeading.trim()) return;
+    updateContent({
+      customSections: [
+        ...(content.customSections || []),
+        { heading: newSectionHeading.trim(), content: '' }
+      ]
+    })
+    setNewSectionHeading('')
+    setShowAddSection(false)
+  }
+
+  const updateCustomSectionHeading = (index: number, heading: string) => {
+    const newSections = [...(content.customSections || [])]
+    newSections[index].heading = heading
+    updateContent({ customSections: newSections })
+  }
+
+  const updateCustomSectionContent = (index: number, value: string) => {
+    const newSections = [...(content.customSections || [])]
+    newSections[index].content = value
+    updateContent({ customSections: newSections })
+  }
+
+  const removeCustomSection = (sectionIdx: number) => {
+    const newSections = (content.customSections || []).filter((_, i) => i !== sectionIdx)
+    updateContent({ customSections: newSections })
+  }
+
   return (
     <div className="space-y-6">
       {/* Personal Information */}
@@ -125,55 +214,52 @@ export default function ResumeForm({ content, onChange }: ResumeFormProps) {
           <div className="px-6 pb-6 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Full Name
-                </label>
-                <input
-                  type="text"
+                <FormattedInput
                   value={content.personalInfo.name}
-                  onChange={(e) => updateContent({
-                    personalInfo: { ...content.personalInfo, name: e.target.value }
+                  onChange={(value) => updateContent({
+                    personalInfo: { ...content.personalInfo, name: value }
                   })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={content.personalInfo.email}
-                  onChange={(e) => updateContent({
-                    personalInfo: { ...content.personalInfo, email: e.target.value }
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone
-                </label>
-                <input
-                  type="tel"
-                  value={content.personalInfo.phone}
-                  onChange={(e) => updateContent({
-                    personalInfo: { ...content.personalInfo, phone: e.target.value }
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Location
-                </label>
-                <input
+                  onFormatChange={(formatting) => updatePersonalInfoFormatting('name', formatting)}
+                  initialFormatting={content.personalInfo.formatting?.name}
                   type="text"
-                  value={content.personalInfo.location}
-                  onChange={(e) => updateContent({
-                    personalInfo: { ...content.personalInfo, location: e.target.value }
+                  label="Full Name"
+                  onFocus={() => onFieldFocus?.('Personal Name')}
+                />
+              </div>
+              <div>
+                <FormattedInput
+                  value={content.personalInfo.email}
+                  onChange={(value) => updateContent({
+                    personalInfo: { ...content.personalInfo, email: value }
                   })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                  onFormatChange={(formatting) => updatePersonalInfoFormatting('email', formatting)}
+                  initialFormatting={content.personalInfo.formatting?.email}
+                  type="email"
+                  label="Email"
+                />
+              </div>
+              <div>
+                <FormattedInput
+                  value={content.personalInfo.phone}
+                  onChange={(value) => updateContent({
+                    personalInfo: { ...content.personalInfo, phone: value }
+                  })}
+                  onFormatChange={(formatting) => updatePersonalInfoFormatting('phone', formatting)}
+                  initialFormatting={content.personalInfo.formatting?.phone}
+                  type="tel"
+                  label="Phone"
+                />
+              </div>
+              <div>
+                <FormattedInput
+                  value={content.personalInfo.location}
+                  onChange={(value) => updateContent({
+                    personalInfo: { ...content.personalInfo, location: value }
+                  })}
+                  onFormatChange={(formatting) => updatePersonalInfoFormatting('location', formatting)}
+                  initialFormatting={content.personalInfo.formatting?.location}
+                  type="text"
+                  label="Location"
                 />
               </div>
             </div>
@@ -197,12 +283,14 @@ export default function ResumeForm({ content, onChange }: ResumeFormProps) {
 
         {expandedSections.has('summary') && (
           <div className="px-6 pb-6">
-            <textarea
+            <FormattedInput
               value={content.summary}
-              onChange={(e) => updateContent({ summary: e.target.value })}
+              onChange={(value) => updateContent({ summary: value })}
+              onFormatChange={updateSummaryFormatting}
+              initialFormatting={content.summaryFormatting}
               rows={4}
               placeholder="Write a compelling professional summary..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              onFocus={() => onFieldFocus?.('Professional Summary')}
             />
           </div>
         )}
@@ -245,50 +333,47 @@ export default function ResumeForm({ content, onChange }: ResumeFormProps) {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Job Title
-                    </label>
-                    <input
-                      type="text"
+                    <FormattedInput
                       value={exp.title}
-                      onChange={(e) => updateExperience(index, 'title', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                      onChange={(value) => updateExperience(index, 'title', value)}
+                      onFormatChange={(formatting) => updateExperienceFormatting(index, 'title', formatting)}
+                      initialFormatting={exp.formatting?.title}
+                      type="text"
+                      label="Job Title"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Company
-                    </label>
-                    <input
-                      type="text"
+                    <FormattedInput
                       value={exp.company}
-                      onChange={(e) => updateExperience(index, 'company', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                      onChange={(value) => updateExperience(index, 'company', value)}
+                      onFormatChange={(formatting) => updateExperienceFormatting(index, 'company', formatting)}
+                      initialFormatting={exp.formatting?.company}
+                      type="text"
+                      label="Company"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Duration
-                    </label>
-                    <input
-                      type="text"
+                    <FormattedInput
                       value={exp.duration}
-                      onChange={(e) => updateExperience(index, 'duration', e.target.value)}
+                      onChange={(value) => updateExperience(index, 'duration', value)}
+                      onFormatChange={(formatting) => updateExperienceFormatting(index, 'duration', formatting)}
+                      initialFormatting={exp.formatting?.duration}
+                      type="text"
+                      label="Duration"
                       placeholder="e.g., Jan 2020 - Present"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                     />
                   </div>
                 </div>
                 <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
-                  <textarea
+                  <FormattedInput
                     value={exp.description}
-                    onChange={(e) => updateExperience(index, 'description', e.target.value)}
+                    onChange={(value) => updateExperience(index, 'description', value)}
+                    onFormatChange={(formatting) => updateExperienceFormatting(index, 'description', formatting)}
+                    initialFormatting={exp.formatting?.description}
                     rows={3}
                     placeholder="Describe your responsibilities and achievements..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                    label="Description"
+                    onFocus={() => onFieldFocus?.(`Experience ${index + 1} Description`)}
                   />
                 </div>
               </div>
@@ -334,37 +419,34 @@ export default function ResumeForm({ content, onChange }: ResumeFormProps) {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Degree
-                    </label>
-                    <input
-                      type="text"
+                    <FormattedInput
                       value={edu.degree}
-                      onChange={(e) => updateEducation(index, 'degree', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                      onChange={(value) => updateEducation(index, 'degree', value)}
+                      onFormatChange={(formatting) => updateEducationFormatting(index, 'degree', formatting)}
+                      initialFormatting={edu.formatting?.degree}
+                      type="text"
+                      label="Degree"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Institution
-                    </label>
-                    <input
-                      type="text"
+                    <FormattedInput
                       value={edu.institution}
-                      onChange={(e) => updateEducation(index, 'institution', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                      onChange={(value) => updateEducation(index, 'institution', value)}
+                      onFormatChange={(formatting) => updateEducationFormatting(index, 'institution', formatting)}
+                      initialFormatting={edu.formatting?.institution}
+                      type="text"
+                      label="Institution"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Year
-                    </label>
-                    <input
-                      type="text"
+                    <FormattedInput
                       value={edu.year}
-                      onChange={(e) => updateEducation(index, 'year', e.target.value)}
+                      onChange={(value) => updateEducation(index, 'year', value)}
+                      onFormatChange={(formatting) => updateEducationFormatting(index, 'year', formatting)}
+                      initialFormatting={edu.formatting?.year}
+                      type="text"
+                      label="Year"
                       placeholder="e.g., 2020"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                     />
                   </div>
                 </div>
@@ -462,6 +544,110 @@ export default function ResumeForm({ content, onChange }: ResumeFormProps) {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Other Qualities */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mt-4">
+        <div className="px-6 py-4 flex items-center justify-between">
+          <span className="text-lg font-semibold text-gray-900">Other Qualities</span>
+          <button
+            onClick={addOtherQuality}
+            className="ml-4 p-2 text-blue-600 hover:bg-blue-50 rounded-md text-sm font-medium border border-blue-100"
+            type="button"
+          >
+            Add More
+          </button>
+        </div>
+        {(content.otherQualities || []).length > 0 && (
+          <div className="px-6 pb-6 space-y-2">
+            {(content.otherQualities || []).map((quality, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={quality}
+                  onChange={e => updateOtherQuality(index, e.target.value)}
+                  placeholder="Enter a quality or achievement"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                />
+                <button
+                  onClick={() => removeOtherQuality(index)}
+                  className="text-red-600 hover:text-red-800 p-2"
+                  type="button"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Custom Sections as Cards */}
+      <div className="mt-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-lg font-semibold text-gray-900">Add More</span>
+          <button
+            onClick={() => setShowAddSection(true)}
+            className="ml-4 p-2 text-blue-600 hover:bg-blue-50 rounded-md text-sm font-medium border border-blue-100"
+            type="button"
+          >
+            + Add More
+          </button>
+        </div>
+        {showAddSection && (
+          <div className="mb-4 flex flex-col sm:flex-row gap-2 items-stretch w-full">
+            <input
+              type="text"
+              value={newSectionHeading}
+              onChange={e => setNewSectionHeading(e.target.value)}
+              placeholder="Section Heading (e.g. Awards)"
+              className="flex-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={addCustomSection}
+                className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                type="button"
+              >
+                Add
+              </button>
+              <button
+                onClick={() => { setShowAddSection(false); setNewSectionHeading('') }}
+                className="px-3 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                type="button"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+        <div className="space-y-6">
+          {(content.customSections || []).map((section, sectionIdx) => (
+            <div key={sectionIdx} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  type="text"
+                  value={section.heading}
+                  onChange={e => updateCustomSectionHeading(sectionIdx, e.target.value)}
+                  className="text-lg font-bold text-blue-700 bg-transparent border-b border-blue-200 focus:outline-none focus:border-blue-500 flex-1"
+                />
+                <button
+                  onClick={() => removeCustomSection(sectionIdx)}
+                  className="text-red-600 hover:text-red-800 p-2"
+                  type="button"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+              <FormattedInput
+                value={section.content}
+                onChange={value => updateCustomSectionContent(sectionIdx, value)}
+                rows={4}
+                placeholder="Write content for this section..."
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
