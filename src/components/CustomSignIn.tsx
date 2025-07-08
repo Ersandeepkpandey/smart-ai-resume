@@ -25,7 +25,15 @@ export default function CustomSignIn({ redirectTo }: CustomSignInProps) {
       const result = await signIn(email, password)
 
       if (result.success) {
-        router.push(redirectTo)
+        // Check if there's pending resume data
+        const pendingResume = sessionStorage.getItem('pendingResume')
+        if (pendingResume) {
+          console.log('Found pending resume data, redirecting to resume creation')
+          // Redirect to resume creation page - don't clear data yet
+          router.push('/resume/new')
+        } else {
+          router.push(redirectTo)
+        }
       } else {
         setError(result.error || 'Sign in failed')
       }

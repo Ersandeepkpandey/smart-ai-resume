@@ -10,6 +10,21 @@ interface Template2Props {
 
 const Template2 = forwardRef<HTMLDivElement, Template2Props>(
   ({ content, className = '' }, ref) => {
+    // Defensive: ensure formatting objects exist
+    const personalInfo = {
+      ...content.personalInfo,
+      formatting: content.personalInfo.formatting || {}
+    }
+    const summaryFormatting = content.summaryFormatting || {}
+    const experience = (content.experience || []).map(exp => ({
+      ...exp,
+      formatting: exp.formatting || {}
+    }))
+    const education = (content.education || []).map(edu => ({
+      ...edu,
+      formatting: edu.formatting || {}
+    }))
+
     return (
       <div
         ref={ref}
@@ -21,55 +36,55 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
           <h1
             className="text-4xl font-bold mb-2"
             style={{
-              fontSize: content.personalInfo.formatting?.name?.fontSize || '2.25rem',
-              color: content.personalInfo.formatting?.name?.color || '#ffffff',
-              textAlign: content.personalInfo.formatting?.name?.alignment as 'left' | 'center' | 'right' || 'left',
-              fontWeight: content.personalInfo.formatting?.name?.bold ? 'bold' : 'bold',
-              fontStyle: content.personalInfo.formatting?.name?.italic ? 'italic' : 'normal',
-              textDecoration: content.personalInfo.formatting?.name?.underline ? 'underline' : 'none'
+              fontSize: personalInfo.formatting?.name?.fontSize || '2.25rem',
+              color: personalInfo.formatting?.name?.color || '#ffffff',
+              textAlign: personalInfo.formatting?.name?.alignment as 'left' | 'center' | 'right' || 'left',
+              fontWeight: personalInfo.formatting?.name?.bold ? 'bold' : 'bold',
+              fontStyle: personalInfo.formatting?.name?.italic ? 'italic' : 'normal',
+              textDecoration: personalInfo.formatting?.name?.underline ? 'underline' : 'none'
             }}
           >
-            {content.personalInfo.name}
+            {personalInfo.name}
           </h1>
-          <p className="text-xl text-gray-300 mb-4">{content.experience[0]?.title || 'Professional'}</p>
+          <p className="text-xl text-gray-300 mb-4">{experience[0]?.title || 'Professional'}</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="flex items-center">
               <span className="mr-2">📧</span>
               <span style={{
-                fontSize: content.personalInfo.formatting?.email?.fontSize || '0.875rem',
-                color: content.personalInfo.formatting?.email?.color || '#d1d5db',
-                textAlign: content.personalInfo.formatting?.email?.alignment as 'left' | 'center' | 'right' || 'left',
-                fontWeight: content.personalInfo.formatting?.email?.bold ? 'bold' : 'normal',
-                fontStyle: content.personalInfo.formatting?.email?.italic ? 'italic' : 'normal',
-                textDecoration: content.personalInfo.formatting?.email?.underline ? 'underline' : 'none'
+                fontSize: personalInfo.formatting?.email?.fontSize || '0.875rem',
+                color: personalInfo.formatting?.email?.color || '#d1d5db',
+                textAlign: personalInfo.formatting?.email?.alignment as 'left' | 'center' | 'right' || 'left',
+                fontWeight: personalInfo.formatting?.email?.bold ? 'bold' : 'normal',
+                fontStyle: personalInfo.formatting?.email?.italic ? 'italic' : 'normal',
+                textDecoration: personalInfo.formatting?.email?.underline ? 'underline' : 'none'
               }}>
-                {content.personalInfo.email}
+                {personalInfo.email}
               </span>
             </div>
             <div className="flex items-center">
               <span className="mr-2">📱</span>
               <span style={{
-                fontSize: content.personalInfo.formatting?.phone?.fontSize || '0.875rem',
-                color: content.personalInfo.formatting?.phone?.color || '#d1d5db',
-                textAlign: content.personalInfo.formatting?.phone?.alignment as 'left' | 'center' | 'right' || 'left',
-                fontWeight: content.personalInfo.formatting?.phone?.bold ? 'bold' : 'normal',
-                fontStyle: content.personalInfo.formatting?.phone?.italic ? 'italic' : 'normal',
-                textDecoration: content.personalInfo.formatting?.phone?.underline ? 'underline' : 'none'
+                fontSize: personalInfo.formatting?.phone?.fontSize || '0.875rem',
+                color: personalInfo.formatting?.phone?.color || '#d1d5db',
+                textAlign: personalInfo.formatting?.phone?.alignment as 'left' | 'center' | 'right' || 'left',
+                fontWeight: personalInfo.formatting?.phone?.bold ? 'bold' : 'normal',
+                fontStyle: personalInfo.formatting?.phone?.italic ? 'italic' : 'normal',
+                textDecoration: personalInfo.formatting?.phone?.underline ? 'underline' : 'none'
               }}>
-                {content.personalInfo.phone}
+                {personalInfo.phone}
               </span>
             </div>
             <div className="flex items-center">
               <span className="mr-2">📍</span>
               <span style={{
-                fontSize: content.personalInfo.formatting?.location?.fontSize || '0.875rem',
-                color: content.personalInfo.formatting?.location?.color || '#d1d5db',
-                textAlign: content.personalInfo.formatting?.location?.alignment as 'left' | 'center' | 'right' || 'left',
-                fontWeight: content.personalInfo.formatting?.location?.bold ? 'bold' : 'normal',
-                fontStyle: content.personalInfo.formatting?.location?.italic ? 'italic' : 'normal',
-                textDecoration: content.personalInfo.formatting?.location?.underline ? 'underline' : 'none'
+                fontSize: personalInfo.formatting?.location?.fontSize || '0.875rem',
+                color: personalInfo.formatting?.location?.color || '#d1d5db',
+                textAlign: personalInfo.formatting?.location?.alignment as 'left' | 'center' | 'right' || 'left',
+                fontWeight: personalInfo.formatting?.location?.bold ? 'bold' : 'normal',
+                fontStyle: personalInfo.formatting?.location?.italic ? 'italic' : 'normal',
+                textDecoration: personalInfo.formatting?.location?.underline ? 'underline' : 'none'
               }}>
-                {content.personalInfo.location}
+                {personalInfo.location}
               </span>
             </div>
           </div>
@@ -87,12 +102,12 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
                 <p
                   className="text-gray-700 leading-relaxed"
                   style={{
-                    fontSize: content.summaryFormatting?.fontSize || '1rem',
-                    color: content.summaryFormatting?.color || '#374151',
-                    textAlign: content.summaryFormatting?.alignment as 'left' | 'center' | 'right' || 'left',
-                    fontWeight: content.summaryFormatting?.bold ? 'bold' : 'normal',
-                    fontStyle: content.summaryFormatting?.italic ? 'italic' : 'normal',
-                    textDecoration: content.summaryFormatting?.underline ? 'underline' : 'none'
+                    fontSize: summaryFormatting?.fontSize || '1rem',
+                    color: summaryFormatting?.color || '#374151',
+                    textAlign: summaryFormatting?.alignment as 'left' | 'center' | 'right' || 'left',
+                    fontWeight: summaryFormatting?.bold ? 'bold' : 'normal',
+                    fontStyle: summaryFormatting?.italic ? 'italic' : 'normal',
+                    textDecoration: summaryFormatting?.underline ? 'underline' : 'none'
                   }}
                 >
                   {content.summary}
@@ -101,13 +116,13 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
             )}
 
             {/* Experience */}
-            {content.experience.length > 0 && (
+            {experience.length > 0 && (
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
                   Work Experience
                 </h2>
                 <div className="space-y-6">
-                  {content.experience.map((exp, index) => (
+                  {experience.map((exp, index) => (
                     <div key={index}>
                       <div className="flex justify-between items-start mb-2">
                         <h3
@@ -170,13 +185,13 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
             )}
 
             {/* Education */}
-            {content.education.length > 0 && (
+            {education.length > 0 && (
               <div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
                   Education
                 </h2>
                 <div className="space-y-4">
-                  {content.education.map((edu, index) => (
+                  {education.map((edu, index) => (
                     <div key={index} className="flex justify-between items-start">
                       <div>
                         <h3

@@ -66,6 +66,8 @@ function NewResumeContent() {
   const [downloading, setDownloading] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
 
+
+
   // Handle template selection from URL parameters or sessionStorage
   useEffect(() => {
     const templateFromUrl = searchParams.get('template')
@@ -80,37 +82,54 @@ function NewResumeContent() {
     }
   }, [searchParams])
 
+  // Handle pending resume data after sign in
+  useEffect(() => {
+    if (user) {
+      const pendingResume = sessionStorage.getItem('pendingResume')
+      if (pendingResume) {
+        try {
+          const resumeData = JSON.parse(pendingResume)
+          setTitle(resumeData.title || '')
+          setSelectedTemplate(resumeData.template_id || 'template1')
+          setContent(resumeData.content || defaultContent)
+          // Clear the pending resume data only after successfully loading it
+          sessionStorage.removeItem('pendingResume')
+          console.log('Resume data restored from pending session')
+        } catch (error) {
+          console.error('Error parsing pending resume data:', error)
+          sessionStorage.removeItem('pendingResume')
+        }
+      }
+    }
+  }, [user])
+
     const atsScore = calculateATSScore(content)
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Please sign in to create a resume.</h2>
-          <p className="text-gray-600 mb-6">You must be signed in to use this feature.</p>
-          <div className="space-y-4">
-            <Link
-              href="/auth/signin"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-            >
-              Sign In
-            </Link>
-            <br />
-            <Link
-              href="/"
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            >
-              Back to Home
-            </Link>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // Allow anonymous users to create resumes
+  const isAnonymous = !user
 
   const saveResume = async () => {
     if (!title.trim()) {
       alert('Please enter a title for your resume')
+      return
+    }
+
+    // If user is anonymous, prompt them to sign in
+    if (isAnonymous) {
+      const shouldSignIn = confirm('To save your resume, you need to sign in. Would you like to sign in now?')
+      if (shouldSignIn) {
+        // Store resume data in sessionStorage for after sign in
+        const resumeData = {
+          title: title.trim(),
+          template_id: selectedTemplate,
+          content: content,
+          ats_score: atsScore.score
+        }
+        sessionStorage.setItem('pendingResume', JSON.stringify(resumeData))
+        console.log('Stored pending resume data:', resumeData)
+        router.push('/auth/signin')
+        return
+      }
       return
     }
 
@@ -143,7 +162,7 @@ function NewResumeContent() {
     }
   }
 
-  const TemplateComponent = templates[selectedTemplate as keyof typeof templates]
+  const TemplateComponent = templates[selectedTemplate as keyof typeof templates] || Template1
 
   const selectedTemplateObj = [
     { id: 'template1', name: 'Professional Classic' },
@@ -156,23 +175,23 @@ function NewResumeContent() {
       <Navigation />
 
       {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Mobile Header */}
-          <div className="lg:hidden">
-            <div className="flex items-center justify-between py-4">
+      <div className="bg-white shadow overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                      {/* Mobile Header */}
+          <div className="md:hidden">
+            <div className="flex items-center justify-between py-4 min-w-0">
               <Link
                 href="/dashboard"
-                className="flex items-center text-gray-600 hover:text-gray-900"
+                className="flex items-center text-gray-600 hover:text-gray-900 min-w-0 flex-shrink-0"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                <span className="text-sm">Back</span>
+                <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2 flex-shrink-0" />
+                <span className="text-sm truncate">Back</span>
               </Link>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
                 <button
                   onClick={() => setShowMobileMenu(!showMobileMenu)}
-                  className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                  className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 flex-shrink-0"
                 >
                   {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                 </button>
@@ -181,19 +200,19 @@ function NewResumeContent() {
 
             {/* Mobile Menu */}
             {showMobileMenu && (
-              <div className="pb-4 space-y-3">
-                <div className="flex flex-col space-y-2">
+              <div className="pb-4 space-y-3 overflow-hidden max-w-full">
+                <div className="flex flex-col space-y-3">
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Enter resume title..."
-                    className="text-lg font-bold text-black bg-transparent border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="text-base sm:text-lg font-bold text-black bg-transparent border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full"
                   />
 
-                                    <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <button
-                      className="inline-flex items-center px-3 py-2 rounded-full bg-blue-600 text-white shadow hover:bg-blue-700 transition-colors text-sm font-semibold"
+                      className="inline-flex items-center px-3 py-2 rounded-full bg-blue-600 text-white shadow hover:bg-blue-700 transition-colors text-sm font-semibold flex-shrink-0"
                       onClick={() => setShowTemplateSelector((v) => !v)}
                       type="button"
                     >
@@ -202,15 +221,17 @@ function NewResumeContent() {
                     </button>
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={saveResume}
                       disabled={saving}
-                      className="flex-1 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-                      title="Save Resume"
+                      className="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 min-w-0"
+                      title={isAnonymous ? "Sign in to Save" : "Save Resume"}
                     >
-                      <Save className="w-5 h-5" />
-                      {saving && <span className="ml-2 text-xs">...</span>}
+                      <Save className="w-4 h-4 mr-1" />
+                      <span className="truncate text-xs sm:text-sm">
+                        {saving ? 'Saving...' : isAnonymous ? 'Sign in' : 'Save'}
+                      </span>
                     </button>
                     <button
                       onClick={async () => {
@@ -219,12 +240,14 @@ function NewResumeContent() {
                         setDownloading(false)
                       }}
                       disabled={downloading}
-                      className="flex-1 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+                      className="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 min-w-0"
                       type="button"
                       title="Download PDF"
                     >
-                      <Download className="w-5 h-5" />
-                      {downloading && <span className="ml-2 text-xs">...</span>}
+                      <Download className="w-4 h-4 mr-1" />
+                      <span className="truncate text-xs sm:text-sm">
+                        {downloading ? 'Downloading...' : 'PDF'}
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -244,46 +267,58 @@ function NewResumeContent() {
             )}
           </div>
 
-          {/* Desktop Header */}
-          <div className="hidden lg:block">
+          {/* Tablet/Desktop Header */}
+          <div className="hidden md:block">
             <div className="flex items-center justify-between py-4">
-              <div className="flex items-center space-x-4">
+              {/* Left Section */}
+              <div className="flex items-center space-x-4 min-w-0 flex-1">
                 <Link
                   href="/dashboard"
-                  className="flex items-center text-gray-600 hover:text-gray-900"
+                  className="flex items-center text-gray-600 hover:text-gray-900 flex-shrink-0"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Dashboard
+                  <span className="hidden lg:inline">Back to Dashboard</span>
+                  <span className="lg:hidden">Back</span>
                 </Link>
-                <div className="flex items-center space-x-2">
+
+                <div className="flex items-center space-x-4 min-w-0 flex-1">
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Enter resume title..."
-                    className="text-2xl font-bold text-black bg-transparent border-none outline-none focus:ring-0"
+                    className="text-xl lg:text-2xl font-bold text-black bg-transparent border-none outline-none focus:ring-0 min-w-0 flex-1"
                   />
                   <button
-                    className="inline-flex items-center px-3 py-2 rounded-full bg-blue-600 text-white shadow hover:bg-blue-700 transition-colors text-sm font-semibold"
+                    className="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white shadow hover:bg-blue-700 transition-colors text-sm font-medium flex-shrink-0 mr-4"
                     onClick={() => setShowTemplateSelector((v) => !v)}
                     type="button"
                   >
                     <LayoutTemplate className="w-4 h-4 mr-2" />
-                    {showTemplateSelector ? 'Hide Templates' : 'Choose Template'}
+                    <span>
+                      {showTemplateSelector
+                        ? 'Hide Templates'
+                        : selectedTemplateObj?.name || 'Choose Template'}
+                    </span>
                   </button>
-                  <span className="ml-2 text-sm text-black">{selectedTemplateObj?.name}</span>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
+
+              {/* Right Section - Actions */}
+              <div className="flex items-center space-x-4">
+                {/* Primary Actions */}
                 <button
                   onClick={saveResume}
                   disabled={saving}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-                  title="Save Resume"
+                  className="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white shadow hover:bg-blue-700 transition-colors text-sm font-medium flex-shrink-0"
+                  title={isAnonymous ? "Sign in to Save" : "Save Resume"}
                 >
-                  <Save className="w-5 h-5" />
-                  {saving && <span className="ml-2 text-xs">Saving...</span>}
+                  <Save className="w-4 h-4 lg:w-5 lg:h-5" />
+                  <span className="ml-1 lg:ml-2 text-xs lg:text-sm hidden sm:inline">
+                    {saving ? 'Saving...' : isAnonymous ? 'Sign in' : 'Save'}
+                  </span>
                 </button>
+
                 <button
                   onClick={async () => {
                     setDownloading(true)
@@ -291,15 +326,20 @@ function NewResumeContent() {
                     setDownloading(false)
                   }}
                   disabled={downloading}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+                  className="inline-flex items-center px-4 py-2 rounded-md bg-green-600 text-white shadow hover:bg-green-700 transition-colors text-sm font-medium flex-shrink-0"
                   type="button"
                   title="Download PDF"
                 >
-                  <Download className="w-5 h-5" />
-                  {downloading && <span className="ml-2 text-xs">Downloading...</span>}
+                  <Download className="w-4 h-4 lg:w-5 lg:h-5" />
+                  <span className="ml-1 lg:ml-2 text-xs lg:text-sm hidden sm:inline">
+                    {downloading ? 'Downloading...' : 'PDF'}
+                  </span>
                 </button>
+
+
               </div>
             </div>
+
             {showTemplateSelector && (
               <div className="mt-2">
                 <TemplateSelector
@@ -321,6 +361,13 @@ function NewResumeContent() {
           {/* Form Sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:sticky lg:top-8">
+              {isAnonymous && (
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <p className="text-sm text-blue-800">
+                    <strong>Tip:</strong> You can create your resume now and sign in later to save it.
+                  </p>
+                </div>
+              )}
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Resume Builder</h2>
                             <ResumeForm
                 content={content}
@@ -353,15 +400,17 @@ function NewResumeContent() {
 
                             <div className="p-4 lg:p-8">
                 {/* Mobile Action Buttons */}
-                <div className="lg:hidden mb-4 flex gap-2">
+                <div className="md:hidden mb-4 flex flex-col gap-2">
                   <button
                     onClick={saveResume}
                     disabled={saving}
-                    className="flex-1 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-                    title="Save Resume"
+                    className="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 w-full"
+                    title={isAnonymous ? "Sign in to Save" : "Save Resume"}
                   >
                     <Save className="w-4 h-4 mr-2" />
-                    {saving ? 'Saving...' : 'Save'}
+                    <span className="text-sm">
+                      {saving ? 'Saving...' : isAnonymous ? 'Sign in to Save' : 'Save Resume'}
+                    </span>
                   </button>
                   <button
                     onClick={async () => {
@@ -370,12 +419,14 @@ function NewResumeContent() {
                       setDownloading(false)
                     }}
                     disabled={downloading}
-                    className="flex-1 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+                    className="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 w-full"
                     type="button"
                     title="Download PDF"
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    {downloading ? 'Downloading...' : 'PDF'}
+                    <span className="text-sm">
+                      {downloading ? 'Downloading...' : 'Download PDF'}
+                    </span>
                   </button>
                 </div>
 

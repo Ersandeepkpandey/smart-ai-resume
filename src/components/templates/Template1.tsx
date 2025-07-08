@@ -10,6 +10,21 @@ interface Template1Props {
 
 const Template1 = forwardRef<HTMLDivElement, Template1Props>(
   ({ content, className = '' }, ref) => {
+    // Defensive: ensure formatting objects exist
+    const personalInfo = {
+      ...content.personalInfo,
+      formatting: content.personalInfo.formatting || {}
+    }
+    const summaryFormatting = content.summaryFormatting || {}
+    const experience = (content.experience || []).map(exp => ({
+      ...exp,
+      formatting: exp.formatting || {}
+    }))
+    const education = (content.education || []).map(edu => ({
+      ...edu,
+      formatting: edu.formatting || {}
+    }))
+
     return (
       <div
         ref={ref}
@@ -21,50 +36,50 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
           <h1
             className="text-4xl font-bold text-blue-600 mb-2"
             style={{
-              fontSize: content.personalInfo.formatting?.name?.fontSize || '2.25rem',
-              fontFamily: content.personalInfo.formatting?.name?.fontFamily || 'Georgia, serif',
-              color: content.personalInfo.formatting?.name?.color || '#2563eb',
-              textAlign: content.personalInfo.formatting?.name?.alignment as 'left' | 'center' | 'right' || 'left',
-              fontWeight: content.personalInfo.formatting?.name?.bold ? 'bold' : 'bold',
-              fontStyle: content.personalInfo.formatting?.name?.italic ? 'italic' : 'normal',
-              textDecoration: content.personalInfo.formatting?.name?.underline ? 'underline' : 'none'
+              fontSize: personalInfo.formatting?.name?.fontSize || '2.25rem',
+              fontFamily: personalInfo.formatting?.name?.fontFamily || 'Georgia, serif',
+              color: personalInfo.formatting?.name?.color || '#2563eb',
+              textAlign: personalInfo.formatting?.name?.alignment as 'left' | 'center' | 'right' || 'left',
+              fontWeight: personalInfo.formatting?.name?.bold ? 'bold' : 'bold',
+              fontStyle: personalInfo.formatting?.name?.italic ? 'italic' : 'normal',
+              textDecoration: personalInfo.formatting?.name?.underline ? 'underline' : 'none'
             }}
           >
-            {content.personalInfo.name}
+            {personalInfo.name}
           </h1>
           <div className="text-lg text-gray-600 space-y-1">
             <p style={{
-              fontSize: content.personalInfo.formatting?.email?.fontSize || '1.125rem',
-              fontFamily: content.personalInfo.formatting?.email?.fontFamily || 'Georgia, serif',
-              color: content.personalInfo.formatting?.email?.color || '#4b5563',
-              textAlign: content.personalInfo.formatting?.email?.alignment as 'left' | 'center' | 'right' || 'left',
-              fontWeight: content.personalInfo.formatting?.email?.bold ? 'bold' : 'normal',
-              fontStyle: content.personalInfo.formatting?.email?.italic ? 'italic' : 'normal',
-              textDecoration: content.personalInfo.formatting?.email?.underline ? 'underline' : 'none'
+              fontSize: personalInfo.formatting?.email?.fontSize || '1.125rem',
+              fontFamily: personalInfo.formatting?.email?.fontFamily || 'Georgia, serif',
+              color: personalInfo.formatting?.email?.color || '#4b5563',
+              textAlign: personalInfo.formatting?.email?.alignment as 'left' | 'center' | 'right' || 'left',
+              fontWeight: personalInfo.formatting?.email?.bold ? 'bold' : 'normal',
+              fontStyle: personalInfo.formatting?.email?.italic ? 'italic' : 'normal',
+              textDecoration: personalInfo.formatting?.email?.underline ? 'underline' : 'none'
             }}>
-              {content.personalInfo.email}
+              {personalInfo.email}
             </p>
             <p style={{
-              fontSize: content.personalInfo.formatting?.phone?.fontSize || '1.125rem',
-              fontFamily: content.personalInfo.formatting?.phone?.fontFamily || 'Georgia, serif',
-              color: content.personalInfo.formatting?.phone?.color || '#4b5563',
-              textAlign: content.personalInfo.formatting?.phone?.alignment as 'left' | 'center' | 'right' || 'left',
-              fontWeight: content.personalInfo.formatting?.phone?.bold ? 'bold' : 'normal',
-              fontStyle: content.personalInfo.formatting?.phone?.italic ? 'italic' : 'normal',
-              textDecoration: content.personalInfo.formatting?.phone?.underline ? 'underline' : 'none'
+              fontSize: personalInfo.formatting?.phone?.fontSize || '1.125rem',
+              fontFamily: personalInfo.formatting?.phone?.fontFamily || 'Georgia, serif',
+              color: personalInfo.formatting?.phone?.color || '#4b5563',
+              textAlign: personalInfo.formatting?.phone?.alignment as 'left' | 'center' | 'right' || 'left',
+              fontWeight: personalInfo.formatting?.phone?.bold ? 'bold' : 'normal',
+              fontStyle: personalInfo.formatting?.phone?.italic ? 'italic' : 'normal',
+              textDecoration: personalInfo.formatting?.phone?.underline ? 'underline' : 'none'
             }}>
-              {content.personalInfo.phone}
+              {personalInfo.phone}
             </p>
             <p style={{
-              fontSize: content.personalInfo.formatting?.location?.fontSize || '1.125rem',
-              fontFamily: content.personalInfo.formatting?.location?.fontFamily || 'Georgia, serif',
-              color: content.personalInfo.formatting?.location?.color || '#4b5563',
-              textAlign: content.personalInfo.formatting?.location?.alignment as 'left' | 'center' | 'right' || 'left',
-              fontWeight: content.personalInfo.formatting?.location?.bold ? 'bold' : 'normal',
-              fontStyle: content.personalInfo.formatting?.location?.italic ? 'italic' : 'normal',
-              textDecoration: content.personalInfo.formatting?.location?.underline ? 'underline' : 'none'
+              fontSize: personalInfo.formatting?.location?.fontSize || '1.125rem',
+              fontFamily: personalInfo.formatting?.location?.fontFamily || 'Georgia, serif',
+              color: personalInfo.formatting?.location?.color || '#4b5563',
+              textAlign: personalInfo.formatting?.location?.alignment as 'left' | 'center' | 'right' || 'left',
+              fontWeight: personalInfo.formatting?.location?.bold ? 'bold' : 'normal',
+              fontStyle: personalInfo.formatting?.location?.italic ? 'italic' : 'normal',
+              textDecoration: personalInfo.formatting?.location?.underline ? 'underline' : 'none'
             }}>
-              {content.personalInfo.location}
+              {personalInfo.location}
             </p>
           </div>
         </div>
@@ -78,13 +93,13 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
             <p
               className="text-lg leading-relaxed"
               style={{
-                fontSize: content.summaryFormatting?.fontSize || '1.125rem',
-                fontFamily: content.summaryFormatting?.fontFamily || 'Georgia, serif',
-                color: content.summaryFormatting?.color || '#000000',
-                textAlign: content.summaryFormatting?.alignment as 'left' | 'center' | 'right' || 'left',
-                fontWeight: content.summaryFormatting?.bold ? 'bold' : 'normal',
-                fontStyle: content.summaryFormatting?.italic ? 'italic' : 'normal',
-                textDecoration: content.summaryFormatting?.underline ? 'underline' : 'none'
+                fontSize: summaryFormatting?.fontSize || '1.125rem',
+                fontFamily: summaryFormatting?.fontFamily || 'Georgia, serif',
+                color: summaryFormatting?.color || '#000000',
+                textAlign: summaryFormatting?.alignment as 'left' | 'center' | 'right' || 'left',
+                fontWeight: summaryFormatting?.bold ? 'bold' : 'normal',
+                fontStyle: summaryFormatting?.italic ? 'italic' : 'normal',
+                textDecoration: summaryFormatting?.underline ? 'underline' : 'none'
               }}
             >
               {content.summary}
@@ -93,13 +108,13 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
         )}
 
         {/* Experience */}
-        {content.experience.length > 0 && (
+        {experience.length > 0 && (
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-blue-600 mb-3 border-b-2 border-gray-300 pb-1">
               Professional Experience
             </h2>
             <div className="space-y-4">
-              {content.experience.map((exp, index) => (
+              {experience.map((exp, index) => (
                 <div key={index} className="border-l-4 border-blue-200 pl-4">
                   <div className="flex justify-between items-start mb-2">
                     <h3
@@ -166,13 +181,13 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
         )}
 
         {/* Education */}
-        {content.education.length > 0 && (
+        {education.length > 0 && (
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-blue-600 mb-3 border-b-2 border-gray-300 pb-1">
               Education
             </h2>
             <div className="space-y-3">
-              {content.education.map((edu, index) => (
+              {education.map((edu, index) => (
                 <div key={index} className="flex justify-between items-center">
                   <div>
                     <h3
@@ -203,21 +218,21 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
                     >
                       {edu.institution}
                     </p>
+                    <p
+                      className="text-gray-600"
+                      style={{
+                        fontSize: edu.formatting?.year?.fontSize || '1rem',
+                        fontFamily: edu.formatting?.year?.fontFamily || 'Georgia, serif',
+                        color: edu.formatting?.year?.color || '#6b7280',
+                        textAlign: edu.formatting?.year?.alignment as 'left' | 'center' | 'right' || 'left',
+                        fontWeight: edu.formatting?.year?.bold ? 'bold' : 'normal',
+                        fontStyle: edu.formatting?.year?.italic ? 'italic' : 'normal',
+                        textDecoration: edu.formatting?.year?.underline ? 'underline' : 'none'
+                      }}
+                    >
+                      {edu.year}
+                    </p>
                   </div>
-                  <span
-                    className="text-gray-600 font-medium"
-                    style={{
-                      fontSize: edu.formatting?.year?.fontSize || '0.875rem',
-                      fontFamily: edu.formatting?.year?.fontFamily || 'Georgia, serif',
-                      color: edu.formatting?.year?.color || '#6b7280',
-                      textAlign: edu.formatting?.year?.alignment as 'left' | 'center' | 'right' || 'right',
-                      fontWeight: edu.formatting?.year?.bold ? 'bold' : 'medium',
-                      fontStyle: edu.formatting?.year?.italic ? 'italic' : 'normal',
-                      textDecoration: edu.formatting?.year?.underline ? 'underline' : 'none'
-                    }}
-                  >
-                    {edu.year}
-                  </span>
                 </div>
               ))}
             </div>

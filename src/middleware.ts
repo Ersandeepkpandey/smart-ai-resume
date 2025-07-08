@@ -10,6 +10,7 @@ export async function middleware(request: NextRequest) {
     '/',
     '/auth/signin',
     '/auth/signup',
+    '/resume/new',
     '/api/auth/signin',
     '/api/auth/signup',
     '/api/auth/verify-email',

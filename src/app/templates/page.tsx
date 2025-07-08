@@ -14,7 +14,6 @@ import {
   Award,
   Users
 } from 'lucide-react';
-import Head from 'next/head';
 
 export default function TemplatesPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
@@ -78,12 +77,7 @@ export default function TemplatesPage() {
   };
 
   return (
-    <>
-      <Head>
-        <title>Resume Templates | Rezume</title>
-        <meta name="description" content="Explore a variety of professional, ATS-friendly resume templates. Choose the best template to make your resume stand out and get hired faster." />
-      </Head>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
         {/* Hero Section */}
         <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
           <div className="absolute inset-0 bg-black/10"></div>
@@ -285,6 +279,5 @@ export default function TemplatesPage() {
           </div>
         </div>
       </div>
-    </>
   );
 }

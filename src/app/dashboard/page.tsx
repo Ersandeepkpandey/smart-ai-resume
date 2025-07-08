@@ -61,6 +61,16 @@ export default function Dashboard() {
     }
   }
 
+  const handleDownload = (resumeId: string, title: string) => {
+    const url = `/resume/${resumeId}/download`
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${title || 'resume'}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -81,14 +91,14 @@ export default function Dashboard() {
           <div className="space-y-4">
             <Link
               href="/auth/signin"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               Sign In
             </Link>
             <br />
             <Link
               href="/"
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
             >
               Back to Home
             </Link>
@@ -115,7 +125,7 @@ export default function Dashboard() {
             <div className="flex items-center space-x-4">
               <Link
                 href="/resume/new"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create New Resume
@@ -142,7 +152,7 @@ export default function Dashboard() {
             <div className="mt-6">
               <Link
                 href="/resume/new"
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Resume
@@ -154,10 +164,10 @@ export default function Dashboard() {
             {resumes.map((resume) => (
               <div
                 key={resume.id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-shadow group relative"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">{resume.title}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 truncate max-w-xs" title={resume.title}>{resume.title}</h3>
                   <div className="flex items-center space-x-2">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -167,6 +177,7 @@ export default function Dashboard() {
                           ? 'bg-yellow-100 text-yellow-800'
                           : 'bg-red-100 text-red-800'
                       }`}
+                      title={`ATS Score: ${resume.ats_score}`}
                     >
                       ATS: {resume.ats_score}
                     </span>
@@ -174,42 +185,44 @@ export default function Dashboard() {
                 </div>
 
                 <div className="text-sm text-gray-500 mb-4">
-                  <p>Template: {resume.template_id}</p>
-                  <p>Updated: {new Date(resume.updated_at).toLocaleDateString()}</p>
+                  <p>Template: <span className="font-medium text-gray-700">{resume.template_id}</span></p>
+                  <p>Updated: {new Date(resume.updated_at).toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="flex space-x-2">
                     <Link
                       href={`/resume/${resume.id}`}
-                      className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
+                      className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-blue-50 transition-colors"
                     >
-                      <Edit className="w-3 h-3 mr-1" />
+                      <Edit className="w-4 h-4 mr-1" />
                       Edit
                     </Link>
                     <Link
                       href={`/resume/${resume.id}/preview`}
-                      className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
+                      className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-blue-50 transition-colors"
                     >
-                      <Eye className="w-3 h-3 mr-1" />
+                      <Eye className="w-4 h-4 mr-1" />
                       Preview
                     </Link>
                   </div>
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => deleteResume(resume.id)}
-                      className="inline-flex items-center px-3 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-white hover:bg-red-50"
+                      onClick={() => handleDownload(resume.id, resume.title)}
+                      className="inline-flex items-center justify-center p-2 border border-gray-300 shadow-sm rounded text-gray-700 bg-white hover:bg-blue-50 transition-colors"
+                      title="Download as PDF"
+                      aria-label="Download"
                     >
-                      <Trash2 className="w-3 h-3 mr-1" />
-                      Delete
+                      <Download className="w-4 h-4" />
                     </button>
-                    <Link
-                      href={`/resume/${resume.id}/download`}
-                      className="inline-flex items-center px-3 py-1.5 border border-transparent shadow-sm text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700"
+                    <button
+                      onClick={() => deleteResume(resume.id)}
+                      className="inline-flex items-center justify-center p-2 border border-red-300 shadow-sm rounded text-red-700 bg-white hover:bg-red-50 transition-colors"
+                      title="Delete this resume"
+                      aria-label="Delete"
                     >
-                      <Download className="w-3 h-3 mr-1" />
-                      Download
-                    </Link>
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               </div>

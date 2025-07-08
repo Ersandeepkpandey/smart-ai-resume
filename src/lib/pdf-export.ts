@@ -1,5 +1,5 @@
 import React from 'react'
-import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer'
+import { Document, Page, Text, View, StyleSheet, pdf, renderToBuffer } from '@react-pdf/renderer'
 import { ResumeContent, TextFormatting } from './ats-scorer'
 
 // Helper function to convert CSS color to PDF color
@@ -597,7 +597,7 @@ const pdfTemplates = {
 
 export async function downloadResumeAsPDF(content: ResumeContent, name: string, template: string = 'template1') {
   try {
-    // Get the appropriate PDF template
+        // Get the appropriate PDF template
     const PDFTemplate = pdfTemplates[template as keyof typeof pdfTemplates] || pdfTemplates.template1
 
     // Generate PDF blob
@@ -620,6 +620,11 @@ export async function downloadResumeAsPDF(content: ResumeContent, name: string, 
     console.error('Error generating PDF:', error)
     throw error
   }
+}
+
+export async function renderResumePDFBuffer(content: ResumeContent, template: string = 'template1') {
+  const PDFTemplate = pdfTemplates[template as keyof typeof pdfTemplates] || pdfTemplates.template1;
+  return await renderToBuffer(PDFTemplate({ content }));
 }
 
 // Legacy function for backward compatibility (keeping the same signature)

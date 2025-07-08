@@ -84,16 +84,23 @@ export function calculateATSScore(content: ResumeContent, jobKeywords: string[] 
   const foundKeywords: string[] = []
   const missingKeywords: string[] = []
 
+  // Defensive: ensure all arrays exist
+  const experience = content.experience || []
+  const education = content.education || []
+  const skills = content.skills || []
+  const certifications = content.certifications || []
+  const summary = content.summary || ''
+
   // Combine all text content for analysis
   const allText = [
-    content.personalInfo.name,
-    content.personalInfo.email,
-    content.personalInfo.location,
-    content.summary,
-    ...content.experience.map(exp => `${exp.title} ${exp.company} ${exp.description}`),
-    ...content.education.map(edu => `${edu.degree} ${edu.institution}`),
-    ...content.skills,
-    ...content.certifications
+    content.personalInfo?.name || '',
+    content.personalInfo?.email || '',
+    content.personalInfo?.location || '',
+    summary,
+    ...experience.map(exp => `${exp.title || ''} ${exp.company || ''} ${exp.description || ''}`),
+    ...education.map(edu => `${edu.degree || ''} ${edu.institution || ''}`),
+    ...skills,
+    ...certifications
   ].join(' ').toLowerCase()
 
   // Check for common keywords
@@ -115,14 +122,14 @@ export function calculateATSScore(content: ResumeContent, jobKeywords: string[] 
   score += keywordScore
 
   // Content completeness (30 points)
-  if (content.summary.length > 50) score += 10
-  if (content.experience.length > 0) score += 10
-  if (content.education.length > 0) score += 5
-  if (content.skills.length > 5) score += 5
+  if (summary.length > 50) score += 10
+  if (experience.length > 0) score += 10
+  if (education.length > 0) score += 5
+  if (skills.length > 5) score += 5
 
   // Format and structure (20 points)
-  if (content.personalInfo.name && content.personalInfo.email) score += 10
-  if (content.experience.some(exp => exp.description.length > 50)) score += 10
+  if (content.personalInfo?.name && content.personalInfo?.email) score += 10
+  if (experience.some(exp => (exp.description || '').length > 50)) score += 10
 
   // Action verbs and achievements (10 points)
   const actionVerbs = ['developed', 'implemented', 'managed', 'led', 'created', 'designed', 'improved', 'increased', 'reduced', 'achieved']
@@ -133,13 +140,13 @@ export function calculateATSScore(content: ResumeContent, jobKeywords: string[] 
   if (score < 70) {
     suggestions.push('Consider adding more relevant keywords from the job description')
   }
-  if (content.summary.length < 50) {
+  if (summary.length < 50) {
     suggestions.push('Add a more detailed professional summary')
   }
-  if (content.experience.length === 0) {
+  if (experience.length === 0) {
     suggestions.push('Include relevant work experience')
   }
-  if (content.skills.length < 5) {
+  if (skills.length < 5) {
     suggestions.push('Add more relevant skills')
   }
   if (!hasActionVerbs) {

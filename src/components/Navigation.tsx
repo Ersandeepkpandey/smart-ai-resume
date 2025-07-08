@@ -75,33 +75,37 @@ export default function Navigation() {
             </Link>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             <Link
               href="/dashboard"
-              className="flex items-center text-gray-600 hover:text-blue-600 px-3 py-2 text-base font-medium rounded transition-colors"
+              className="hidden sm:flex items-center text-gray-600 hover:text-blue-600 px-2 sm:px-3 py-2 text-sm sm:text-base font-medium rounded transition-colors"
             >
-              <FileText className="w-5 h-5 mr-2" />
-              {user ? 'My Resumes' : 'Demo'}
+              <FileText className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">{user ? 'My Resumes' : 'Demo'}</span>
+              <span className="sm:hidden">Resumes</span>
             </Link>
+
             <Link
               href="/resume/new"
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-lg text-base font-semibold shadow hover:from-blue-700 hover:to-indigo-700 transition-colors"
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 sm:px-5 py-2 rounded-lg text-sm sm:text-base font-semibold shadow hover:from-blue-700 hover:to-indigo-700 transition-colors whitespace-nowrap"
             >
-              Create Resume
+              <span className="hidden sm:inline">Create Resume</span>
+              <span className="sm:hidden">Create</span>
             </Link>
+
             {user && (
               <div className="relative" ref={profileRef}>
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center text-gray-700 hover:text-blue-700 p-2 rounded-full hover:bg-blue-50 transition-colors border border-transparent hover:border-blue-200"
+                  className="flex items-center text-gray-700 hover:text-blue-700 p-1 sm:p-2 rounded-full hover:bg-blue-50 transition-colors border border-transparent hover:border-blue-200"
                 >
                   <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center shadow"
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow"
                     style={{ backgroundColor: generateUserColor(user.email || 'default@user.com') }}
                   >
-                    <User className="w-5 h-5 text-white" />
+                    <User className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
-                  <ChevronDown className={`w-5 h-5 ml-1 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 ml-1 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {isProfileOpen && (

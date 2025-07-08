@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         // Session is invalid, but don't redirect on public pages
         const currentPath = window.location.pathname
-        const publicPaths = ['/', '/auth/signin', '/auth/signup', '/templates', '/ats-score', '/pricing', '/help-center', '/contact-us', '/privacy-policy', '/about', '/blog', '/careers']
+        const publicPaths = ['/', '/auth/signin', '/auth/signup', '/templates', '/ats-score', '/help-center', '/contact-us', '/privacy-policy', '/about', '/blog', '/careers', '/resume/new']
         const isPublicPath = publicPaths.some(path => currentPath === path || currentPath.startsWith(path))
 
         if (!isPublicPath) {
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('Session verification error:', error)
       // Don't redirect on public pages even on error
       const currentPath = window.location.pathname
-      const publicPaths = ['/', '/auth/signin', '/auth/signup', '/templates', '/ats-score', '/pricing', '/help-center', '/contact-us', '/privacy-policy', '/about', '/blog', '/careers']
+      const publicPaths = ['/', '/auth/signin', '/auth/signup', '/templates', '/ats-score', '/help-center', '/contact-us', '/privacy-policy', '/about', '/blog', '/careers', '/resume/new']
       const isPublicPath = publicPaths.some(path => currentPath === path || currentPath.startsWith(path))
 
       if (!isPublicPath) {

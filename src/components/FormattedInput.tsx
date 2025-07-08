@@ -23,7 +23,7 @@ import {
 } from 'lucide-react'
 
 interface FormattedInputProps {
-  value: string
+  value: string | undefined
   onChange: (value: string) => void
   onFormatChange?: (formatting: TextFormatting) => void
   initialFormatting?: TextFormatting
@@ -312,7 +312,7 @@ export default function FormattedInput({
           {rows > 1 ? (
             <textarea
               ref={textareaRef}
-              value={value}
+              value={value || ''}
               onChange={handleInputChange}
               onFocus={handleFocus}
               onBlur={handleBlur}
@@ -326,7 +326,7 @@ export default function FormattedInput({
             <input
               ref={inputRef}
               type={type}
-              value={value}
+              value={value || ''}
               onChange={handleInputChange}
               onFocus={handleFocus}
               onBlur={handleBlur}
