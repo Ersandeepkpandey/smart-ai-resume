@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://rezume.com/sitemap.xml
+Sitemap: https://rezume.in/sitemap.xml
 
 # Allow crawling of important pages
 Allow: /templates
