@@ -28,5 +28,3 @@ Disallow: /resume/*/preview
 Disallow: /admin
 Disallow: /api/
 
-# Optional: Crawl delay
-Crawl-delay: 1
