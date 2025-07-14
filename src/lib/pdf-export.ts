@@ -2,6 +2,22 @@ import React from 'react'
 import { Document, Page, Text, View, StyleSheet, pdf, renderToBuffer } from '@react-pdf/renderer'
 import { ResumeContent, TextFormatting } from './ats-scorer'
 
+// Helper function to process custom links in PDF content
+const processCustomLinksForPDF = (content: string, showLinks: boolean = true): string => {
+  if (!content) return content;
+
+  // Replace [LINK:url]text[/LINK] with either URL or text based on preference
+  return content.replace(/\[LINK:([^\]]+)\]([^[]*?)\[\/LINK\]/g, (match, url, text) => {
+    if (showLinks) {
+      // Show URL when links are enabled
+      return url;
+    } else {
+      // Show only the link text when links are disabled
+      return text;
+    }
+  });
+}
+
 // Helper function to convert CSS color to PDF color
 const convertColor = (color: string) => {
   if (!color) return '#000000'
@@ -285,20 +301,30 @@ const PDFTemplate1 = ({ content }: { content: ResumeContent }) => {
         }, content.personalInfo.phone),
         React.createElement(Text, {
           style: getTextStyle(content.personalInfo.formatting?.location, styles.contactInfo)
-        }, content.personalInfo.location)
+        }, content.personalInfo.location),
+        // Social Media Links
+        content.personalInfo.socialLinks && content.personalInfo.socialLinks.length > 0 && content.showSocialLinksInPDF !== false &&
+        React.createElement(View, { style: { marginTop: 8 } },
+          ...content.personalInfo.socialLinks.map((link, index) =>
+            React.createElement(Text, {
+              key: index,
+              style: { ...styles.contactInfo, color: '#2563eb', textDecoration: 'underline' }
+            }, link.label || link.platform)
+          )
+        )
       ),
 
       // Summary
       content.summary && React.createElement(View, { style: styles.section },
-        React.createElement(Text, { style: styles.sectionTitle }, "Professional Summary"),
+        React.createElement(Text, { style: styles.sectionTitle }, content.sectionHeadings?.summary || "Professional Summary"),
         React.createElement(Text, {
           style: getTextStyle(content.summaryFormatting, styles.summary)
-        }, content.summary)
+        }, processCustomLinksForPDF(content.summary, content.showSocialLinksInPDF !== false))
       ),
 
       // Experience
       content.experience.length > 0 && React.createElement(View, { style: styles.section },
-        React.createElement(Text, { style: styles.sectionTitle }, "Professional Experience"),
+        React.createElement(Text, { style: styles.sectionTitle }, content.sectionHeadings?.experience || "Professional Experience"),
         ...content.experience.map((exp, index) =>
           React.createElement(View, { key: index, style: styles.experienceItem },
             React.createElement(View, { style: styles.experienceHeader },
@@ -314,14 +340,14 @@ const PDFTemplate1 = ({ content }: { content: ResumeContent }) => {
             }, exp.company),
             React.createElement(Text, {
               style: getTextStyle(exp.formatting?.description, styles.description)
-            }, exp.description)
+            }, processCustomLinksForPDF(exp.description, content.showSocialLinksInPDF !== false))
           )
         )
       ),
 
       // Education
       content.education.length > 0 && React.createElement(View, { style: styles.section },
-        React.createElement(Text, { style: styles.sectionTitle }, "Education"),
+        React.createElement(Text, { style: styles.sectionTitle }, content.sectionHeadings?.education || "Education"),
         ...content.education.map((edu, index) =>
           React.createElement(View, { key: index, style: styles.educationItem },
             React.createElement(View, { style: styles.educationLeft },
@@ -341,7 +367,7 @@ const PDFTemplate1 = ({ content }: { content: ResumeContent }) => {
 
       // Skills
       content.skills.length > 0 && React.createElement(View, { style: styles.section },
-        React.createElement(Text, { style: styles.sectionTitle }, "Skills"),
+        React.createElement(Text, { style: styles.sectionTitle }, content.sectionHeadings?.skills || "Skills"),
         React.createElement(View, { style: styles.skillsContainer },
           ...content.skills.map((skill, index) =>
             React.createElement(Text, { key: index, style: styles.skill }, skill)
@@ -351,7 +377,7 @@ const PDFTemplate1 = ({ content }: { content: ResumeContent }) => {
 
       // Certifications
       content.certifications.length > 0 && React.createElement(View, { style: styles.section },
-        React.createElement(Text, { style: styles.sectionTitle }, "Certifications"),
+        React.createElement(Text, { style: styles.sectionTitle }, content.sectionHeadings?.certifications || "Certifications"),
         React.createElement(View, { style: styles.certificationsList },
           ...content.certifications.map((cert, index) =>
             React.createElement(Text, { key: index, style: styles.certificationItem }, `• ${cert}`)
@@ -380,7 +406,17 @@ const PDFTemplate2 = ({ content }: { content: ResumeContent }) => {
           }, content.personalInfo.phone),
           React.createElement(Text, {
             style: getTextStyle(content.personalInfo.formatting?.location, { ...styles.contactInfo, fontSize: 12 })
-          }, content.personalInfo.location)
+          }, content.personalInfo.location),
+          // Social Media Links
+          content.personalInfo.socialLinks && content.personalInfo.socialLinks.length > 0 && content.showSocialLinksInPDF !== false &&
+          React.createElement(View, { style: { marginTop: 8 } },
+            ...content.personalInfo.socialLinks.map((link, index) =>
+              React.createElement(Text, {
+                key: index,
+                style: { ...styles.contactInfo, fontSize: 10, color: '#2563eb', textDecoration: 'underline' }
+              }, link.label || link.platform)
+            )
+          )
         )
       ),
 
@@ -390,15 +426,15 @@ const PDFTemplate2 = ({ content }: { content: ResumeContent }) => {
         React.createElement(View, { style: { flex: 1, marginRight: 20 } },
           // Summary
           content.summary && React.createElement(View, { style: styles.section },
-            React.createElement(Text, { style: styles.sectionTitle }, "Professional Summary"),
+            React.createElement(Text, { style: styles.sectionTitle }, content.sectionHeadings?.summary || "Professional Summary"),
             React.createElement(Text, {
               style: getTextStyle(content.summaryFormatting, styles.summary)
-            }, content.summary)
+            }, processCustomLinksForPDF(content.summary, content.showSocialLinksInPDF !== false))
           ),
 
           // Experience
           content.experience.length > 0 && React.createElement(View, { style: styles.section },
-            React.createElement(Text, { style: styles.sectionTitle }, "Work Experience"),
+            React.createElement(Text, { style: styles.sectionTitle }, content.sectionHeadings?.experience || "Work Experience"),
             ...content.experience.map((exp, index) =>
               React.createElement(View, { key: index, style: { marginBottom: 16 } },
                 React.createElement(View, { style: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 } },
@@ -414,14 +450,14 @@ const PDFTemplate2 = ({ content }: { content: ResumeContent }) => {
                 }, exp.company),
                 React.createElement(Text, {
                   style: getTextStyle(exp.formatting?.description, styles.description)
-                }, exp.description)
+                }, processCustomLinksForPDF(exp.description, content.showSocialLinksInPDF !== false))
               )
             )
           ),
 
           // Education
           content.education.length > 0 && React.createElement(View, { style: styles.section },
-            React.createElement(Text, { style: styles.sectionTitle }, "Education"),
+            React.createElement(Text, { style: styles.sectionTitle }, content.sectionHeadings?.education || "Education"),
             ...content.education.map((edu, index) =>
               React.createElement(View, { key: index, style: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 } },
                 React.createElement(View, { style: { flex: 1 } },
@@ -444,7 +480,7 @@ const PDFTemplate2 = ({ content }: { content: ResumeContent }) => {
         React.createElement(View, { style: { width: 120, backgroundColor: '#f8f9fa', padding: 16 } },
           // Skills
           content.skills.length > 0 && React.createElement(View, { style: { marginBottom: 20 } },
-            React.createElement(Text, { style: { ...styles.sectionTitle, fontSize: 16, marginBottom: 8 } }, "Skills"),
+            React.createElement(Text, { style: { ...styles.sectionTitle, fontSize: 16, marginBottom: 8 } }, content.sectionHeadings?.skills || "Skills"),
             ...content.skills.map((skill, index) =>
               React.createElement(Text, {
                 key: index,
@@ -462,7 +498,7 @@ const PDFTemplate2 = ({ content }: { content: ResumeContent }) => {
 
           // Certifications
           content.certifications.length > 0 && React.createElement(View, {},
-            React.createElement(Text, { style: { ...styles.sectionTitle, fontSize: 16, marginBottom: 8 } }, "Certifications"),
+            React.createElement(Text, { style: { ...styles.sectionTitle, fontSize: 16, marginBottom: 8 } }, content.sectionHeadings?.certifications || "Certifications"),
             ...content.certifications.map((cert, index) =>
               React.createElement(Text, {
                 key: index,
@@ -500,19 +536,29 @@ const PDFTemplate3 = ({ content }: { content: ResumeContent }) => {
         }, content.personalInfo.phone),
         React.createElement(Text, {
           style: getTextStyle(content.personalInfo.formatting?.location, { ...styles.contactInfo, fontSize: 12, textAlign: 'center' })
-        }, content.personalInfo.location)
+        }, content.personalInfo.location),
+        // Social Media Links
+        content.personalInfo.socialLinks && content.personalInfo.socialLinks.length > 0 && content.showSocialLinksInPDF !== false &&
+        React.createElement(View, { style: { marginTop: 8 } },
+          ...content.personalInfo.socialLinks.map((link, index) =>
+            React.createElement(Text, {
+              key: index,
+              style: { ...styles.contactInfo, fontSize: 10, textAlign: 'center', color: '#2563eb', textDecoration: 'underline' }
+            }, link.label || link.platform)
+          )
+        )
       ),
 
       // Summary
       content.summary && React.createElement(View, { style: { marginBottom: 30 } },
         React.createElement(Text, {
           style: getTextStyle(content.summaryFormatting, { ...styles.summary, fontSize: 16, textAlign: 'center' })
-        }, content.summary)
+        }, processCustomLinksForPDF(content.summary, content.showSocialLinksInPDF !== false))
       ),
 
       // Experience
       content.experience.length > 0 && React.createElement(View, { style: { marginBottom: 30 } },
-        React.createElement(Text, { style: { ...styles.sectionTitle, fontSize: 24, textAlign: 'center', marginBottom: 20 } }, "Experience"),
+        React.createElement(Text, { style: { ...styles.sectionTitle, fontSize: 24, textAlign: 'center', marginBottom: 20 } }, content.sectionHeadings?.experience || "Experience"),
         ...content.experience.map((exp, index) =>
           React.createElement(View, { key: index, style: { marginBottom: 20, textAlign: 'center' } },
             React.createElement(Text, {
@@ -526,14 +572,14 @@ const PDFTemplate3 = ({ content }: { content: ResumeContent }) => {
             }, exp.duration),
             React.createElement(Text, {
               style: getTextStyle(exp.formatting?.description, { ...styles.description, fontSize: 14, textAlign: 'center' })
-            }, exp.description)
+            }, processCustomLinksForPDF(exp.description, content.showSocialLinksInPDF !== false))
           )
         )
       ),
 
       // Education
       content.education.length > 0 && React.createElement(View, { style: { marginBottom: 30 } },
-        React.createElement(Text, { style: { ...styles.sectionTitle, fontSize: 24, textAlign: 'center', marginBottom: 20 } }, "Education"),
+        React.createElement(Text, { style: { ...styles.sectionTitle, fontSize: 24, textAlign: 'center', marginBottom: 20 } }, content.sectionHeadings?.education || "Education"),
         ...content.education.map((edu, index) =>
           React.createElement(View, { key: index, style: { marginBottom: 16, textAlign: 'center' } },
             React.createElement(Text, {
@@ -551,7 +597,7 @@ const PDFTemplate3 = ({ content }: { content: ResumeContent }) => {
 
       // Skills
       content.skills.length > 0 && React.createElement(View, { style: { marginBottom: 30 } },
-        React.createElement(Text, { style: { ...styles.sectionTitle, fontSize: 24, textAlign: 'center', marginBottom: 20 } }, "Skills"),
+        React.createElement(Text, { style: { ...styles.sectionTitle, fontSize: 24, textAlign: 'center', marginBottom: 20 } }, content.sectionHeadings?.skills || "Skills"),
         React.createElement(View, { style: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8 } },
           ...content.skills.map((skill, index) =>
             React.createElement(Text, {
@@ -559,10 +605,11 @@ const PDFTemplate3 = ({ content }: { content: ResumeContent }) => {
               style: {
                 fontSize: 12,
                 color: '#374151',
-                border: '1px solid #d1d5db',
+                backgroundColor: '#f3f4f6',
                 paddingHorizontal: 12,
-                paddingVertical: 4,
-                borderRadius: 12
+                paddingVertical: 6,
+                borderRadius: 16,
+                marginBottom: 8
               }
             }, skill)
           )
@@ -570,18 +617,20 @@ const PDFTemplate3 = ({ content }: { content: ResumeContent }) => {
       ),
 
       // Certifications
-      content.certifications.length > 0 && React.createElement(View, {},
-        React.createElement(Text, { style: { ...styles.sectionTitle, fontSize: 24, textAlign: 'center', marginBottom: 20 } }, "Certifications"),
-        ...content.certifications.map((cert, index) =>
-          React.createElement(Text, {
-            key: index,
-            style: {
-              fontSize: 14,
-              color: '#374151',
-              textAlign: 'center',
-              marginBottom: 8
-            }
-          }, cert)
+      content.certifications.length > 0 && React.createElement(View, { style: { marginBottom: 30 } },
+        React.createElement(Text, { style: { ...styles.sectionTitle, fontSize: 24, textAlign: 'center', marginBottom: 20 } }, content.sectionHeadings?.certifications || "Certifications"),
+        React.createElement(View, { style: { alignItems: 'center' } },
+          ...content.certifications.map((cert, index) =>
+            React.createElement(Text, {
+              key: index,
+              style: {
+                fontSize: 14,
+                color: '#374151',
+                marginBottom: 8,
+                textAlign: 'center'
+              }
+            }, `• ${cert}`)
+          )
         )
       )
     )

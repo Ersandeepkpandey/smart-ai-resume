@@ -1,6 +1,6 @@
 'use client'
 
-import { ResumeContent } from '@/lib/ats-scorer'
+import { ResumeContent, renderContentWithLinks } from '@/lib/ats-scorer'
 import { forwardRef } from 'react'
 
 interface Template1Props {
@@ -24,6 +24,22 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
       ...edu,
       formatting: edu.formatting || {}
     }))
+
+    // Social media platforms for display
+    const socialPlatforms = [
+      { value: 'linkedin', label: 'LinkedIn' },
+      { value: 'github', label: 'GitHub' },
+      { value: 'portfolio', label: 'Portfolio' },
+      { value: 'twitter', label: 'Twitter/X' },
+      { value: 'instagram', label: 'Instagram' },
+      { value: 'facebook', label: 'Facebook' },
+      { value: 'youtube', label: 'YouTube' },
+      { value: 'medium', label: 'Medium' },
+      { value: 'behance', label: 'Behance' },
+      { value: 'dribbble', label: 'Dribbble' },
+      { value: 'stackoverflow', label: 'Stack Overflow' },
+      { value: 'custom', label: 'Custom' }
+    ]
 
     return (
       <div
@@ -82,36 +98,59 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
               {personalInfo.location}
             </p>
           </div>
+
+          {/* Social Media Links */}
+          {personalInfo.socialLinks && personalInfo.socialLinks.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-300">
+              <div className="flex flex-wrap gap-3">
+                {personalInfo.socialLinks.map((link, index) => {
+                  const platform = socialPlatforms.find(p => p.value === link.platform);
+                  const displayText = link.label || platform?.label || link.platform;
+
+                  return (
+                    <a
+                      key={index}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm hover:bg-blue-100 transition-colors"
+                    >
+                      {displayText}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Summary */}
         {content.summary && (
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-blue-600 mb-3 border-b-2 border-gray-300 pb-1">
-              Professional Summary
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
+              {content.sectionHeadings?.summary || 'Professional Summary'}
             </h2>
             <p
-              className="text-lg leading-relaxed"
+              className="text-gray-700 leading-relaxed"
               style={{
-                fontSize: summaryFormatting?.fontSize || '1.125rem',
-                fontFamily: summaryFormatting?.fontFamily || 'Georgia, serif',
-                color: summaryFormatting?.color || '#000000',
+                fontSize: summaryFormatting?.fontSize || '1rem',
+                color: summaryFormatting?.color || '#374151',
                 textAlign: summaryFormatting?.alignment as 'left' | 'center' | 'right' || 'left',
                 fontWeight: summaryFormatting?.bold ? 'bold' : 'normal',
                 fontStyle: summaryFormatting?.italic ? 'italic' : 'normal',
                 textDecoration: summaryFormatting?.underline ? 'underline' : 'none'
               }}
             >
-              {content.summary}
+              {renderContentWithLinks(content.summary)}
             </p>
           </div>
         )}
 
         {/* Experience */}
         {experience.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-blue-600 mb-3 border-b-2 border-gray-300 pb-1">
-              Professional Experience
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
+              {content.sectionHeadings?.experience || 'Work Experience'}
             </h2>
             <div className="space-y-4">
               {experience.map((exp, index) => (
@@ -146,20 +185,20 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
                       {exp.duration}
                     </span>
                   </div>
-                  <p
-                    className="text-lg text-blue-600 font-medium mb-2"
-                    style={{
-                      fontSize: exp.formatting?.company?.fontSize || '1.125rem',
-                      fontFamily: exp.formatting?.company?.fontFamily || 'Georgia, serif',
-                      color: exp.formatting?.company?.color || '#2563eb',
-                      textAlign: exp.formatting?.company?.alignment as 'left' | 'center' | 'right' || 'left',
-                      fontWeight: exp.formatting?.company?.bold ? 'bold' : 'medium',
-                      fontStyle: exp.formatting?.company?.italic ? 'italic' : 'normal',
-                      textDecoration: exp.formatting?.company?.underline ? 'underline' : 'none'
-                    }}
-                  >
-                    {exp.company}
-                  </p>
+                                      <p
+                      className="text-lg text-blue-600 font-medium mb-2"
+                      style={{
+                        fontSize: exp.formatting?.company?.fontSize || '1.125rem',
+                        fontFamily: exp.formatting?.company?.fontFamily || 'Georgia, serif',
+                        color: exp.formatting?.company?.color || '#2563eb',
+                        textAlign: exp.formatting?.company?.alignment as 'left' | 'center' | 'right' || 'left',
+                        fontWeight: exp.formatting?.company?.bold ? 'bold' : 'medium',
+                        fontStyle: exp.formatting?.company?.italic ? 'italic' : 'normal',
+                        textDecoration: exp.formatting?.company?.underline ? 'underline' : 'none'
+                      }}
+                    >
+                      {renderContentWithLinks(exp.company)}
+                    </p>
                   <p
                     className="text-gray-700 leading-relaxed"
                     style={{
@@ -172,7 +211,7 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
                       textDecoration: exp.formatting?.description?.underline ? 'underline' : 'none'
                     }}
                   >
-                    {exp.description}
+                    {renderContentWithLinks(exp.description)}
                   </p>
                 </div>
               ))}
@@ -182,22 +221,21 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
 
         {/* Education */}
         {education.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-blue-600 mb-3 border-b-2 border-gray-300 pb-1">
-              Education
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
+              {content.sectionHeadings?.education || 'Education'}
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {education.map((edu, index) => (
-                <div key={index} className="flex justify-between items-center">
+                <div key={index} className="flex justify-between items-start">
                   <div>
                     <h3
                       className="text-lg font-semibold text-gray-800"
                       style={{
                         fontSize: edu.formatting?.degree?.fontSize || '1.125rem',
-                        fontFamily: edu.formatting?.degree?.fontFamily || 'Georgia, serif',
                         color: edu.formatting?.degree?.color || '#1f2937',
                         textAlign: edu.formatting?.degree?.alignment as 'left' | 'center' | 'right' || 'left',
-                        fontWeight: edu.formatting?.degree?.bold ? 'bold' : 'semibold',
+                        fontWeight: edu.formatting?.degree?.bold ? 'bold' : '600',
                         fontStyle: edu.formatting?.degree?.italic ? 'italic' : 'normal',
                         textDecoration: edu.formatting?.degree?.underline ? 'underline' : 'none'
                       }}
@@ -208,8 +246,7 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
                       className="text-gray-600"
                       style={{
                         fontSize: edu.formatting?.institution?.fontSize || '1rem',
-                        fontFamily: edu.formatting?.institution?.fontFamily || 'Georgia, serif',
-                        color: edu.formatting?.institution?.color || '#6b7280',
+                        color: edu.formatting?.institution?.color || '#4b5563',
                         textAlign: edu.formatting?.institution?.alignment as 'left' | 'center' | 'right' || 'left',
                         fontWeight: edu.formatting?.institution?.bold ? 'bold' : 'normal',
                         fontStyle: edu.formatting?.institution?.italic ? 'italic' : 'normal',
@@ -218,21 +255,20 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
                     >
                       {edu.institution}
                     </p>
-                    <p
-                      className="text-gray-600"
-                      style={{
-                        fontSize: edu.formatting?.year?.fontSize || '1rem',
-                        fontFamily: edu.formatting?.year?.fontFamily || 'Georgia, serif',
-                        color: edu.formatting?.year?.color || '#6b7280',
-                        textAlign: edu.formatting?.year?.alignment as 'left' | 'center' | 'right' || 'left',
-                        fontWeight: edu.formatting?.year?.bold ? 'bold' : 'normal',
-                        fontStyle: edu.formatting?.year?.italic ? 'italic' : 'normal',
-                        textDecoration: edu.formatting?.year?.underline ? 'underline' : 'none'
-                      }}
-                    >
-                      {edu.year}
-                    </p>
                   </div>
+                  <span
+                    className="text-gray-600 font-medium"
+                    style={{
+                      fontSize: edu.formatting?.year?.fontSize || '0.875rem',
+                      color: edu.formatting?.year?.color || '#6b7280',
+                      textAlign: edu.formatting?.year?.alignment as 'left' | 'center' | 'right' || 'right',
+                      fontWeight: edu.formatting?.year?.bold ? 'bold' : 'medium',
+                      fontStyle: edu.formatting?.year?.italic ? 'italic' : 'normal',
+                      textDecoration: edu.formatting?.year?.underline ? 'underline' : 'none'
+                    }}
+                  >
+                    {edu.year}
+                  </span>
                 </div>
               ))}
             </div>
@@ -241,9 +277,9 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
 
         {/* Skills */}
         {content.skills.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-blue-600 mb-3 border-b-2 border-gray-300 pb-1">
-              Skills
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
+              {content.sectionHeadings?.skills || 'Skills'}
             </h2>
             <div className="flex flex-wrap gap-2">
               {content.skills.map((skill, index) => (
@@ -260,13 +296,15 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
 
         {/* Certifications */}
         {content.certifications.length > 0 && (
-          <div>
-            <h2 className="text-2xl font-bold text-blue-600 mb-3 border-b-2 border-gray-300 pb-1">
-              Certifications
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
+              {content.sectionHeadings?.certifications || 'Certifications'}
             </h2>
-            <ul className="list-disc list-inside space-y-1 text-gray-700">
+            <ul className="list-disc list-inside space-y-2">
               {content.certifications.map((cert, index) => (
-                <li key={index}>{cert}</li>
+                <li key={index} className="text-gray-700">
+                  {cert}
+                </li>
               ))}
             </ul>
           </div>
@@ -293,7 +331,7 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
               {section.heading}
             </h2>
             <div className="text-gray-800 text-base leading-relaxed whitespace-pre-line">
-              {section.content}
+              {renderContentWithLinks(section.content)}
             </div>
           </div>
         ))}

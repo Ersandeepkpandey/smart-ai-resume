@@ -1,10 +1,13 @@
+User-agent: Googlebot
+Allow: /
+
 User-agent: *
 Allow: /
 
-# Sitemap location
+# Sitemap
 Sitemap: https://rezume.in/sitemap.xml
 
-# Allow crawling of important pages
+# Explicitly allow important public pages
 Allow: /templates
 Allow: /ats-score
 Allow: /about
@@ -17,7 +20,7 @@ Allow: /auth/signin
 Allow: /auth/signup
 Allow: /resume/new
 
-# Disallow private/user-specific pages
+# Disallow private or user-specific pages
 Disallow: /dashboard
 Disallow: /profile
 Disallow: /resume/*/edit
@@ -25,5 +28,5 @@ Disallow: /resume/*/preview
 Disallow: /admin
 Disallow: /api/
 
-# Crawl delay (optional - helps with server load)
+# Optional: Crawl delay
 Crawl-delay: 1

@@ -1,6 +1,6 @@
 'use client'
 
-import { ResumeContent } from '@/lib/ats-scorer'
+import { ResumeContent, renderContentWithLinks } from '@/lib/ats-scorer'
 import { forwardRef } from 'react'
 
 interface Template3Props {
@@ -24,6 +24,22 @@ const Template3 = forwardRef<HTMLDivElement, Template3Props>(
       ...edu,
       formatting: edu.formatting || {}
     }))
+
+    // Social media platforms for display
+    const socialPlatforms = [
+      { value: 'linkedin', label: 'LinkedIn' },
+      { value: 'github', label: 'GitHub' },
+      { value: 'portfolio', label: 'Portfolio' },
+      { value: 'twitter', label: 'Twitter/X' },
+      { value: 'instagram', label: 'Instagram' },
+      { value: 'facebook', label: 'Facebook' },
+      { value: 'youtube', label: 'YouTube' },
+      { value: 'medium', label: 'Medium' },
+      { value: 'behance', label: 'Behance' },
+      { value: 'dribbble', label: 'Dribbble' },
+      { value: 'stackoverflow', label: 'Stack Overflow' },
+      { value: 'custom', label: 'Custom' }
+    ]
 
     return (
       <div
@@ -83,6 +99,28 @@ const Template3 = forwardRef<HTMLDivElement, Template3Props>(
               {personalInfo.location}
             </span>
           </div>
+
+          {/* Social Media Links */}
+          {personalInfo.socialLinks && personalInfo.socialLinks.length > 0 && (
+            <div className="mt-4 flex justify-center flex-wrap gap-2">
+              {personalInfo.socialLinks.map((link, index) => {
+                const platform = socialPlatforms.find(p => p.value === link.platform);
+                const displayText = link.label || platform?.label || link.platform;
+
+                return (
+                                      <a
+                      key={index}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs hover:bg-gray-200 transition-colors"
+                    >
+                      {displayText}
+                    </a>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Summary */}
@@ -99,7 +137,7 @@ const Template3 = forwardRef<HTMLDivElement, Template3Props>(
                 textDecoration: summaryFormatting?.underline ? 'underline' : 'none'
               }}
             >
-              {content.summary}
+              {renderContentWithLinks(content.summary)}
             </p>
           </div>
         )}
@@ -108,7 +146,7 @@ const Template3 = forwardRef<HTMLDivElement, Template3Props>(
         {experience.length > 0 && (
           <div className="mb-8">
             <h2 className="text-2xl font-light text-gray-900 mb-6 text-center border-b border-gray-300 pb-2">
-              Experience
+              {content.sectionHeadings?.experience || 'Experience'}
             </h2>
             <div className="space-y-6">
               {experience.map((exp, index) => (
@@ -165,7 +203,7 @@ const Template3 = forwardRef<HTMLDivElement, Template3Props>(
                       textDecoration: exp.formatting?.description?.underline ? 'underline' : 'none'
                     }}
                   >
-                    {exp.description}
+                    {renderContentWithLinks(exp.description)}
                   </p>
                 </div>
               ))}
@@ -177,7 +215,7 @@ const Template3 = forwardRef<HTMLDivElement, Template3Props>(
         {education.length > 0 && (
           <div className="mb-8">
             <h2 className="text-2xl font-light text-gray-900 mb-6 text-center border-b border-gray-300 pb-2">
-              Education
+              {content.sectionHeadings?.education || 'Education'}
             </h2>
             <div className="space-y-4">
               {education.map((edu, index) => (
@@ -231,7 +269,7 @@ const Template3 = forwardRef<HTMLDivElement, Template3Props>(
         {content.skills.length > 0 && (
           <div className="mb-8">
             <h2 className="text-2xl font-light text-gray-900 mb-6 text-center border-b border-gray-300 pb-2">
-              Skills
+              {content.sectionHeadings?.skills || 'Skills'}
             </h2>
             <div className="flex flex-wrap justify-center gap-3">
               {content.skills.map((skill, index) => (
@@ -248,9 +286,9 @@ const Template3 = forwardRef<HTMLDivElement, Template3Props>(
 
         {/* Certifications */}
         {content.certifications.length > 0 && (
-          <div>
+          <div className="mb-8">
             <h2 className="text-2xl font-light text-gray-900 mb-6 text-center border-b border-gray-300 pb-2">
-              Certifications
+              {content.sectionHeadings?.certifications || 'Certifications'}
             </h2>
             <div className="text-center space-y-2">
               {content.certifications.map((cert, index) => (

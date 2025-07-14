@@ -194,6 +194,45 @@ export default function ResumeForm({ content, onChange, onFieldFocus }: ResumeFo
     updateContent({ customSections: newSections })
   }
 
+  // Social Media Links functions
+  const addSocialLink = () => {
+    const newSocialLinks = [...(content.personalInfo.socialLinks || []), { platform: '', url: '', label: '' }]
+    updateContent({
+      personalInfo: { ...content.personalInfo, socialLinks: newSocialLinks }
+    })
+  }
+
+  const updateSocialLink = (index: number, field: string, value: string) => {
+    const newSocialLinks = [...(content.personalInfo.socialLinks || [])]
+    newSocialLinks[index] = { ...newSocialLinks[index], [field]: value }
+    updateContent({
+      personalInfo: { ...content.personalInfo, socialLinks: newSocialLinks }
+    })
+  }
+
+  const removeSocialLink = (index: number) => {
+    const newSocialLinks = (content.personalInfo.socialLinks || []).filter((_, i) => i !== index)
+    updateContent({
+      personalInfo: { ...content.personalInfo, socialLinks: newSocialLinks }
+    })
+  }
+
+  // Predefined social media platforms
+  const socialPlatforms = [
+    { value: 'linkedin', label: 'LinkedIn' },
+    { value: 'github', label: 'GitHub' },
+    { value: 'portfolio', label: 'Portfolio' },
+    { value: 'twitter', label: 'Twitter/X' },
+    { value: 'instagram', label: 'Instagram' },
+    { value: 'facebook', label: 'Facebook' },
+    { value: 'youtube', label: 'YouTube' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'behance', label: 'Behance' },
+    { value: 'dribbble', label: 'Dribbble' },
+    { value: 'stackoverflow', label: 'Stack Overflow' },
+    { value: 'custom', label: 'Custom' }
+  ]
+
   return (
     <div className="space-y-6">
       {/* Personal Information */}
@@ -263,6 +302,110 @@ export default function ResumeForm({ content, onChange, onFieldFocus }: ResumeFo
                 />
               </div>
             </div>
+
+            {/* Social Media Links */}
+            <div className="border-t border-gray-200 pt-4">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-md font-medium text-gray-900">Social Media Links</h4>
+                <button
+                  onClick={addSocialLink}
+                  className="flex items-center px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-md"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add Link
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                {(content.personalInfo.socialLinks || []).map((link, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-3">
+                    <div className="flex justify-between items-start mb-3">
+                      <h5 className="text-sm font-medium text-gray-700">Social Link {index + 1}</h5>
+                      <button
+                        onClick={() => removeSocialLink(index)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Platform</label>
+                        <select
+                          value={link.platform}
+                          onChange={(e) => updateSocialLink(index, 'platform', e.target.value)}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+                        >
+                          <option value="">Select Platform</option>
+                          {socialPlatforms.map((platform) => (
+                            <option key={platform.value} value={platform.value}>
+                              {platform.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">URL</label>
+                        <input
+                          type="url"
+                          value={link.url}
+                          onChange={(e) => updateSocialLink(index, 'url', e.target.value)}
+                          placeholder="https://..."
+                          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Display Label (Optional)</label>
+                        <input
+                          type="text"
+                          value={link.label || ''}
+                          onChange={(e) => updateSocialLink(index, 'label', e.target.value)}
+                          placeholder="e.g., My Portfolio"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {(!content.personalInfo.socialLinks || content.personalInfo.socialLinks.length === 0) && (
+                  <div className="text-center py-6 text-gray-500">
+                    <p className="text-sm">No social media links added yet.</p>
+                    <p className="text-xs mt-1">Click &quot;Add Link&quot; to get started.</p>
+                  </div>
+                )}
+
+                {/* PDF Preference Toggle */}
+                {content.personalInfo.socialLinks && content.personalInfo.socialLinks.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex-1">
+                        <label className="text-sm font-semibold text-gray-800">Include in PDF Download</label>
+                        <p className="text-xs text-gray-600 mt-1">Show social media links in the downloaded PDF</p>
+                      </div>
+                      <button
+                        onClick={() => updateContent({
+                          showSocialLinksInPDF: !content.showSocialLinksInPDF
+                        })}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                          content.showSocialLinksInPDF !== false ? 'bg-blue-600' : 'bg-gray-300'
+                        }`}
+                        type="button"
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
+                            content.showSocialLinksInPDF !== false ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -283,6 +426,21 @@ export default function ResumeForm({ content, onChange, onFieldFocus }: ResumeFo
 
         {expandedSections.has('summary') && (
           <div className="px-6 pb-6">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Section Heading</label>
+              <input
+                type="text"
+                value={content.sectionHeadings?.summary || 'Professional Summary'}
+                onChange={(e) => updateContent({
+                  sectionHeadings: {
+                    ...content.sectionHeadings,
+                    summary: e.target.value
+                  }
+                })}
+                placeholder="e.g., Professional Summary, Career Overview, About Me"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              />
+            </div>
             <FormattedInput
               value={content.summary}
               onChange={(value) => updateContent({ summary: value })}
@@ -320,6 +478,21 @@ export default function ResumeForm({ content, onChange, onFieldFocus }: ResumeFo
 
         {expandedSections.has('experience') && (
           <div className="px-6 pb-6 space-y-4">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Section Heading</label>
+              <input
+                type="text"
+                value={content.sectionHeadings?.experience || 'Work Experience'}
+                onChange={(e) => updateContent({
+                  sectionHeadings: {
+                    ...content.sectionHeadings,
+                    experience: e.target.value
+                  }
+                })}
+                placeholder="e.g., Work Experience, Professional Experience, Employment History"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              />
+            </div>
             {content.experience.map((exp, index) => (
               <div key={index} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex justify-between items-start mb-4">
@@ -406,6 +579,21 @@ export default function ResumeForm({ content, onChange, onFieldFocus }: ResumeFo
 
         {expandedSections.has('education') && (
           <div className="px-6 pb-6 space-y-4">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Section Heading</label>
+              <input
+                type="text"
+                value={content.sectionHeadings?.education || 'Education'}
+                onChange={(e) => updateContent({
+                  sectionHeadings: {
+                    ...content.sectionHeadings,
+                    education: e.target.value
+                  }
+                })}
+                placeholder="e.g., Education, Academic Background, Qualifications"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              />
+            </div>
             {content.education.map((edu, index) => (
               <div key={index} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex justify-between items-start mb-4">
@@ -480,6 +668,21 @@ export default function ResumeForm({ content, onChange, onFieldFocus }: ResumeFo
 
         {expandedSections.has('skills') && (
           <div className="px-6 pb-6 space-y-2">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Section Heading</label>
+              <input
+                type="text"
+                value={content.sectionHeadings?.skills || 'Skills'}
+                onChange={(e) => updateContent({
+                  sectionHeadings: {
+                    ...content.sectionHeadings,
+                    skills: e.target.value
+                  }
+                })}
+                placeholder="e.g., Skills, Technical Skills, Core Competencies"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              />
+            </div>
             {content.skills.map((skill, index) => (
               <div key={index} className="flex items-center gap-2">
                 <input
@@ -525,6 +728,21 @@ export default function ResumeForm({ content, onChange, onFieldFocus }: ResumeFo
 
         {expandedSections.has('certifications') && (
           <div className="px-6 pb-6 space-y-2">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Section Heading</label>
+              <input
+                type="text"
+                value={content.sectionHeadings?.certifications || 'Certifications'}
+                onChange={(e) => updateContent({
+                  sectionHeadings: {
+                    ...content.sectionHeadings,
+                    certifications: e.target.value
+                  }
+                })}
+                placeholder="e.g., Certifications, Professional Certifications, Licenses"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              />
+            </div>
             {content.certifications.map((cert, index) => (
               <div key={index} className="flex items-center gap-2">
                 <input

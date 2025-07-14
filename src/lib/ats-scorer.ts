@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface ATSScore {
   score: number
   suggestions: string[]
@@ -9,11 +11,55 @@ export interface TextFormatting {
   fontSize?: string
   fontFamily?: string
   color?: string
-  alignment?: string
+  alignment?: 'left' | 'center' | 'right' | 'justify'
   bold?: boolean
   italic?: boolean
   underline?: boolean
 }
+
+// Function to render content with clickable links
+export const renderContentWithLinks = (content: string): React.ReactNode => {
+  if (!content) return content;
+
+  // Replace [LINK:url]text[/LINK] with clickable links
+  const linkRegex = /\[LINK:([^\]]+)\]([^[]*)\[\/LINK\]/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = linkRegex.exec(content)) !== null) {
+    // Add text before the link
+    if (match.index > lastIndex) {
+      parts.push(content.substring(lastIndex, match.index));
+    }
+
+    // Add the clickable link
+    const url = match[1];
+    const linkText = match[2];
+    parts.push(
+      React.createElement('a', {
+        key: `link-${match.index}`,
+        href: url,
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        className: 'text-blue-600 hover:text-blue-800 underline cursor-pointer',
+        onClick: (e: React.MouseEvent) => {
+          e.preventDefault();
+          window.open(url, '_blank');
+        }
+      }, linkText)
+    );
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Add remaining text
+  if (lastIndex < content.length) {
+    parts.push(content.substring(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : content;
+};
 
 export interface ResumeContent {
   personalInfo: {
@@ -21,6 +67,11 @@ export interface ResumeContent {
     email: string
     phone: string
     location: string
+    socialLinks?: Array<{
+      platform: string
+      url: string
+      label?: string
+    }>
     formatting?: {
       name?: TextFormatting
       email?: TextFormatting
@@ -57,6 +108,14 @@ export interface ResumeContent {
   formatting?: TextFormatting
   otherQualities?: string[]
   customSections?: { heading: string, content: string }[]
+  showSocialLinksInPDF?: boolean
+  sectionHeadings?: {
+    summary?: string
+    experience?: string
+    education?: string
+    skills?: string
+    certifications?: string
+  }
 }
 
 // Common ATS keywords by industry

@@ -1,6 +1,6 @@
 'use client'
 
-import { ResumeContent } from '@/lib/ats-scorer'
+import { ResumeContent, renderContentWithLinks } from '@/lib/ats-scorer'
 import { forwardRef } from 'react'
 
 interface Template2Props {
@@ -24,6 +24,22 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
       ...edu,
       formatting: edu.formatting || {}
     }))
+
+    // Social media platforms for display
+    const socialPlatforms = [
+      { value: 'linkedin', label: 'LinkedIn' },
+      { value: 'github', label: 'GitHub' },
+      { value: 'portfolio', label: 'Portfolio' },
+      { value: 'twitter', label: 'Twitter/X' },
+      { value: 'instagram', label: 'Instagram' },
+      { value: 'facebook', label: 'Facebook' },
+      { value: 'youtube', label: 'YouTube' },
+      { value: 'medium', label: 'Medium' },
+      { value: 'behance', label: 'Behance' },
+      { value: 'dribbble', label: 'Dribbble' },
+      { value: 'stackoverflow', label: 'Stack Overflow' },
+      { value: 'custom', label: 'Custom' }
+    ]
 
     return (
       <div
@@ -88,6 +104,30 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
               </span>
             </div>
           </div>
+
+          {/* Social Media Links */}
+          {personalInfo.socialLinks && personalInfo.socialLinks.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-600">
+              <div className="flex flex-wrap gap-2">
+                {personalInfo.socialLinks.map((link, index) => {
+                  const platform = socialPlatforms.find(p => p.value === link.platform);
+                  const displayText = link.label || platform?.label || link.platform;
+
+                  return (
+                    <a
+                      key={index}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-2 py-1 bg-gray-700 text-gray-200 rounded text-xs hover:bg-gray-600 transition-colors"
+                    >
+                      {displayText}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col lg:flex-row">
@@ -97,7 +137,7 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
             {content.summary && (
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
-                  Professional Summary
+                  {content.sectionHeadings?.summary || 'Professional Summary'}
                 </h2>
                 <p
                   className="text-gray-700 leading-relaxed"
@@ -110,7 +150,7 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
                     textDecoration: summaryFormatting?.underline ? 'underline' : 'none'
                   }}
                 >
-                  {content.summary}
+                  {renderContentWithLinks(content.summary)}
                 </p>
               </div>
             )}
@@ -119,7 +159,7 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
             {experience.length > 0 && (
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
-                  Work Experience
+                  {content.sectionHeadings?.experience || 'Work Experience'}
                 </h2>
                 <div className="space-y-6">
                   {experience.map((exp, index) => (
@@ -176,7 +216,7 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
                           textDecoration: exp.formatting?.description?.underline ? 'underline' : 'none'
                         }}
                       >
-                        {exp.description}
+                        {renderContentWithLinks(exp.description)}
                       </p>
                     </div>
                   ))}
@@ -188,7 +228,7 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
             {education.length > 0 && (
               <div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
-                  Education
+                  {content.sectionHeadings?.education || 'Education'}
                 </h2>
                 <div className="space-y-4">
                   {education.map((edu, index) => (
@@ -247,7 +287,7 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
             {content.skills.length > 0 && (
               <div className="mb-8">
                 <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
-                  Skills
+                  {content.sectionHeadings?.skills || 'Skills'}
                 </h2>
                 <div className="space-y-2">
                   {content.skills.map((skill, index) => (
@@ -264,17 +304,20 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
 
             {/* Certifications */}
             {content.certifications.length > 0 && (
-              <div>
+              <div className="mb-8">
                 <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 pb-2">
-                  Certifications
+                  {content.sectionHeadings?.certifications || 'Certifications'}
                 </h2>
-                <ul className="space-y-2">
+                <div className="space-y-2">
                   {content.certifications.map((cert, index) => (
-                    <li key={index} className="text-sm text-gray-700 bg-white px-3 py-2 rounded border border-gray-200">
+                    <div
+                      key={index}
+                      className="bg-white text-gray-700 px-3 py-2 rounded border border-gray-200 text-sm"
+                    >
                       {cert}
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
           </div>
