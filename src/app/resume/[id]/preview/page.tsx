@@ -10,7 +10,6 @@ import Template3 from '@/components/templates/Template3'
 import { ArrowLeft, Download, Edit, Eye } from 'lucide-react'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
-import { downloadResumeAsPDF } from '@/lib/pdf-export'
 import { useSearchParams } from 'next/navigation';
 
 const templates = {
@@ -35,10 +34,12 @@ function ResumePreviewContent() {
   const { user, loading } = useAuth()
   const [resume, setResume] = useState<Resume | null>(null)
   const [loadingResume, setLoadingResume] = useState(true)
-  const [downloading, setDownloading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const resumeId = params.id as string
+
+  // Detect PDF mode
+  const isPDF = searchParams.get('pdf') === '1';
 
   const fetchResume = useCallback(async () => {
     try {
@@ -119,21 +120,6 @@ function ResumePreviewContent() {
     }
   }, [user, resumeId, fetchResume])
 
-  const handleDownload = async () => {
-    if (!resume) return
-
-    setDownloading(true)
-    try {
-
-      await downloadResumeAsPDF(resume.content, resume.title, resume.template_id)
-    } catch (error) {
-      console.error('Error downloading resume:', error)
-      alert('Failed to download resume')
-    } finally {
-      setDownloading(false)
-    }
-  }
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -196,10 +182,19 @@ function ResumePreviewContent() {
   const TemplateComponent = templates[templateKey as keyof typeof templates] || Template1;
   console.log('Rendering template:', templateKey, 'with content:', resume.content);
 
+  // PDF mode: render only the resume content, no navigation/header/wrappers
+  if (isPDF) {
+    return (
+      <div style={{ background: '#fff', color: '#000', minHeight: '100vh' }}>
+        <TemplateComponent content={resume.content} />
+      </div>
+    );
+  }
+
+  // Normal preview mode
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-
       {/* Header */}
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -227,19 +222,20 @@ function ResumePreviewContent() {
                 <Edit className="w-4 h-4 mr-2" />
                 Edit
               </Link>
-              <button
-                onClick={handleDownload}
-                disabled={downloading}
+              <a
+                href={`/resume/${resume.id}/download${templateKey ? `?template=${templateKey}` : ''}`}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-50"
+                target="_blank"
+                rel="noopener noreferrer"
+                download
               >
                 <Download className="w-4 h-4 mr-2" />
-                {downloading ? 'Downloading...' : 'Download PDF'}
-              </button>
+                Download PDF
+              </a>
             </div>
           </div>
         </div>
       </div>
-
       {/* Resume Preview */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -252,7 +248,6 @@ function ResumePreviewContent() {
               </div>
             </div>
           </div>
-
           <div className="p-4 lg:p-8">
             <div className="border border-gray-200 rounded-lg overflow-hidden">
               <TemplateComponent content={resume.content} />

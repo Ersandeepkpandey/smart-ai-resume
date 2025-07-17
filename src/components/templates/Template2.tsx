@@ -48,12 +48,12 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
         style={{ fontFamily: 'Arial, sans-serif' }}
       >
         {/* Header */}
-        <div className="bg-gray-900 text-white p-8">
+        <div className="bg-white text-gray-900 p-8 border-b border-gray-200">
           <h1
             className="text-4xl font-bold mb-2"
             style={{
               fontSize: personalInfo.formatting?.name?.fontSize || '2.25rem',
-              color: personalInfo.formatting?.name?.color || '#ffffff',
+              color: personalInfo.formatting?.name?.color || '#1f2937',
               textAlign: personalInfo.formatting?.name?.alignment as 'left' | 'center' | 'right' || 'left',
               fontWeight: personalInfo.formatting?.name?.bold ? 'bold' : 'bold',
               fontStyle: personalInfo.formatting?.name?.italic ? 'italic' : 'normal',
@@ -62,13 +62,12 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
           >
             {personalInfo.name}
           </h1>
-          <p className="text-xl text-gray-300 mb-4">{experience[0]?.title || 'Professional'}</p>
+          <p className="text-xl text-gray-600 mb-4">{experience[0]?.title || 'Professional'}</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="flex items-center">
-              <span className="mr-2">📧</span>
               <span style={{
                 fontSize: personalInfo.formatting?.email?.fontSize || '0.875rem',
-                color: personalInfo.formatting?.email?.color || '#d1d5db',
+                color: personalInfo.formatting?.email?.color || '#374151',
                 textAlign: personalInfo.formatting?.email?.alignment as 'left' | 'center' | 'right' || 'left',
                 fontWeight: personalInfo.formatting?.email?.bold ? 'bold' : 'normal',
                 fontStyle: personalInfo.formatting?.email?.italic ? 'italic' : 'normal',
@@ -78,10 +77,9 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
               </span>
             </div>
             <div className="flex items-center">
-              <span className="mr-2">📱</span>
               <span style={{
                 fontSize: personalInfo.formatting?.phone?.fontSize || '0.875rem',
-                color: personalInfo.formatting?.phone?.color || '#d1d5db',
+                color: personalInfo.formatting?.phone?.color || '#374151',
                 textAlign: personalInfo.formatting?.phone?.alignment as 'left' | 'center' | 'right' || 'left',
                 fontWeight: personalInfo.formatting?.phone?.bold ? 'bold' : 'normal',
                 fontStyle: personalInfo.formatting?.phone?.italic ? 'italic' : 'normal',
@@ -91,10 +89,9 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
               </span>
             </div>
             <div className="flex items-center">
-              <span className="mr-2">📍</span>
               <span style={{
                 fontSize: personalInfo.formatting?.location?.fontSize || '0.875rem',
-                color: personalInfo.formatting?.location?.color || '#d1d5db',
+                color: personalInfo.formatting?.location?.color || '#374151',
                 textAlign: personalInfo.formatting?.location?.alignment as 'left' | 'center' | 'right' || 'left',
                 fontWeight: personalInfo.formatting?.location?.bold ? 'bold' : 'normal',
                 fontStyle: personalInfo.formatting?.location?.italic ? 'italic' : 'normal',
@@ -107,7 +104,7 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
 
           {/* Social Media Links */}
           {personalInfo.socialLinks && personalInfo.socialLinks.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-600">
+            <div className="mt-4 pt-4 border-t border-gray-200">
               <div className="flex flex-wrap gap-2">
                 {personalInfo.socialLinks.map((link, index) => {
                   const platform = socialPlatforms.find(p => p.value === link.platform);
@@ -119,7 +116,7 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center px-2 py-1 bg-gray-700 text-gray-200 rounded text-xs hover:bg-gray-600 transition-colors"
+                      className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200 transition-colors"
                     >
                       {displayText}
                     </a>

@@ -1,8 +1,37 @@
 "use client";
 import Link from 'next/link'
 import Image from 'next/image'
+import { useAuth } from '@/contexts/AuthContext'
+import { useState, useRef, useEffect } from 'react'
 
 export default function Home() {
+  const { user, loading, signOut } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const avatarRef = useRef<HTMLDivElement>(null);
+
+  // Helper to get initials from name or email
+  function getInitials(nameOrEmail: string) {
+    if (!nameOrEmail) return '?';
+    const parts = nameOrEmail.split(/\s|@/);
+    if (parts.length === 1) return parts[0][0]?.toUpperCase() || '?';
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClick(event: MouseEvent) {
+      if (avatarRef.current && avatarRef.current.contains && avatarRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClick);
+    } else {
+      document.removeEventListener('mousedown', handleClick);
+    }
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [dropdownOpen]);
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-white to-blue-100 relative overflow-x-clip">
       {/* Decorative background pattern */}
@@ -23,11 +52,44 @@ export default function Home() {
               <Image src="/logo.png" alt="Rezume" width={32} height={32} className="rounded" />
               <span className="text-xl font-bold text-blue-700 tracking-tight">Rezume</span>
             </Link>
-            <Link href="/resume/new" className="bg-gradient-to-r from-blue-600 to-blue-400 text-white px-6 py-2 rounded-full text-base font-semibold shadow hover:from-blue-700 hover:to-blue-500 transition-colors">
-              Create Resume
-            </Link>
-          </div>
-        </nav>
+            <div className="flex items-center gap-4">
+              <Link href="/resume/new" className="bg-gradient-to-r from-blue-600 to-blue-400 text-white px-6 py-2 rounded-full text-base font-semibold shadow hover:from-blue-700 hover:to-blue-500 transition-colors">
+                Create Resume
+              </Link>
+              {!loading && !user && (
+                <Link href="/auth/signin" className="text-blue-700 font-semibold hover:underline px-3 py-2 rounded transition-colors text-sm">Sign In</Link>
+              )}
+              {!loading && user && (
+                <div className="relative" ref={avatarRef}>
+                  <button
+                    className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow border-2 border-blue-200 focus:outline-none"
+                    onClick={() => setDropdownOpen((open) => !open)}
+                    aria-label="Open profile menu"
+                  >
+                    {getInitials(user.fullName || user.email)}
+                  </button>
+                  {dropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl py-2 z-50 border border-gray-200 animate-fade-in">
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 text-gray-700 hover:bg-blue-50 rounded transition-colors"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        Profile Settings
+                      </Link>
+                      <button
+                        onClick={() => { setDropdownOpen(false); signOut(); }}
+                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded transition-colors"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+        </div>
+      </nav>
 
       {/* Hero Section with Gradient Background and Trust Badges */}
       <main className="w-full px-4 sm:px-6 lg:px-8 py-20 flex flex-col items-center relative overflow-x-clip">
@@ -354,7 +416,7 @@ export default function Home() {
           <div className="flex-1 min-w-[180px]">
             <h3 className="text-lg font-semibold text-blue-700 mb-3">Contact & Legal</h3>
             <ul className="space-y-2 text-gray-700 text-sm">
-              <li><a href="mailto:support@rezume.in" className="hover:text-blue-500 transition-colors">support@rezume.in</a></li>
+              <li><a href="mailto:rezumecare@gmail.com" className="hover:text-blue-500 transition-colors">rezumecare@gmail.com</a></li>
               <li><a href="/privacy-policy" className="hover:text-blue-500 transition-colors">Privacy Policy</a></li>
               <li><a href="/terms" className="hover:text-blue-500 transition-colors">Terms of Service</a></li>
               <li><a href="/disclaimer" className="hover:text-blue-500 transition-colors">Disclaimer</a></li>

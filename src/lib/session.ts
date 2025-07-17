@@ -1,12 +1,18 @@
 import { cookies } from 'next/headers'
-import { randomBytes } from 'crypto'
 import client from './turso'
 
 const SESSION_COOKIE_NAME = 'session_id'
 const SESSION_DURATION_HOURS = 24
 
+// Add a function to generate a random hex string using Web Crypto API
+function generateRandomHex(bytes: number) {
+  const array = new Uint8Array(bytes);
+  crypto.getRandomValues(array);
+  return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+}
+
 export async function createSession(userId: string) {
-  const sessionId = randomBytes(32).toString('hex')
+  const sessionId = generateRandomHex(32)
   const expiresAt = new Date(Date.now() + SESSION_DURATION_HOURS * 60 * 60 * 1000).toISOString()
   await client.execute({
     sql: 'INSERT INTO sessions (session_id, user_id, expires_at) VALUES (?, ?, ?)',

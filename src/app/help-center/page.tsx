@@ -26,6 +26,7 @@ export default function HelpCenterPage() {
             <MessageSquare className="w-12 h-12 text-indigo-500 mb-4" />
             <h2 className="text-xl font-bold mb-2">Contact Support</h2>
             <p className="text-gray-600 text-sm mb-4 text-center">Reach out to our team for personalized help and troubleshooting.</p>
+            <a href="mailto:rezumecare@gmail.com" className="text-blue-600 hover:underline font-semibold">rezumecare@gmail.com</a>
           </div>
           <div className="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center hover:shadow-2xl transition-shadow">
             <ShieldCheck className="w-12 h-12 text-green-500 mb-4" />

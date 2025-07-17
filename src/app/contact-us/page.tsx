@@ -53,7 +53,9 @@ export default function ContactUsPage() {
         <div className="bg-white rounded-xl shadow-2xl p-10 w-full max-w-lg mx-auto flex flex-col items-center">
           <h1 className="text-3xl font-extrabold text-blue-700 mb-4">Contact Us</h1>
           <p className="text-gray-600 mb-8 text-center">
-            Have questions or need support? Fill out the form below or email us directly. Our team is here to help you with your resume and job search journey.
+            Have questions or need support? Fill out the form below or email us directly at{' '}
+            <a href="mailto:rezumecare@gmail.com" className="text-blue-600 hover:underline font-semibold">rezumecare@gmail.com</a>.
+            Our team is here to help you with your resume and job search journey.
           </p>
           <form className="space-y-6 w-full" onSubmit={handleSubmit}>
             <div className="flex items-center border rounded px-3 py-2 mb-2 bg-gray-50">

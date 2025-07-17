@@ -65,7 +65,8 @@ function NewResumeContent() {
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
-
+  const [resumeId, setResumeId] = useState<string | null>(null)
+  const [autosaveStatus, setAutosaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
 
 
   // Handle template selection from URL parameters or sessionStorage
@@ -162,6 +163,52 @@ function NewResumeContent() {
     }
   }
 
+  // AUTOSAVE: Debounced effect
+  useEffect(() => {
+    if (!title.trim()) return;
+    setAutosaveStatus('saving');
+    const handler = setTimeout(async () => {
+      try {
+        let response;
+        if (resumeId) {
+          // Update existing resume
+          response = await fetch(`/api/resumes/${resumeId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: title.trim(),
+              template_id: selectedTemplate,
+              content,
+              ats_score: calculateATSScore(content).score
+            })
+          });
+        } else {
+          // Create new resume
+          response = await fetch('/api/resumes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: title.trim(),
+              template_id: selectedTemplate,
+              content,
+              ats_score: calculateATSScore(content).score
+            })
+          });
+        }
+        if (response.ok) {
+          const data = await response.json();
+          if (data.resume && data.resume.id) setResumeId(data.resume.id);
+          setAutosaveStatus('saved');
+        } else {
+          setAutosaveStatus('idle');
+        }
+      } catch {
+        setAutosaveStatus('idle');
+      }
+    }, 1200); // 1.2s debounce
+    return () => clearTimeout(handler);
+  }, [title, content, selectedTemplate, resumeId]);
+
   const TemplateComponent = templates[selectedTemplate as keyof typeof templates] || Template1
 
   const selectedTemplateObj = [
@@ -235,9 +282,16 @@ function NewResumeContent() {
                     </button>
                     <button
                       onClick={async () => {
-                        setDownloading(true)
-                        await downloadResumeAsPDF(content, title || 'resume', selectedTemplate)
-                        setDownloading(false)
+                        setDownloading(true);
+                        if (resumeId) {
+                          // Download from server endpoint
+                          const url = `/resume/${resumeId}/download?template=${selectedTemplate}`;
+                          window.open(url, '_blank');
+                        } else {
+                          // Download client-side PDF
+                          await downloadResumeAsPDF(content, title || 'resume', selectedTemplate);
+                        }
+                        setDownloading(false);
                       }}
                       disabled={downloading}
                       className="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 min-w-0"
@@ -321,9 +375,16 @@ function NewResumeContent() {
 
                 <button
                   onClick={async () => {
-                    setDownloading(true)
-                    await downloadResumeAsPDF(content, title || 'resume', selectedTemplate)
-                    setDownloading(false)
+                    setDownloading(true);
+                    if (resumeId) {
+                      // Download from server endpoint
+                      const url = `/resume/${resumeId}/download?template=${selectedTemplate}`;
+                      window.open(url, '_blank');
+                    } else {
+                      // Download client-side PDF
+                      await downloadResumeAsPDF(content, title || 'resume', selectedTemplate);
+                    }
+                    setDownloading(false);
                   }}
                   disabled={downloading}
                   className="inline-flex items-center px-4 py-2 rounded-md bg-green-600 text-white shadow hover:bg-green-700 transition-colors text-sm font-medium flex-shrink-0"
@@ -332,7 +393,7 @@ function NewResumeContent() {
                 >
                   <Download className="w-4 h-4 lg:w-5 lg:h-5" />
                   <span className="ml-1 lg:ml-2 text-xs lg:text-sm hidden sm:inline">
-                    {downloading ? 'Downloading...' : 'PDF'}
+                    {downloading ? 'Saving...' : 'Save & PDF'}
                   </span>
                 </button>
 
@@ -415,7 +476,19 @@ function NewResumeContent() {
                   <button
                     onClick={async () => {
                       setDownloading(true)
-                      await downloadResumeAsPDF(content, title || 'resume', selectedTemplate)
+                      // For new resumes, we need to save first before downloading
+                      if (!isAnonymous) {
+                        try {
+                          await saveResume()
+                          // After saving, the user will be redirected to the edit page
+                          // where they can download the PDF
+                        } catch (error) {
+                          console.error('Error saving resume:', error)
+                          alert('Please save the resume first, then download.')
+                        }
+                      } else {
+                        alert('Please sign in to save and download your resume.')
+                      }
                       setDownloading(false)
                     }}
                     disabled={downloading}
@@ -425,7 +498,7 @@ function NewResumeContent() {
                   >
                     <Download className="w-4 h-4 mr-2" />
                     <span className="text-sm">
-                      {downloading ? 'Downloading...' : 'Download PDF'}
+                      {downloading ? 'Saving...' : 'Save & PDF'}
                     </span>
                   </button>
                 </div>
@@ -438,6 +511,8 @@ function NewResumeContent() {
           </div>
         </div>
       </div>
+      {/* Autosave status indicator */}
+      <div className="text-xs text-gray-500 mt-1">{autosaveStatus === 'saving' ? 'Saving...' : autosaveStatus === 'saved' ? 'All changes saved' : ''}</div>
     </div>
   )
 }

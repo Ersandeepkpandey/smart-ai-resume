@@ -191,7 +191,7 @@ If you encounter any issues or have questions:
 
 1. Check the [Issues](https://github.com/your-repo/issues) page
 2. Create a new issue with detailed information
-3. Contact support at support@rezume.in
+3. Contact support at rezumecare@gmail.com
 
 ## 🙏 Acknowledgments
 
