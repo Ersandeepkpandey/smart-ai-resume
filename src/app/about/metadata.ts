@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "About Rezume | Free Resume Builder & Maker | Professional Resume Creation",
     description: "Learn about Rezume, the free resume builder and maker helping millions create professional ATS-friendly resumes. Our mission is to make professional resume creation accessible to everyone.",
     type: "website",
-    url: "https://rezume.com/about",
+    url: "https://rezume.in/about",
     siteName: "Rezume",
     locale: "en_US",
     images: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     images: ["/about-og-image.png"],
   },
   alternates: {
-    canonical: "https://rezume.com/about",
+    canonical: "https://rezume.in/about",
   },
   robots: "index, follow",
   category: "Career & Employment",

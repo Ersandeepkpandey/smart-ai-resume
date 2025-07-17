@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "Free Resume Templates | Professional ATS-Friendly Templates | Rezume",
     description: "Free resume templates and professional ATS-friendly resume builder templates. Choose from modern, classic, and creative designs. Download free resume templates for your job search.",
     type: "website",
-    url: "https://rezume.com/templates",
+    url: "https://rezume.in/templates",
     siteName: "Rezume",
     locale: "en_US",
     images: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     images: ["/templates-og-image.png"],
   },
   alternates: {
-    canonical: "https://rezume.com/templates",
+    canonical: "https://rezume.in/templates",
   },
   robots: "index, follow",
   category: "Career & Employment",

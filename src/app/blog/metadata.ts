@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "Resume Blog | Free Resume Builder Tips | Career & Job Search Advice",
     description: "Expert resume writing tips, career advice, and job search strategies from our free resume builder blog. Learn how to create ATS-friendly resumes and land your dream job with professional guidance.",
     type: "website",
-    url: "https://rezume.com/blog",
+    url: "https://rezume.in/blog",
     siteName: "Rezume",
     locale: "en_US",
     images: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     images: ["/blog-og-image.png"],
   },
   alternates: {
-    canonical: "https://rezume.com/blog",
+    canonical: "https://rezume.in/blog",
   },
   robots: "index, follow",
   category: "Career & Employment",

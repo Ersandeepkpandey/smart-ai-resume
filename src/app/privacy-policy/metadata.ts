@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "Privacy Policy | Free Resume Builder | Rezume Data Protection",
     description: "Privacy policy for Rezume's free resume builder and maker. Learn how we protect your personal data and resume information while using our professional resume creation platform.",
     type: "website",
-    url: "https://rezume.com/privacy-policy",
+    url: "https://rezume.in/privacy-policy",
     siteName: "Rezume",
     locale: "en_US",
     images: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     images: ["/privacy-policy-og-image.png"],
   },
   alternates: {
-    canonical: "https://rezume.com/privacy-policy",
+    canonical: "https://rezume.in/privacy-policy",
   },
   robots: "index, follow",
   category: "Legal",

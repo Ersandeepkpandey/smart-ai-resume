@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "Contact Rezume | Free Resume Builder Support | Get Help with Resume Creation",
     description: "Contact Rezume for support with our free resume builder and maker. Get help with resume creation, template selection, ATS optimization, and technical issues. We're here to help you succeed.",
     type: "website",
-    url: "https://rezume.com/contact-us",
+    url: "https://rezume.in/contact-us",
     siteName: "Rezume",
     locale: "en_US",
     images: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     images: ["/contact-og-image.png"],
   },
   alternates: {
-    canonical: "https://rezume.com/contact-us",
+    canonical: "https://rezume.in/contact-us",
   },
   robots: "index, follow",
   category: "Career & Employment",

@@ -155,50 +155,49 @@ const Template1 = forwardRef<HTMLDivElement, Template1Props>(
             <div className="space-y-4">
               {experience.map((exp, index) => (
                 <div key={index} className="border-l-4 border-blue-200 pl-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3
-                      className="text-xl font-semibold text-gray-800"
-                      style={{
-                        fontSize: exp.formatting?.title?.fontSize || '1.25rem',
-                        fontFamily: exp.formatting?.title?.fontFamily || 'Georgia, serif',
-                        color: exp.formatting?.title?.color || '#1f2937',
-                        textAlign: exp.formatting?.title?.alignment as 'left' | 'center' | 'right' || 'left',
-                        fontWeight: exp.formatting?.title?.bold ? 'bold' : 'semibold',
-                        fontStyle: exp.formatting?.title?.italic ? 'italic' : 'normal',
-                        textDecoration: exp.formatting?.title?.underline ? 'underline' : 'none'
-                      }}
-                    >
-                      {exp.title}
-                    </h3>
-                    <span
-                      className="text-gray-600 font-medium"
-                      style={{
-                        fontSize: exp.formatting?.duration?.fontSize || '0.875rem',
-                        fontFamily: exp.formatting?.duration?.fontFamily || 'Georgia, serif',
-                        color: exp.formatting?.duration?.color || '#6b7280',
-                        textAlign: exp.formatting?.duration?.alignment as 'left' | 'center' | 'right' || 'right',
-                        fontWeight: exp.formatting?.duration?.bold ? 'bold' : 'medium',
-                        fontStyle: exp.formatting?.duration?.italic ? 'italic' : 'normal',
-                        textDecoration: exp.formatting?.duration?.underline ? 'underline' : 'none'
-                      }}
-                    >
-                      {exp.duration}
-                    </span>
-                  </div>
-                                      <p
-                      className="text-lg text-blue-600 font-medium mb-2"
-                      style={{
-                        fontSize: exp.formatting?.company?.fontSize || '1.125rem',
-                        fontFamily: exp.formatting?.company?.fontFamily || 'Georgia, serif',
-                        color: exp.formatting?.company?.color || '#2563eb',
-                        textAlign: exp.formatting?.company?.alignment as 'left' | 'center' | 'right' || 'left',
-                        fontWeight: exp.formatting?.company?.bold ? 'bold' : 'medium',
-                        fontStyle: exp.formatting?.company?.italic ? 'italic' : 'normal',
-                        textDecoration: exp.formatting?.company?.underline ? 'underline' : 'none'
-                      }}
-                    >
-                      {renderContentWithLinks(exp.company)}
-                    </p>
+                  {/* Stack title, company, and duration vertically to avoid overlap */}
+                  <h3
+                    className="text-xl font-semibold text-gray-800"
+                    style={{
+                      fontSize: exp.formatting?.title?.fontSize || '1.25rem',
+                      fontFamily: exp.formatting?.title?.fontFamily || 'Georgia, serif',
+                      color: exp.formatting?.title?.color || '#1f2937',
+                      textAlign: exp.formatting?.title?.alignment as 'left' | 'center' | 'right' || 'left',
+                      fontWeight: exp.formatting?.title?.bold ? 'bold' : 'semibold',
+                      fontStyle: exp.formatting?.title?.italic ? 'italic' : 'normal',
+                      textDecoration: exp.formatting?.title?.underline ? 'underline' : 'none'
+                    }}
+                  >
+                    {exp.title}
+                  </h3>
+                  <p
+                    className="text-lg text-blue-600 font-medium mb-1"
+                    style={{
+                      fontSize: exp.formatting?.company?.fontSize || '1.125rem',
+                      fontFamily: exp.formatting?.company?.fontFamily || 'Georgia, serif',
+                      color: exp.formatting?.company?.color || '#2563eb',
+                      textAlign: exp.formatting?.company?.alignment as 'left' | 'center' | 'right' || 'left',
+                      fontWeight: exp.formatting?.company?.bold ? 'bold' : 'medium',
+                      fontStyle: exp.formatting?.company?.italic ? 'italic' : 'normal',
+                      textDecoration: exp.formatting?.company?.underline ? 'underline' : 'none'
+                    }}
+                  >
+                    {renderContentWithLinks(exp.company)}
+                  </p>
+                  <span
+                    className="text-gray-600 font-medium block mb-2"
+                    style={{
+                      fontSize: exp.formatting?.duration?.fontSize || '0.875rem',
+                      fontFamily: exp.formatting?.duration?.fontFamily || 'Georgia, serif',
+                      color: exp.formatting?.duration?.color || '#6b7280',
+                      textAlign: exp.formatting?.duration?.alignment as 'left' | 'center' | 'right' || 'right',
+                      fontWeight: exp.formatting?.duration?.bold ? 'bold' : 'medium',
+                      fontStyle: exp.formatting?.duration?.italic ? 'italic' : 'normal',
+                      textDecoration: exp.formatting?.duration?.underline ? 'underline' : 'none'
+                    }}
+                  >
+                    {exp.duration}
+                  </span>
                   <p
                     className="text-gray-700 leading-relaxed"
                     style={{

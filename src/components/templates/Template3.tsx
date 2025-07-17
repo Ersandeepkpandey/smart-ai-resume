@@ -151,9 +151,9 @@ const Template3 = forwardRef<HTMLDivElement, Template3Props>(
             <div className="space-y-6">
               {experience.map((exp, index) => (
                 <div key={index} className="text-center">
-                  <div className="mb-2">
+                  <div className="mb-2 flex flex-col items-center">
                     <h3
-                      className="text-xl font-medium text-gray-900"
+                      className="text-xl font-medium text-gray-900 block mb-1"
                       style={{
                         fontSize: exp.formatting?.title?.fontSize || '1.25rem',
                         color: exp.formatting?.title?.color || '#111827',
@@ -165,8 +165,8 @@ const Template3 = forwardRef<HTMLDivElement, Template3Props>(
                     >
                       {exp.title}
                     </h3>
-                    <p
-                      className="text-lg text-gray-600"
+                    <span
+                      className="text-lg text-gray-600 block mb-1"
                       style={{
                         fontSize: exp.formatting?.company?.fontSize || '1.125rem',
                         color: exp.formatting?.company?.color || '#4b5563',
@@ -177,9 +177,9 @@ const Template3 = forwardRef<HTMLDivElement, Template3Props>(
                       }}
                     >
                       {exp.company}
-                    </p>
-                    <p
-                      className="text-sm text-gray-500"
+                    </span>
+                    <span
+                      className="text-sm text-gray-500 block mb-2"
                       style={{
                         fontSize: exp.formatting?.duration?.fontSize || '0.875rem',
                         color: exp.formatting?.duration?.color || '#6b7280',
@@ -190,7 +190,7 @@ const Template3 = forwardRef<HTMLDivElement, Template3Props>(
                       }}
                     >
                       {exp.duration}
-                    </p>
+                    </span>
                   </div>
                   <p
                     className="text-gray-700 leading-relaxed max-w-2xl mx-auto"

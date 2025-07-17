@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "Free ATS Resume Score Checker | Resume Optimization Tool | Rezume",
     description: "Free ATS resume score checker and optimization tool. Test your resume's compatibility with Applicant Tracking Systems. Get instant feedback and improve your resume for better job applications.",
     type: "website",
-    url: "https://rezume.com/ats-score",
+    url: "https://rezume.in/ats-score",
     siteName: "Rezume",
     locale: "en_US",
     images: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     images: ["/ats-score-og-image.png"],
   },
   alternates: {
-    canonical: "https://rezume.com/ats-score",
+    canonical: "https://rezume.in/ats-score",
   },
   robots: "index, follow",
   category: "Career & Employment",

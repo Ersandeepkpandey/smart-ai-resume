@@ -11,6 +11,7 @@ import { ArrowLeft, Download, Edit, Eye } from 'lucide-react'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 import { downloadResumeAsPDF } from '@/lib/pdf-export'
+import { useSearchParams } from 'next/navigation';
 
 const templates = {
   template1: Template1,
@@ -30,6 +31,7 @@ interface Resume {
 
 function ResumePreviewContent() {
   const params = useParams()
+  const searchParams = useSearchParams();
   const { user, loading } = useAuth()
   const [resume, setResume] = useState<Resume | null>(null)
   const [loadingResume, setLoadingResume] = useState(true)
@@ -188,8 +190,11 @@ function ResumePreviewContent() {
     )
   }
 
-  const TemplateComponent = templates[resume.template_id as keyof typeof templates] || Template1
-  console.log('Rendering template:', resume.template_id, 'with content:', resume.content)
+  // Use template from query param if present, else from resume
+  const templateParam = searchParams.get('template');
+  const templateKey = templateParam || resume.template_id;
+  const TemplateComponent = templates[templateKey as keyof typeof templates] || Template1;
+  console.log('Rendering template:', templateKey, 'with content:', resume.content);
 
   return (
     <div className="min-h-screen bg-gray-50">

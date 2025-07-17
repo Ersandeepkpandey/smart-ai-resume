@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "Careers at Rezume | Join Our Free Resume Builder Team | Job Opportunities",
     description: "Join the Rezume team and help millions create professional resumes with our free resume builder and maker. Explore career opportunities in a company dedicated to making resume creation accessible to everyone.",
     type: "website",
-    url: "https://rezume.com/careers",
+    url: "https://rezume.in/careers",
     siteName: "Rezume",
     locale: "en_US",
     images: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     images: ["/careers-og-image.png"],
   },
   alternates: {
-    canonical: "https://rezume.com/careers",
+    canonical: "https://rezume.in/careers",
   },
   robots: "index, follow",
   category: "Career & Employment",

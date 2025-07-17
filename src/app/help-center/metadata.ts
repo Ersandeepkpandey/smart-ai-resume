@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: "Help Center | Free Resume Builder Guide | Resume Creation Tutorials",
     description: "Get help with our free resume builder and maker. Find tutorials, guides, and FAQs for resume creation, template selection, ATS optimization, and troubleshooting. Everything you need to create the perfect resume.",
     type: "website",
-    url: "https://rezume.com/help-center",
+    url: "https://rezume.in/help-center",
     siteName: "Rezume",
     locale: "en_US",
     images: [
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     images: ["/help-center-og-image.png"],
   },
   alternates: {
-    canonical: "https://rezume.com/help-center",
+    canonical: "https://rezume.in/help-center",
   },
   robots: "index, follow",
   category: "Career & Employment",

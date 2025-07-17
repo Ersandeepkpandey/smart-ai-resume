@@ -13,7 +13,6 @@ import Template3 from '@/components/templates/Template3'
 import { Save, Download, Eye, ArrowLeft, LayoutTemplate, Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
-import { downloadResumeAsPDF } from '@/lib/pdf-export'
 
 const templates = {
   template1: Template1,
@@ -40,11 +39,9 @@ function EditResumeContent() {
   const [title, setTitle] = useState('')
   const [saving, setSaving] = useState(false)
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
-  const [downloading, setDownloading] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [loadingResume, setLoadingResume] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
   const resumeId = params.id as string
 
@@ -96,7 +93,6 @@ function EditResumeContent() {
         setContent(normalizedResume.content)
         setSelectedTemplate(normalizedResume.template_id)
         setTitle(normalizedResume.title)
-        setHasUnsavedChanges(false)
       } else if (response.status === 404) {
         setError('Resume not found')
       } else if (response.status === 401) {
@@ -161,7 +157,6 @@ function EditResumeContent() {
         const data = await response.json()
         console.log('Save response data:', data)
         setResume(data.resume)
-        setHasUnsavedChanges(false)
         alert('Resume saved successfully!')
       } else {
         const errorText = await response.text()
@@ -173,26 +168,6 @@ function EditResumeContent() {
       alert('Failed to save resume. Please try again.')
     } finally {
       setSaving(false)
-    }
-  }
-
-  const handleDownload = async () => {
-    if (!content) return
-
-    if (hasUnsavedChanges) {
-      alert('You have unsaved changes. Please save your resume before downloading the PDF.');
-      return;
-    }
-
-    setDownloading(true)
-    try {
-
-      await downloadResumeAsPDF(content, title || 'resume', selectedTemplate)
-    } catch (error) {
-      console.error('Error downloading resume:', error)
-      alert('Failed to download resume')
-    } finally {
-      setDownloading(false)
     }
   }
 
@@ -322,14 +297,17 @@ function EditResumeContent() {
                       {saving ? <span className="ml-2 text-xs">Saving...</span> : null}
                     </button>
                     <button
-                      onClick={handleDownload}
-                      disabled={downloading}
+                      onClick={() => {
+                        const url = `/resume/${resumeId}/download?template=${selectedTemplate}`;
+                        window.open(url, '_blank');
+                      }}
+                      disabled={false}
                       className="flex-1 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
                       type="button"
                       title="Download PDF"
                     >
                       <Download className="w-5 h-5" />
-                      {downloading && <span className="ml-2 text-xs">...</span>}
+                      {false && <span className="ml-2 text-xs">Downloading...</span>}
                     </button>
                   </div>
                 </div>
@@ -341,7 +319,6 @@ function EditResumeContent() {
                                         onTemplateSelect={(id) => {
                     if (id !== selectedTemplate) {
                       setSelectedTemplate(id)
-                      setHasUnsavedChanges(true)
                     }
                     setShowTemplateSelector(false)
                   }}
@@ -399,14 +376,17 @@ function EditResumeContent() {
                   {saving ? <span className="ml-2 text-xs">Saving...</span> : null}
                 </button>
                 <button
-                  onClick={handleDownload}
-                  disabled={downloading}
+                  onClick={() => {
+                    const url = `/resume/${resumeId}/download?template=${selectedTemplate}`;
+                    window.open(url, '_blank');
+                  }}
+                  disabled={false}
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
                   type="button"
                   title="Download PDF"
                 >
                   <Download className="w-5 h-5" />
-                  {downloading && <span className="ml-2 text-xs">Downloading...</span>}
+                  {false && <span className="ml-2 text-xs">Downloading...</span>}
                 </button>
               </div>
             </div>
@@ -417,7 +397,6 @@ function EditResumeContent() {
                   onTemplateSelect={(id) => {
                     if (id !== selectedTemplate) {
                       setSelectedTemplate(id)
-                      setHasUnsavedChanges(true)
                     }
                     setShowTemplateSelector(false)
                   }}
@@ -474,14 +453,17 @@ function EditResumeContent() {
                     {saving ? 'Saving...' : 'Save'}
                   </button>
                   <button
-                    onClick={handleDownload}
-                    disabled={downloading}
+                    onClick={() => {
+                      const url = `/resume/${resumeId}/download?template=${selectedTemplate}`;
+                      window.open(url, '_blank');
+                    }}
+                    disabled={false}
                     className="flex-1 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
                     type="button"
                     title="Download PDF"
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    {downloading ? 'Downloading...' : 'PDF'}
+                    {false ? 'Downloading...' : 'PDF'}
                   </button>
                 </div>
 
