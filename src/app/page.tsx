@@ -20,7 +20,7 @@ export default function Home() {
   // Close dropdown on outside click
   useEffect(() => {
     function handleClick(event: MouseEvent) {
-      if (avatarRef.current && avatarRef.current.contains && avatarRef.current.contains(event.target as Node)) {
+      if (avatarRef.current && !avatarRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
       }
     }
@@ -77,8 +77,15 @@ export default function Home() {
                       >
                         Profile Settings
                       </Link>
-                      <button
-                        onClick={() => { setDropdownOpen(false); signOut(); }}
+                                                                  <button
+                        onClick={async () => {
+                          setDropdownOpen(false);
+                          try {
+                            await signOut();
+                          } catch (error) {
+                            console.error('Sign out error in landing page:', error);
+                          }
+                        }}
                         className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded transition-colors"
                       >
                         Sign Out

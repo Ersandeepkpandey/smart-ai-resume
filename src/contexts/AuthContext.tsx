@@ -30,6 +30,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string) => Promise<{ success: boolean; error?: string }>
   signOut: () => void
   updateUser: (userData: Partial<User>) => void
+  isSigningOut: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -37,6 +38,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isSigningOut, setIsSigningOut] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -45,7 +47,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const verifySession = async () => {
+    const verifySession = async () => {
+    // Skip session verification if we're in the process of signing out
+    if (isSigningOut) {
+      setLoading(false)
+      return
+    }
+
     try {
       const response = await fetch('/api/auth/verify')
 
@@ -125,13 +133,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const signOut = async () => {
+      const signOut = async () => {
+    // Set signing out flag to prevent session verification
+    setIsSigningOut(true)
+
+    // Clear user state immediately to prevent any race conditions
+    setUser(null)
+
     try {
-      await fetch('/api/auth/signout', { method: 'POST' })
+      const response = await fetch('/api/auth/signout', { method: 'POST' })
+      if (!response.ok) {
+        throw new Error(`Sign out failed: ${response.status}`)
+      }
     } catch (error) {
       console.error('Sign out error:', error)
+      // Even if the API call fails, we should still clear the local state
     }
-    setUser(null)
+
     router.push('/auth/signin')
   }
 
@@ -148,6 +166,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signOut,
     updateUser,
+    isSigningOut,
   }
 
   return (

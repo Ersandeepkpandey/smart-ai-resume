@@ -3,7 +3,6 @@
 import { useAuth } from '@/contexts/AuthContext'
 import Link from 'next/link'
 import { LogOut, User, FileText, ChevronDown, Settings } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useState, useRef, useEffect } from 'react'
 
 // Function to generate consistent color based on email
@@ -42,13 +41,16 @@ const generateUserColor = (email: string): string => {
 
 export default function Navigation() {
   const { user, signOut } = useAuth()
-  const router = useRouter()
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
 
   const handleSignOut = async () => {
-    await signOut()
-    router.push('/')
+    try {
+      await signOut()
+      // The signOut function already redirects to /auth/signin, so we don't need to redirect here
+    } catch (error) {
+      console.error('Sign out error in Navigation:', error)
+    }
   }
 
   // Close dropdown when clicking outside

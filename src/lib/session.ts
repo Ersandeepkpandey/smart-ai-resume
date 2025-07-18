@@ -57,6 +57,7 @@ export async function clearSessionCookie() {
     httpOnly: true,
     path: '/',
     maxAge: 0,
+    expires: new Date(0),
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
   })
