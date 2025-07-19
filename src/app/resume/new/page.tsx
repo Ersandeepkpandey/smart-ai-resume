@@ -83,8 +83,78 @@ function NewResumeContent() {
     }
   }, [searchParams])
 
-  // Handle pending resume data after sign in
+    // Handle initial data from create modal and pending resume data after sign in
   useEffect(() => {
+        // Check for initial data from the create modal
+    const initialData = sessionStorage.getItem('initialResumeData')
+    if (initialData) {
+      try {
+        const data = JSON.parse(initialData)
+        setTitle(data.title || '')
+
+        // Filter out empty values from arrays
+        const filterEmpty = (arr: string[]) => arr.filter(item => item.trim() !== '')
+
+                // Filter experience entries that have a title
+        const validExperience = data.experience ? data.experience
+          .filter((exp: {title?: string, company?: string, duration?: string, description?: string}) => exp.title && exp.title.trim() !== '')
+          .map((exp: {title?: string, company?: string, duration?: string, description?: string}) => ({
+            title: exp.title || '',
+            company: exp.company || '',
+            duration: exp.duration || '',
+            description: exp.description || ''
+          })) : []
+
+        // Filter education entries that have a degree
+        const validEducation = data.education ? data.education
+          .filter((edu: {degree?: string, institution?: string, year?: string}) => edu.degree && edu.degree.trim() !== '')
+          .map((edu: {degree?: string, institution?: string, year?: string}) => ({
+            degree: edu.degree || '',
+            institution: edu.institution || '',
+            year: edu.year || ''
+          })) : []
+
+        // Update content with all modal data
+        const updatedContent = {
+          ...defaultContent,
+          personalInfo: {
+            name: data.name || '',
+            email: data.email || '',
+            phone: data.phone || '',
+            location: data.location || ''
+          },
+          summary: data.summary || '',
+          experience: validExperience,
+          education: validEducation,
+          skills: data.skills ? filterEmpty(data.skills) : [],
+          certifications: data.certifications ? filterEmpty(data.certifications) : [],
+          // Add support for projects and languages as custom sections
+          customSections: [
+            ...(defaultContent.customSections || []),
+            ...(data.projects && data.projects.filter((p: {name?: string}) => p.name && p.name.trim() !== '').length > 0 ? [{
+              heading: 'Projects',
+              content: data.projects
+                .filter((p: {name: string; technologies?: string; description?: string}) => p.name && p.name.trim() !== '')
+                .map((p: {name: string; technologies?: string; description?: string}) => `**${p.name}**${p.technologies ? ` (${p.technologies})` : ''}\n${p.description || ''}`).join('\n\n')
+            }] : []),
+            ...(data.languages && filterEmpty(data.languages).length > 0 ? [{
+              heading: 'Languages',
+              content: data.languages.filter((l: string) => l.trim() !== '').join(', ')
+            }] : [])
+          ]
+        }
+        setContent(updatedContent)
+
+        // Clear the initial data after using it
+        sessionStorage.removeItem('initialResumeData')
+        console.log('Resume initialized with comprehensive modal data:', updatedContent)
+      } catch (error) {
+        console.error('Error parsing initial resume data:', error)
+        sessionStorage.removeItem('initialResumeData')
+      }
+    }
+
+    // Handle pending resume data after sign in (existing functionality)
     if (user) {
       const pendingResume = sessionStorage.getItem('pendingResume')
       if (pendingResume) {

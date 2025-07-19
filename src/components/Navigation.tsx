@@ -46,7 +46,7 @@ export default function Navigation() {
 
   const handleSignOut = async () => {
     try {
-      await signOut()
+    await signOut()
       // The signOut function already redirects to /auth/signin, so we don't need to redirect here
     } catch (error) {
       console.error('Sign out error in Navigation:', error)
@@ -83,7 +83,7 @@ export default function Navigation() {
               className="hidden sm:flex items-center text-gray-600 hover:text-blue-600 px-2 sm:px-3 py-2 text-sm sm:text-base font-medium rounded transition-colors"
             >
               <FileText className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">{user ? 'My Resumes' : 'Demo'}</span>
+              <span className="hidden sm:inline">My Resumes</span>
               <span className="sm:hidden">Resumes</span>
             </Link>
 

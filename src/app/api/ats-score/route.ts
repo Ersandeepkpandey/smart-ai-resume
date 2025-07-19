@@ -1,6 +1,4 @@
-// @ts-expect-error - formidable types are not properly exported
 import formidable, { File as FormidableFile, Fields, Files } from 'formidable';
-// @ts-expect-error - pdf-parse types are not properly exported
 import pdfParse from 'pdf-parse';
 import mammoth from 'mammoth';
 import { NextRequest, NextResponse } from 'next/server';

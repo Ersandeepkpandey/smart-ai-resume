@@ -18,7 +18,7 @@ export async function POST() {
     console.error('Signout error:', error)
     // Still clear the cookie even if database operation fails
     try {
-      await clearSessionCookie()
+    await clearSessionCookie()
     } catch (clearError) {
       console.error('Failed to clear session cookie:', clearError)
     }

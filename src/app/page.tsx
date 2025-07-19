@@ -3,10 +3,12 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
 import { useState, useRef, useEffect } from 'react'
+import CreateResumeModal from '@/components/CreateResumeModal'
 
 export default function Home() {
   const { user, loading, signOut } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const avatarRef = useRef<HTMLDivElement>(null);
 
   // Helper to get initials from name or email
@@ -53,9 +55,12 @@ export default function Home() {
               <span className="text-xl font-bold text-blue-700 tracking-tight">Rezume</span>
             </Link>
             <div className="flex items-center gap-4">
-              <Link href="/resume/new" className="bg-gradient-to-r from-blue-600 to-blue-400 text-white px-6 py-2 rounded-full text-base font-semibold shadow hover:from-blue-700 hover:to-blue-500 transition-colors">
+              <button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="bg-gradient-to-r from-blue-600 to-blue-400 text-white px-6 py-2 rounded-full text-base font-semibold shadow hover:from-blue-700 hover:to-blue-500 transition-colors"
+              >
                 Create Resume
-              </Link>
+              </button>
               {!loading && !user && (
                 <Link href="/auth/signin" className="text-blue-700 font-semibold hover:underline px-3 py-2 rounded transition-colors text-sm">Sign In</Link>
               )}
@@ -123,12 +128,12 @@ export default function Home() {
             <p className="text-lg text-gray-600 mb-8 max-w-xl">
               Build a standout, <span className="font-semibold text-blue-700">ATS-friendly</span> resume for free. Choose a template, fill in your details, and download instantly—no signup required.
             </p>
-            <Link
-              href="/resume/new"
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
               className="inline-block bg-gradient-to-r from-blue-600 to-blue-400 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg hover:from-blue-700 hover:to-blue-500 transition-colors"
             >
               Get Started
-            </Link>
+            </button>
             {/* Trust Badges */}
             <div className="flex flex-wrap gap-4 mt-8 items-center justify-center md:justify-start">
               <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow text-gray-700 text-sm font-medium border border-gray-100">
@@ -373,12 +378,12 @@ export default function Home() {
           <div className="inline-block bg-gradient-to-r from-blue-600 to-blue-400 text-white px-10 py-8 rounded-2xl shadow-lg">
             <h2 className="text-2xl font-bold mb-4">Ready to create your resume?</h2>
             <p className="mb-6 text-base">Start building your professional resume for free—no signup required.</p>
-            <Link
-              href="/resume/new"
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
               className="inline-block bg-white text-blue-700 px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-50 transition-colors shadow"
             >
               Get Started Now
-            </Link>
+            </button>
           </div>
         </section>
       </main>
@@ -434,6 +439,12 @@ export default function Home() {
           &copy; {new Date().getFullYear()} Rezume. All rights reserved.
         </div>
       </footer>
+
+      {/* Create Resume Modal */}
+      <CreateResumeModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
     </div>
   )
 }
