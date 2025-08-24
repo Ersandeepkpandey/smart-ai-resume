@@ -9,12 +9,9 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    // Temporarily bypass admin check for debugging
-    // TODO: Re-enable admin check after setup
-    const isAdmin = await requireAdmin(req);
-    if (!isAdmin) {
-      console.log('Warning: Admin check bypassed for debugging - updating template anyway');
-    }
+    // Check admin privileges
+    const adminCheck = await requireAdmin(req);
+    if (adminCheck) return adminCheck;
 
     const body = await req.json();
     const { name, description, category, html_content, css_styles, preview_image, status } = body;
@@ -71,11 +68,9 @@ export async function DELETE(
     const url = new URL(req.url);
     const force = url.searchParams.get('force') === 'true';
     
-    // Temporarily bypass admin check for debugging
-    const isAdmin = await requireAdmin(req);
-    if (!isAdmin) {
-      console.log('Warning: Admin check bypassed for debugging');
-    }
+    // Check admin privileges
+    const adminCheck = await requireAdmin(req);
+    if (adminCheck) return adminCheck;
 
     // Check if force delete is requested
     if (force) {

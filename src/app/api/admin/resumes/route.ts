@@ -4,8 +4,9 @@ import { requireAdmin } from '@/lib/admin-auth';
 
 export async function GET(req: NextRequest) {
   try {
-    // Temporarily bypass admin check for debugging
-    console.log('Warning: Admin check bypassed for debugging - showing resumes anyway');
+    // Check admin privileges
+    const adminCheck = await requireAdmin(req);
+    if (adminCheck) return adminCheck;
     
     // Fetch all resumes from database
     const result = await client.execute({

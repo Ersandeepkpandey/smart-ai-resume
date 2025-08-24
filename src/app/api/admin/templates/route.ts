@@ -5,12 +5,9 @@ import { requireAdmin } from '@/lib/admin-auth';
 // GET - Fetch all templates for admin (including inactive)
 export async function GET(req: NextRequest) {
   try {
-    // Temporarily bypass admin check for debugging
-    // TODO: Re-enable admin check after setup
-    const isAdmin = await requireAdmin(req);
-    if (!isAdmin) {
-      console.log('Warning: Admin check bypassed for debugging - showing templates anyway');
-    }
+    // Check admin privileges
+    const adminCheck = await requireAdmin(req);
+    if (adminCheck) return adminCheck;
 
     const result = await client.execute(`
       SELECT 
@@ -60,10 +57,9 @@ export async function POST(req: NextRequest) {
   try {
     // Temporarily bypass admin check for debugging
     // TODO: Re-enable admin check after setup
-    const isAdmin = await requireAdmin(req);
-    if (!isAdmin) {
-      console.log('Warning: Admin check bypassed for debugging - creating template anyway');
-    }
+    // Check admin privileges
+    const adminCheck = await requireAdmin(req);
+    if (adminCheck) return adminCheck;
 
     const body = await req.json();
     const { name, description, category, html_content, css_styles, preview_image, status } = body;

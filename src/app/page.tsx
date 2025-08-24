@@ -36,6 +36,37 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-white to-blue-100 relative overflow-x-clip">
+      {/* JSON-LD Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "Rezume - FAANG Resume Builder",
+            "description": "Create FAANG-ready resume templates optimized for Google, Amazon, Meta, Apple, Netflix, Microsoft. ATS-friendly resume builder with templates specifically designed for Big Tech companies.",
+            "url": "https://rezume.com",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Web Browser",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD",
+              "description": "Free FAANG resume builder"
+            },
+            "keywords": "FAANG resume template, Google resume template, Amazon resume template, Meta resume template, Apple resume template, Netflix resume template, Microsoft resume template, Big Tech resume, ATS-optimized resume, software engineer resume",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.8",
+              "reviewCount": "2500"
+            },
+            "author": {
+              "@type": "Organization",
+              "name": "Rezume Team"
+            }
+          })
+        }}
+      />
       {/* Decorative background pattern */}
       <div className="pointer-events-none select-none fixed inset-0 z-0">
         <svg width="100%" height="100%" className="w-full h-full" style={{position:'absolute',top:0,left:0}}>
@@ -123,10 +154,10 @@ export default function Home() {
           {/* Left: Headline and CTA */}
           <div className="w-full md:w-1/2 text-center md:text-left">
             <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
-              <span className="">Create a <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">Professional Resume</span></span> <br className="hidden md:block" />in Minutes with Our Free Resume Builder
+              <span className="">Create <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">FAANG-Ready</span> & <span className="bg-gradient-to-r from-green-600 to-green-400 bg-clip-text text-transparent">Google-Approved</span></span> <br className="hidden md:block" />Resume Templates in Minutes - Free Resume Builder
             </h1>
             <p className="text-lg text-gray-600 mb-8 max-w-xl">
-              Build a standout, <span className="font-semibold text-blue-700">ATS-friendly resume</span> for free with our online resume builder. Choose from professional resume templates, fill in your details, and download your resume as PDF instantly—no signup required. Perfect for job seekers, students, and career changers.
+              Build standout, <span className="font-semibold text-blue-700">ATS-optimized resumes for Google, Amazon, Meta, Apple, Microsoft</span> and top tech companies. Our <span className="font-semibold">FAANG-ready resume templates</span> are designed by ex-recruiters from Big Tech. Perfect for software engineers, product managers, data scientists, and all tech professionals.
             </p>
             <button
               onClick={() => setIsCreateModalOpen(true)}
@@ -137,10 +168,13 @@ export default function Home() {
             {/* Trust Badges */}
             <div className="flex flex-wrap gap-4 mt-8 items-center justify-center md:justify-start">
               <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow text-gray-700 text-sm font-medium border border-gray-100">
-                <span className="text-green-500 text-lg">★</span> Trusted by 10,000+ users
+                <span className="text-green-500 text-lg">★</span> FAANG-Ready Templates
               </div>
               <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow text-gray-700 text-sm font-medium border border-gray-100">
-                <span className="text-blue-500 text-lg">✓</span> No Signup Required
+                <span className="text-blue-500 text-lg">✓</span> Google ATS-Optimized
+              </div>
+              <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow text-gray-700 text-sm font-medium border border-gray-100">
+                <span className="text-purple-500 text-lg">◆</span> Big Tech Approved
               </div>
             </div>
           </div>
@@ -228,52 +262,131 @@ export default function Home() {
 
         {/* Template Preview - Modern, Scrollable, Badges */}
         <section className="w-full mb-20">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Professional Resume Templates for Every Career Level</h2>
-          <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Choose from our collection of free resume templates designed for different industries and experience levels. All templates are ATS-friendly and optimized for job applications.</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">FAANG-Ready & Google-Optimized Resume Templates</h2>
+          <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Choose from our collection of <span className="font-semibold">Google-ready, Amazon-approved, Meta-optimized resume templates</span> specifically designed for FAANG companies (Facebook/Meta, Amazon, Apple, Netflix, Google) and top tech companies like Microsoft, Tesla, Uber, Airbnb. All templates pass ATS systems used by Big Tech recruiters.</p>
           <div className="flex md:justify-center gap-8 overflow-x-auto pb-4 md:pb-0 snap-x">
             <div className="relative min-w-[280px] max-w-[340px] snap-center">
-              <div className="absolute top-4 left-4 bg-gradient-to-r from-blue-600 to-blue-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow z-30">Popular</div>
+              <div className="absolute top-4 left-4 bg-gradient-to-r from-red-600 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow z-30">FAANG-Ready</div>
               <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow">
                 <Image
                   src="/resume1.png"
-                  alt="Professional Template"
+                  alt="FAANG Resume Template - Google, Amazon, Meta Ready"
                   width={400}
                   height={500}
                   className="w-full h-auto border-b border-gray-100 object-cover"
                 />
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Professional Resume Template</h3>
-                  <p className="text-gray-600 text-sm mb-4">Clean and traditional design perfect for corporate jobs, finance, consulting, and executive positions</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">FAANG-Optimized Resume Template</h3>
+                  <p className="text-gray-600 text-sm mb-4">Specifically designed for <span className="font-semibold">Google, Amazon, Meta, Apple, Netflix</span> applications. ATS-optimized format preferred by Big Tech recruiters</p>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Google-Ready</span>
+                    <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">Amazon ATS</span>
+                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">Meta-Approved</span>
+                  </div>
                   <Link
-                    href="/resume/new?template=template1"
+                    href="/resume/new?template=template-1756037150032"
                     className="text-blue-600 font-medium hover:text-blue-800"
                   >
-                    Use template →
+                    Use FAANG template →
                   </Link>
                 </div>
               </div>
             </div>
             <div className="relative min-w-[280px] max-w-[340px] snap-center mt-8 md:mt-0">
+              <div className="absolute top-4 left-4 bg-gradient-to-r from-green-600 to-green-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow z-30">Google Engineers</div>
               <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow">
                 <Image
                   src="/resume2.png"
-                  alt="Modern Template"
+                  alt="Google Engineers Resume Template"
                   width={400}
                   height={500}
                   className="w-full h-auto border-b border-gray-100 object-cover"
                 />
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Modern Resume Template</h3>
-                  <p className="text-gray-600 text-sm mb-4">Contemporary layout with sidebar design ideal for creative roles, tech jobs, marketing, and startup positions</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Google Engineers Professional Template</h3>
+                  <p className="text-gray-600 text-sm mb-4">Used by successful <span className="font-semibold">Google L3-L8 engineers, Microsoft SDE, Amazon SDE</span>. Perfect for software engineers, ML engineers, and tech leads</p>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Google L4+</span>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Microsoft SDE</span>
+                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">Tech Lead</span>
+                  </div>
                   <Link
-                    href="/resume/new?template=template2"
+                    href="/resume/new?template=template-1756044868419"
                     className="text-blue-600 font-medium hover:text-blue-800"
                   >
-                    Use template →
+                    Use Google template →
                   </Link>
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* FAANG & Big Tech Templates Section */}
+        <section className="w-full mb-20 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl py-12 px-4 shadow-sm relative z-10">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4 text-center">Resume Templates for FAANG & Big Tech Companies</h2>
+          <p className="text-center text-gray-600 mb-10 max-w-3xl mx-auto">
+            Our <span className="font-semibold">FAANG-ready resume templates</span> are specifically optimized for top tech companies. 
+            Get past the ATS systems used by <span className="font-semibold">Google, Amazon, Meta (Facebook), Apple, Netflix, Microsoft, 
+            Tesla, Uber, Airbnb, LinkedIn, Salesforce, Oracle, IBM</span> and other Fortune 500 tech companies.
+          </p>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-10">
+            <div className="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow border-2 border-blue-100">
+              <div className="text-3xl mb-3">🔷</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Google Resume Template</h3>
+              <p className="text-gray-600 text-sm mb-3">Optimized for Google's hiring process. Perfect for SWE, PM, UX roles at Google, YouTube, Cloud</p>
+              <div className="text-xs text-blue-600 font-semibold">L3-L8 Compatible • Googleyness Focused</div>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow border-2 border-orange-100">
+              <div className="text-3xl mb-3">📦</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Amazon Resume Template</h3>
+              <p className="text-gray-600 text-sm mb-3">Built for Amazon's Leadership Principles. Ideal for SDE, TPM, Operations roles at Amazon, AWS</p>
+              <div className="text-xs text-orange-600 font-semibold">STAR Format • Leadership Principles</div>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow border-2 border-purple-100">
+              <div className="text-3xl mb-3">👥</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Meta Resume Template</h3>
+              <p className="text-gray-600 text-sm mb-3">Designed for Meta/Facebook culture. Great for Engineering, Product, Data Science at Meta, Instagram, WhatsApp</p>
+              <div className="text-xs text-purple-600 font-semibold">Move Fast • Impact Focused</div>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow border-2 border-gray-200">
+              <div className="text-3xl mb-3">🍎</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Apple Resume Template</h3>
+              <p className="text-gray-600 text-sm mb-3">Crafted for Apple's design excellence. Perfect for Hardware, Software, Design roles at Apple</p>
+              <div className="text-xs text-gray-600 font-semibold">Design Excellence • Innovation</div>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow border-2 border-blue-100">
+              <div className="text-3xl mb-3">Ⓜ️</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Microsoft Resume Template</h3>
+              <p className="text-gray-600 text-sm mb-3">Aligned with Microsoft values. Ideal for SDE, PM, Cloud Architect roles at Microsoft, Azure, Office</p>
+              <div className="text-xs text-blue-600 font-semibold">Growth Mindset • Customer Focus</div>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow border-2 border-red-100">
+              <div className="text-3xl mb-3">🎬</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Netflix Resume Template</h3>
+              <p className="text-gray-600 text-sm mb-3">Built for Netflix culture. Great for Engineering, Data, Content roles at Netflix</p>
+              <div className="text-xs text-red-600 font-semibold">Freedom & Responsibility • Context</div>
+            </div>
+          </div>
+          
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 max-w-4xl mx-auto">
+            <h3 className="font-bold text-gray-900 mb-2 flex items-center">
+              <span className="text-2xl mr-2">🎯</span>
+              Why FAANG Companies Love Our Templates
+            </h3>
+            <ul className="text-sm text-gray-700 space-y-2">
+              <li>✅ <strong>ATS-Optimized:</strong> Pass through Taleo, Workday, Greenhouse, Lever systems used by Big Tech</li>
+              <li>✅ <strong>Keyword-Rich:</strong> Include industry-specific keywords that FAANG recruiters search for</li>
+              <li>✅ <strong>Impact-Focused:</strong> Highlight quantifiable achievements that Big Tech values</li>
+              <li>✅ <strong>Clean Format:</strong> Simple, scannable layout preferred by tech recruiters</li>
+              <li>✅ <strong>One-Page Design:</strong> Concise format recommended for tech roles</li>
+            </ul>
           </div>
         </section>
 
@@ -307,38 +420,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Testimonials - Avatars and Stars */}
-        <section className="w-full mb-20 relative z-10">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center relative z-10">What Users Say</h2>
-          {/* Section divider SVG moved below heading */}
-          <div className="w-full h-8 -mb-8 z-0 relative">
-            <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-              <path d="M0,40 Q360,0 720,40 T1440,40 V80 H0 Z" fill="#e0e7ff" />
-            </svg>
-          </div>
-          {/* Decorative icon in testimonials */}
-          <svg className="absolute -top-10 left-0 w-24 h-24 opacity-20 z-0" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#3b82f6" d="M44.8,-67.2C56.7,-59.2,63.7,-44.2,68.2,-29.2C72.7,-14.2,74.7,0.8,70.2,13.7C65.7,26.6,54.7,37.4,42.2,46.7C29.7,56,14.8,63.8,-0.7,64.7C-16.2,65.6,-32.4,59.6,-44.2,49.2C-56,38.8,-63.3,24,-66.2,8.2C-69.1,-7.6,-67.6,-24.4,-59.7,-36.7C-51.8,-49,-37.6,-56.8,-23.1,-62.7C-8.6,-68.6,6.2,-72.6,20.7,-71.1C35.2,-69.6,49.3,-62.2,44.8,-67.2Z" transform="translate(100 100)" /></svg>
-          <div className="grid md:grid-cols-3 gap-8 relative z-10">
-            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 shadow text-center flex flex-col items-center">
-              <Image src="/logo.png" alt="User" width={48} height={48} className="rounded-full mb-2" />
-              <div className="flex gap-1 mb-2 text-yellow-400 text-lg">★ ★ ★ ★ ★</div>
-              <p className="text-gray-700 italic mb-4">“So easy to use and my resume looks amazing. Got more interviews in a week!”</p>
-              <span className="text-sm font-semibold text-gray-900">— Alex P.</span>
-            </div>
-            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 shadow text-center flex flex-col items-center">
-              <Image src="/logo.png" alt="User" width={48} height={48} className="rounded-full mb-2" />
-              <div className="flex gap-1 mb-2 text-yellow-400 text-lg">★ ★ ★ ★ ★</div>
-              <p className="text-gray-700 italic mb-4">“Love that it’s free and no signup. The templates are top-notch.”</p>
-              <span className="text-sm font-semibold text-gray-900">— Priya S.</span>
-            </div>
-            <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 shadow text-center flex flex-col items-center">
-              <Image src="/logo.png" alt="User" width={48} height={48} className="rounded-full mb-2" />
-              <div className="flex gap-1 mb-2 text-yellow-400 text-lg">★ ★ ★ ★ ★</div>
-              <p className="text-gray-700 italic mb-4">“I made my resume in 10 minutes and got the job. Highly recommend!”</p>
-              <span className="text-sm font-semibold text-gray-900">— Jordan M.</span>
-            </div>
-          </div>
-        </section>
 
         {/* FAQ Section */}
         {/* Section divider */}

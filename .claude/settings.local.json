@@ -24,7 +24,8 @@
       "Bash(npm:*)",
       "Bash(npx madge:*)",
       "Bash(DEBUG=*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

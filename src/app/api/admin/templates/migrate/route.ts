@@ -10,13 +10,9 @@ export async function GET(req: NextRequest) {
 // POST - Migrate existing frontend templates to database
 export async function POST(req: NextRequest) {
   try {
-    // Temporarily bypass admin check for migration
-    // TODO: Re-enable admin check after migration
-    const isAdmin = await requireAdmin(req);
-    if (!isAdmin) {
-      console.log('Warning: Admin check bypassed for migration');
-      // Allow migration to proceed
-    }
+    // Check admin privileges
+    const adminCheck = await requireAdmin(req);
+    if (adminCheck) return adminCheck;
 
     // Check if templates already exist
     const existingResult = await client.execute('SELECT COUNT(*) as count FROM templates');

@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import client from '@/lib/turso';
+import { requireAdmin } from '@/lib/admin-auth';
 
 export async function GET(req: NextRequest) {
   try {
-    // Temporarily bypass admin check for debugging
-    console.log('Warning: Admin check bypassed for debugging - showing analytics anyway');
+    // Check admin privileges
+    const adminCheck = await requireAdmin(req);
+    if (adminCheck) return adminCheck;
 
     const url = new URL(req.url);
     const range = url.searchParams.get('range') || '7days';

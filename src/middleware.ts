@@ -14,11 +14,25 @@ export async function middleware(request: NextRequest) {
     '/api/auth/signin',
     '/api/auth/signup',
     '/api/auth/verify-email',
-    '/api/debug-env'
+    '/api/debug-env',
+    '/admin/setup',  // Allow access to admin setup page
+    '/api/admin/setup'  // Allow access to admin setup API
   ]
+
+  // Admin paths that require admin role (excluding setup)
+  const adminPaths = [
+    '/admin',
+    '/api/admin'
+  ]
+  
+  // Exclude setup paths from admin check
+  const isSetupPath = pathname.startsWith('/admin/setup') || pathname.startsWith('/api/admin/setup')
 
   // Check if the current path is public
   const isPublicPath = publicPaths.some(path => pathname.startsWith(path))
+  
+  // Check if the current path is an admin path
+  const isAdminPath = adminPaths.some(path => pathname.startsWith(path))
 
   if (isPublicPath) {
     return NextResponse.next()
@@ -41,6 +55,25 @@ export async function middleware(request: NextRequest) {
 
     if (!user) {
       throw new Error('Invalid session')
+    }
+
+    // Check admin access for admin paths (but not setup paths)
+    if (isAdminPath && !isSetupPath) {
+      // Check if user has admin role
+      if (user.role !== 'admin') {
+        console.log(`Access denied: User ${user.email} (role: ${user.role}) attempted to access admin path: ${pathname}`)
+        
+        if (pathname.startsWith('/api/')) {
+          return NextResponse.json({ 
+            error: 'Access denied. Admin privileges required.' 
+          }, { status: 403 })
+        }
+        
+        // Redirect non-admin users to home page with access denied message
+        const redirectUrl = new URL('/', request.url)
+        redirectUrl.searchParams.set('error', 'admin_access_denied')
+        return NextResponse.redirect(redirectUrl)
+      }
     }
 
     // Add user info to headers for API routes

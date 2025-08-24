@@ -4,17 +4,9 @@ import { requireAdmin } from '@/lib/admin-auth';
 
 export async function GET(req: NextRequest) {
   try {
-    // Temporarily bypass admin check for debugging
-    // TODO: Re-enable admin check after ensuring admin users are properly set up
-    const isAdmin = await requireAdmin(req);
-    if (!isAdmin) {
-      console.log('Warning: Admin check bypassed for debugging - showing users anyway');
-      // For now, let's show the users to debug the issue
-      // return NextResponse.json(
-      //   { error: 'Unauthorized: Admin access required' },
-      //   { status: 403 }
-      // );
-    }
+    // Check admin privileges
+    const adminCheck = await requireAdmin(req);
+    if (adminCheck) return adminCheck; // Return error response if not admin
     
     // Fetch all users from database
     console.log('Fetching users from database...');
