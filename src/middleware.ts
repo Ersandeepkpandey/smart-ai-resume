@@ -109,9 +109,11 @@ export const config = {
     /*
      * Match all request paths except for the ones starting with:
      * - _next/static (static files)
-     * - _next/image (image optimization files)
+     * - _next/image (image optimization files) 
      * - favicon.ico (favicon file)
+     * - Static assets (.png, .jpg, .jpeg, .gif, .svg, .ico, .webp)
+     * - robots.txt, sitemap.xml
      */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|svg|ico|webp)$|robots.txt|sitemap.xml).*)',
   ],
 }
