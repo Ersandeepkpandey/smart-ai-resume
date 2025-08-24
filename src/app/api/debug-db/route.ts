@@ -19,10 +19,32 @@ export async function GET() {
 
     console.log('Resumes table count:', resumesResult)
 
+    // Check admin users
+    const adminUsersResult = await client.execute({
+      sql: 'SELECT id, email, role, status FROM users WHERE role = ?',
+      args: ['admin']
+    })
+    console.log('Admin users:', adminUsersResult.rows)
+
+    // Check templates
+    const templatesResult = await client.execute({
+      sql: 'SELECT id, name, category, status FROM templates LIMIT 5'
+    })
+    console.log('Templates:', templatesResult.rows)
+
+    // Check all users
+    const allUsersResult = await client.execute({
+      sql: 'SELECT id, email, role, status FROM users LIMIT 5'
+    })
+    console.log('All users:', allUsersResult.rows)
+
     return NextResponse.json({
       success: true,
       connection: 'ok',
-      resumesCount: resumesResult.rows[0]?.count || 0
+      resumesCount: resumesResult.rows[0]?.count || 0,
+      adminUsers: adminUsersResult.rows,
+      templates: templatesResult.rows,
+      allUsers: allUsersResult.rows
     })
   } catch (error: unknown) {
     console.error('Database connection error:', error)

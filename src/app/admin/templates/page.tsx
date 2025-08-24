@@ -62,10 +62,18 @@ export default function AdminTemplates() {
 
   const fetchTemplates = async () => {
     try {
-      const response = await fetch('/api/admin/templates');
+      const response = await fetch('/api/admin/templates', {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
       if (response.ok) {
         const data = await response.json();
         setTemplates(data.templates || []);
+      } else {
+        console.error('Failed to fetch templates');
       }
     } catch (error) {
       console.error('Error fetching templates:', error);

@@ -59,11 +59,19 @@ export default function AdminUsers() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/admin/users');
+      const response = await fetch('/api/admin/users', {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
       if (response.ok) {
         const data = await response.json();
         setUsers(data.users || []);
         setFilteredUsers(data.users || []);
+      } else {
+        console.error('Failed to fetch users');
       }
     } catch (error) {
       console.error('Error fetching users:', error);

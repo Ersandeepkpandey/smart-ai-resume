@@ -7,17 +7,21 @@ export async function middleware(request: NextRequest) {
 
   // Public paths that don't require authentication
   const publicPaths = [
-    '/',
     '/auth/signin',
     '/auth/signup',
     '/resume/new',
     '/api/auth/signin',
     '/api/auth/signup',
     '/api/auth/verify-email',
+    '/api/auth/verify',  // Allow auth verification
     '/api/debug-env',
+    '/api/debug-db',
     '/admin/setup',  // Allow access to admin setup page
     '/api/admin/setup'  // Allow access to admin setup API
   ]
+
+  // Special case: allow /admin (login page) but not /admin/* routes
+  const isAdminLoginPage = pathname === '/admin'
 
   // Admin paths that require admin role (excluding setup)
   const adminPaths = [
@@ -29,10 +33,10 @@ export async function middleware(request: NextRequest) {
   const isSetupPath = pathname.startsWith('/admin/setup') || pathname.startsWith('/api/admin/setup')
 
   // Check if the current path is public
-  const isPublicPath = publicPaths.some(path => pathname.startsWith(path))
+  const isPublicPath = pathname === '/' || isAdminLoginPage || publicPaths.some(path => pathname.startsWith(path))
   
-  // Check if the current path is an admin path
-  const isAdminPath = adminPaths.some(path => pathname.startsWith(path))
+  // Check if the current path is an admin path (excluding the login page)
+  const isAdminPath = adminPaths.some(path => pathname.startsWith(path)) && !isAdminLoginPage
 
   if (isPublicPath) {
     return NextResponse.next()

@@ -9,7 +9,6 @@ export async function GET(req: NextRequest) {
     if (adminCheck) return adminCheck; // Return error response if not admin
     
     // Fetch all users from database
-    console.log('Fetching users from database...');
     const usersResult = await client.execute(`
       SELECT 
         id,
@@ -25,9 +24,6 @@ export async function GET(req: NextRequest) {
       ORDER BY created_at DESC
     `);
     
-    console.log('Users query result:', usersResult.rows.length, 'users found');
-    console.log('Sample user data:', usersResult.rows[0]);
-    
     // Fetch resume counts for each user
     const resumeCountsResult = await client.execute(`
       SELECT 
@@ -36,8 +32,6 @@ export async function GET(req: NextRequest) {
       FROM resumes
       GROUP BY user_id
     `);
-    
-    console.log('Resume counts:', resumeCountsResult.rows);
     
     // Create a map of user_id to resume count
     const resumeCounts = resumeCountsResult.rows.reduce((acc, row) => {
@@ -58,8 +52,6 @@ export async function GET(req: NextRequest) {
       status: row.status as string,
       updatedAt: row.updated_at as string
     }));
-    
-    console.log(`Fetched ${users.length} users from database`);
     
     return NextResponse.json({ users });
   } catch (error) {
