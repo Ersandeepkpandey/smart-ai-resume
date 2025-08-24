@@ -2,6 +2,7 @@
 import { usePathname } from "next/navigation";
 import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 const FOOTER_PAGES = [
   "/templates",
@@ -17,6 +18,27 @@ const FOOTER_PAGES = [
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const showHeaderFooter = FOOTER_PAGES.includes(pathname);
+
+  // Add global error handlers
+  useEffect(() => {
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      event.preventDefault(); // Prevent the default error handling
+    };
+
+    const handleError = (event: ErrorEvent) => {
+      console.error('Global error:', event.error);
+    };
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    window.addEventListener('error', handleError);
+
+    return () => {
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.removeEventListener('error', handleError);
+    };
+  }, []);
+
   return (
     <AuthProvider>
       {showHeaderFooter && <Navigation />}

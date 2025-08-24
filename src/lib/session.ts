@@ -23,7 +23,17 @@ export async function createSession(userId: string) {
 
 export async function getSession(sessionId: string) {
   const result = await client.execute({
-    sql: 'SELECT * FROM sessions WHERE session_id = ? AND expires_at > datetime("now")',
+    sql: `
+      SELECT 
+        s.*,
+        u.role,
+        u.email,
+        u.full_name
+      FROM sessions s
+      LEFT JOIN users u ON s.user_id = u.id
+      WHERE s.session_id = ? 
+      AND s.expires_at > datetime("now")
+    `,
     args: [sessionId]
   })
   return result.rows[0] || null

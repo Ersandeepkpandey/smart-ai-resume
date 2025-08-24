@@ -27,7 +27,8 @@ export default function ResumeForm({ content, onChange, onFieldFocus }: ResumeFo
   }
 
   const updateContent = (updates: Partial<ResumeContent>) => {
-    onChange({ ...content, ...updates })
+    const newContent = { ...content, ...updates };
+    onChange(newContent);
   }
 
   const updatePersonalInfoFormatting = (field: string, formatting: TextFormatting) => {

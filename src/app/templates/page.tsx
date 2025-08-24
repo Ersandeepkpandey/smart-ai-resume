@@ -80,7 +80,6 @@ export default function TemplatesPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
         {/* Hero Section */}
         <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
-          <div className="absolute inset-0 bg-black/10"></div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
             <div className="text-center">
               <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
@@ -141,10 +140,9 @@ export default function TemplatesPage() {
 
                 {/* Template Preview */}
                 <div className={`h-48 bg-gradient-to-br ${getGradientClasses(template.color)} rounded-t-2xl flex items-center justify-center relative overflow-hidden`}>
-                  <div className="absolute inset-0 bg-black/5"></div>
                   <template.icon className={`w-16 h-16 text-${template.color}-600`} />
                   <div className="absolute bottom-4 right-4">
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1 text-sm font-medium text-white">
+                    <div className="bg-white/80 backdrop-blur-sm rounded-lg px-3 py-1 text-sm font-medium text-gray-800">
                       {template.category}
                     </div>
                   </div>

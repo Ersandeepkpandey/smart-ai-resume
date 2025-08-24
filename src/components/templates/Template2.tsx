@@ -45,10 +45,10 @@ const Template2 = forwardRef<HTMLDivElement, Template2Props>(
       <div
         ref={ref}
         className={`bg-white text-gray-800 max-w-4xl mx-auto shadow-lg ${className}`}
-        style={{ fontFamily: 'Arial, sans-serif' }}
+        style={{ fontFamily: 'Arial, sans-serif', backgroundColor: 'white' }}
       >
         {/* Header */}
-        <div className="bg-white text-gray-900 p-8 border-b border-gray-200">
+        <div className="bg-white text-gray-900 p-8 border-b border-gray-200" style={{ backgroundColor: 'white' }}>
           <h1
             className="text-4xl font-bold mb-2"
             style={{

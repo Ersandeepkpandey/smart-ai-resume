@@ -123,10 +123,10 @@ export default function Home() {
           {/* Left: Headline and CTA */}
           <div className="w-full md:w-1/2 text-center md:text-left">
             <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
-              <span className="">Create a <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">Professional Resume</span></span> <br className="hidden md:block" />in Minutes
+              <span className="">Create a <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">Professional Resume</span></span> <br className="hidden md:block" />in Minutes with Our Free Resume Builder
             </h1>
             <p className="text-lg text-gray-600 mb-8 max-w-xl">
-              Build a standout, <span className="font-semibold text-blue-700">ATS-friendly</span> resume for free. Choose a template, fill in your details, and download instantly—no signup required.
+              Build a standout, <span className="font-semibold text-blue-700">ATS-friendly resume</span> for free with our online resume builder. Choose from professional resume templates, fill in your details, and download your resume as PDF instantly—no signup required. Perfect for job seekers, students, and career changers.
             </p>
             <button
               onClick={() => setIsCreateModalOpen(true)}
@@ -206,29 +206,30 @@ export default function Home() {
         <section className="w-full mb-20 bg-blue-50 rounded-2xl py-12 px-4 shadow-sm relative z-10">
           {/* Decorative blob in features */}
           <svg className="absolute -top-16 right-0 w-40 h-40 opacity-20 z-0" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#60a5fa" d="M44.8,-67.2C56.7,-59.2,63.7,-44.2,68.2,-29.2C72.7,-14.2,74.7,0.8,70.2,13.7C65.7,26.6,54.7,37.4,42.2,46.7C29.7,56,14.8,63.8,-0.7,64.7C-16.2,65.6,-32.4,59.6,-44.2,49.2C-56,38.8,-63.3,24,-66.2,8.2C-69.1,-7.6,-67.6,-24.4,-59.7,-36.7C-51.8,-49,-37.6,-56.8,-23.1,-62.7C-8.6,-68.6,6.2,-72.6,20.7,-71.1C35.2,-69.6,49.3,-62.2,44.8,-67.2Z" transform="translate(100 100)" /></svg>
-          <h2 className="text-2xl font-bold text-gray-900 mb-10 text-center">How It Works</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-10 text-center">How Our Free Online Resume Builder Works</h2>
           <div className="flex flex-col md:flex-row gap-8 md:gap-0 md:justify-between max-w-4xl mx-auto">
             <div className="flex flex-col items-center md:w-1/3 px-4">
               <div className="bg-white text-blue-600 rounded-full w-16 h-16 flex items-center justify-center mb-4 text-3xl shadow-lg border-2 border-blue-100">📄</div>
-              <h3 className="font-semibold text-gray-900 mb-2">Choose a Template</h3>
-              <p className="text-gray-600 text-sm text-center">Pick from modern, professional templates designed to impress.</p>
+              <h3 className="font-semibold text-gray-900 mb-2">Choose Professional Resume Templates</h3>
+              <p className="text-gray-600 text-sm text-center">Pick from modern, ATS-optimized resume templates designed by professionals to help you get hired.</p>
             </div>
             <div className="flex flex-col items-center md:w-1/3 px-4">
               <div className="bg-white text-blue-600 rounded-full w-16 h-16 flex items-center justify-center mb-4 text-3xl shadow-lg border-2 border-blue-100">✍️</div>
-              <h3 className="font-semibold text-gray-900 mb-2">Fill in Your Details</h3>
-              <p className="text-gray-600 text-sm text-center">Enter your information easily with our guided form.</p>
+              <h3 className="font-semibold text-gray-900 mb-2">Fill Your Resume Information</h3>
+              <p className="text-gray-600 text-sm text-center">Enter your work experience, education, skills, and achievements with our easy-to-use resume builder interface.</p>
             </div>
             <div className="flex flex-col items-center md:w-1/3 px-4">
               <div className="bg-white text-blue-600 rounded-full w-16 h-16 flex items-center justify-center mb-4 text-3xl shadow-lg border-2 border-blue-100">⬇️</div>
-              <h3 className="font-semibold text-gray-900 mb-2">Download Instantly</h3>
-              <p className="text-gray-600 text-sm text-center">Export your resume as a PDF and start applying for jobs right away.</p>
+              <h3 className="font-semibold text-gray-900 mb-2">Download PDF Resume</h3>
+              <p className="text-gray-600 text-sm text-center">Export your professional resume as a PDF file and start applying for jobs immediately. No watermarks, completely free.</p>
             </div>
           </div>
         </section>
 
         {/* Template Preview - Modern, Scrollable, Badges */}
         <section className="w-full mb-20">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Templates</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">Professional Resume Templates for Every Career Level</h2>
+          <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Choose from our collection of free resume templates designed for different industries and experience levels. All templates are ATS-friendly and optimized for job applications.</p>
           <div className="flex md:justify-center gap-8 overflow-x-auto pb-4 md:pb-0 snap-x">
             <div className="relative min-w-[280px] max-w-[340px] snap-center">
               <div className="absolute top-4 left-4 bg-gradient-to-r from-blue-600 to-blue-400 text-white text-xs font-bold px-3 py-1 rounded-full shadow z-30">Popular</div>
@@ -241,8 +242,8 @@ export default function Home() {
                   className="w-full h-auto border-b border-gray-100 object-cover"
                 />
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Professional</h3>
-                  <p className="text-gray-600 text-sm mb-4">Clean and traditional design</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Professional Resume Template</h3>
+                  <p className="text-gray-600 text-sm mb-4">Clean and traditional design perfect for corporate jobs, finance, consulting, and executive positions</p>
                   <Link
                     href="/resume/new?template=template1"
                     className="text-blue-600 font-medium hover:text-blue-800"
@@ -262,8 +263,8 @@ export default function Home() {
                   className="w-full h-auto border-b border-gray-100 object-cover"
                 />
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Modern</h3>
-                  <p className="text-gray-600 text-sm mb-4">Contemporary layout with sidebar</p>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Modern Resume Template</h3>
+                  <p className="text-gray-600 text-sm mb-4">Contemporary layout with sidebar design ideal for creative roles, tech jobs, marketing, and startup positions</p>
                   <Link
                     href="/resume/new?template=template2"
                     className="text-blue-600 font-medium hover:text-blue-800"
@@ -280,27 +281,28 @@ export default function Home() {
         <section className="w-full mb-20 bg-blue-50 rounded-2xl py-12 px-4 shadow-sm relative z-10">
           {/* Decorative blob in features */}
           <svg className="absolute -top-16 right-0 w-40 h-40 opacity-20 z-0" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#60a5fa" d="M44.8,-67.2C56.7,-59.2,63.7,-44.2,68.2,-29.2C72.7,-14.2,74.7,0.8,70.2,13.7C65.7,26.6,54.7,37.4,42.2,46.7C29.7,56,14.8,63.8,-0.7,64.7C-16.2,65.6,-32.4,59.6,-44.2,49.2C-56,38.8,-63.3,24,-66.2,8.2C-69.1,-7.6,-67.6,-24.4,-59.7,-36.7C-51.8,-49,-37.6,-56.8,-23.1,-62.7C-8.6,-68.6,6.2,-72.6,20.7,-71.1C35.2,-69.6,49.3,-62.2,44.8,-67.2Z" transform="translate(100 100)" /></svg>
-          <h2 className="text-2xl font-bold text-gray-900 mb-10 text-center">Features</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-10 text-center">Why Choose Our Free Resume Builder?</h2>
+          <p className="text-center text-gray-600 mb-8 max-w-3xl mx-auto">Our resume maker is trusted by thousands of job seekers worldwide. Create professional resumes that get you hired faster with these powerful features.</p>
           <div className="grid md:grid-cols-4 gap-8">
             <div className="flex flex-col items-center text-center bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow">
               <div className="text-3xl mb-2">🤖</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">ATS-Optimized</h3>
-              <p className="text-gray-600 text-sm">Templates designed to pass Applicant Tracking Systems</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">ATS-Friendly Resume Templates</h3>
+              <p className="text-gray-600 text-sm">All our resume templates are designed to pass Applicant Tracking Systems used by top companies and recruiters</p>
             </div>
             <div className="flex flex-col items-center text-center bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow">
               <div className="text-3xl mb-2">📥</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">PDF Export</h3>
-              <p className="text-gray-600 text-sm">Download your resume as a professional PDF file</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Instant PDF Download</h3>
+              <p className="text-gray-600 text-sm">Download your professional resume as a high-quality PDF file ready for job applications and interviews</p>
             </div>
             <div className="flex flex-col items-center text-center bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow">
               <div className="text-3xl mb-2">💸</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Free & No Signup</h3>
-              <p className="text-gray-600 text-sm">Completely free to use, no account required</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">100% Free Resume Maker</h3>
+              <p className="text-gray-600 text-sm">Completely free resume builder with no hidden costs, watermarks, or signup requirements</p>
             </div>
             <div className="flex flex-col items-center text-center bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow">
               <div className="text-3xl mb-2">🔒</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Privacy First</h3>
-              <p className="text-gray-600 text-sm">Your data stays private—nothing is stored without your consent</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Secure & Private</h3>
+              <p className="text-gray-600 text-sm">Your personal information and resume data stays completely private and secure with no data collection</p>
             </div>
           </div>
         </section>

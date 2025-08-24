@@ -7,18 +7,12 @@ import { ResumeContent, calculateATSScore } from '@/lib/ats-scorer'
 import TemplateSelector from '@/components/TemplateSelector'
 import ResumeForm from '@/components/ResumeForm'
 import ATSScore from '@/components/ATSScore'
-import Template1 from '@/components/templates/Template1'
-import Template2 from '@/components/templates/Template2'
-import Template3 from '@/components/templates/Template3'
+import ResumePreview from '@/components/ResumePreview'
 import { Save, Download, Eye, ArrowLeft, LayoutTemplate, Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 
-const templates = {
-  template1: Template1,
-  template2: Template2,
-  template3: Template3
-}
+// Remove hardcoded templates - now using ResumePreview component
 
 interface Resume {
   id: string
@@ -228,13 +222,6 @@ function EditResumeContent() {
   }
 
   const atsScore = calculateATSScore(content)
-  const TemplateComponent = templates[selectedTemplate as keyof typeof templates] || Template1
-
-  const selectedTemplateObj = [
-    { id: 'template1', name: 'Professional Classic' },
-    { id: 'template2', name: 'Modern Sidebar' },
-    { id: 'template3', name: 'Minimalist' }
-  ].find(t => t.id === selectedTemplate);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -356,7 +343,7 @@ function EditResumeContent() {
                     <LayoutTemplate className="w-4 h-4 mr-2" />
                     {showTemplateSelector ? 'Hide Templates' : 'Choose Template'}
                   </button>
-                  <span className="ml-2 text-sm text-black">{selectedTemplateObj?.name}</span>
+                  <span className="ml-2 text-sm text-black">{selectedTemplate}</span>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
@@ -468,7 +455,12 @@ function EditResumeContent() {
                 </div>
 
                 <div className="border border-gray-200 rounded-lg overflow-hidden">
-                  <TemplateComponent content={content} />
+                  <ResumePreview 
+                    key={selectedTemplate} 
+                    content={content} 
+                    template={selectedTemplate}
+                    showControls={false}
+                  />
                 </div>
               </div>
             </div>

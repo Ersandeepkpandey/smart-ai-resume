@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext'
 import Link from 'next/link'
-import { LogOut, User, FileText, ChevronDown, Settings } from 'lucide-react'
+import { LogOut, User, FileText, ChevronDown, Settings, Shield } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
 
 // Function to generate consistent color based on email
@@ -88,7 +88,7 @@ export default function Navigation() {
             </Link>
 
             <Link
-              href="/resume/new"
+              href="/resume/new?template=template-1756037150032"
               className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 sm:px-5 py-2 rounded-lg text-sm sm:text-base font-semibold shadow hover:from-blue-700 hover:to-indigo-700 transition-colors whitespace-nowrap"
             >
               <span className="hidden sm:inline">Create Resume</span>
@@ -126,6 +126,16 @@ export default function Navigation() {
                         <Settings className="w-4 h-4 mr-3" />
                         Profile Settings
                       </Link>
+                      {user.role === 'admin' && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setIsProfileOpen(false)}
+                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded"
+                        >
+                          <Shield className="w-4 h-4 mr-3" />
+                          Admin Panel
+                        </Link>
+                      )}
                     </div>
 
                     <div className="border-t border-gray-100 py-1">

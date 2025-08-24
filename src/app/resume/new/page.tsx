@@ -3,13 +3,11 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { ResumeContent, calculateATSScore } from '@/lib/ats-scorer'
+import { ResumeContent, calculateATSScore, ATSScore as ATSScoreType } from '@/lib/ats-scorer'
 import TemplateSelector from '@/components/TemplateSelector'
-import ResumeForm from '@/components/ResumeForm'
+import RealtimeEditor from '@/components/RealtimeEditor'
 import ATSScore from '@/components/ATSScore'
-import Template1 from '@/components/templates/Template1'
-import Template2 from '@/components/templates/Template2'
-import Template3 from '@/components/templates/Template3'
+import CompactATSScore from '@/components/CompactATSScore'
 import { Save, Download, Eye, ArrowLeft, LayoutTemplate, Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
@@ -22,19 +20,13 @@ const defaultContent: ResumeContent = {
     phone: '(555) 123-4567',
     location: 'New York, NY'
   },
-  summary: 'Experienced software engineer with 5+ years in full-stack development, specializing in React, Node.js, and cloud technologies. Proven track record of delivering scalable solutions and leading development teams.',
+  summary: 'Experienced professional with expertise in software development.',
   experience: [
     {
-      title: 'Senior Software Engineer',
+      title: 'Software Engineer',
       company: 'Tech Company Inc.',
       duration: '2020 - Present',
-      description: 'Led development of microservices architecture. Mentored junior developers. Improved system performance by 40%.'
-    },
-    {
-      title: 'Software Engineer',
-      company: 'Web Solutions LLC',
-      duration: '2017 - 2020',
-      description: 'Built and maintained web applications. Collaborated with cross-functional teams. Enhanced UI/UX for client projects.'
+      description: 'Led development of key features and mentored junior developers.'
     }
   ],
   education: [
@@ -44,560 +36,265 @@ const defaultContent: ResumeContent = {
       year: '2015 - 2019'
     }
   ],
-  skills: ['JavaScript', 'React', 'Node.js', 'SQL', 'AWS'],
-  certifications: ['AWS Certified Developer', 'Scrum Master Certified']
+  skills: ['JavaScript', 'React', 'Node.js', 'Python'],
+  certifications: ['AWS Certified Developer']
 }
 
-const templates = {
-  template1: Template1,
-  template2: Template2,
-  template3: Template3
-}
-
-function NewResumeContent() {
+function ResumeBuilderContent() {
+  const { user } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user } = useAuth()
+  const templateFromUrl = searchParams.get('template') || 'template-1756037150032'
+  
   const [content, setContent] = useState<ResumeContent>(defaultContent)
-  const [selectedTemplate, setSelectedTemplate] = useState('template1')
-  const [title, setTitle] = useState('')
-  const [saving, setSaving] = useState(false)
+  const [selectedTemplate, setSelectedTemplate] = useState<string>(templateFromUrl)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
+  const [downloadError, setDownloadError] = useState<string | null>(null)
+  const [downloadSuccess, setDownloadSuccess] = useState(false)
   const [showTemplateSelector, setShowTemplateSelector] = useState(false)
-  const [downloading, setDownloading] = useState(false)
-  const [showMobileMenu, setShowMobileMenu] = useState(false)
-  const [resumeId, setResumeId] = useState<string | null>(null)
-  const [autosaveStatus, setAutosaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
+  const [atsScore, setAtsScore] = useState<ATSScoreType>({
+    score: 0,
+    suggestions: [],
+    keywords: [],
+    missingKeywords: []
+  })
 
+  // Temporarily disable auth check for testing
+  // useEffect(() => {
+  //   if (!user) {
+  //     router.push('/auth/signin')
+  //     return
+  //   }
+  // }, [user, router])
 
-  // Handle template selection from URL parameters or sessionStorage
   useEffect(() => {
-    const templateFromUrl = searchParams.get('template')
-    const templateFromStorage = sessionStorage.getItem('selectedTemplate')
+    // Calculate ATS Score when content changes
+    const atsScoreResult = calculateATSScore(content)
+    setAtsScore(atsScoreResult)
+  }, [content])
 
-    if (templateFromUrl) {
-      setSelectedTemplate(`template${templateFromUrl}`)
-      sessionStorage.removeItem('selectedTemplate') // Clean up
-    } else if (templateFromStorage) {
-      setSelectedTemplate(`template${templateFromStorage}`)
-      sessionStorage.removeItem('selectedTemplate') // Clean up
-    }
-  }, [searchParams])
+  const handleContentChange = (newContent: ResumeContent) => {
+    setContent(newContent);
+  };
 
-    // Handle initial data from create modal and pending resume data after sign in
-  useEffect(() => {
-        // Check for initial data from the create modal
-    const initialData = sessionStorage.getItem('initialResumeData')
-    if (initialData) {
-      try {
-        const data = JSON.parse(initialData)
-        setTitle(data.title || '')
-
-        // Filter out empty values from arrays
-        const filterEmpty = (arr: string[]) => arr.filter(item => item.trim() !== '')
-
-                // Filter experience entries that have a title
-        const validExperience = data.experience ? data.experience
-          .filter((exp: {title?: string, company?: string, duration?: string, description?: string}) => exp.title && exp.title.trim() !== '')
-          .map((exp: {title?: string, company?: string, duration?: string, description?: string}) => ({
-            title: exp.title || '',
-            company: exp.company || '',
-            duration: exp.duration || '',
-            description: exp.description || ''
-          })) : []
-
-        // Filter education entries that have a degree
-        const validEducation = data.education ? data.education
-          .filter((edu: {degree?: string, institution?: string, year?: string}) => edu.degree && edu.degree.trim() !== '')
-          .map((edu: {degree?: string, institution?: string, year?: string}) => ({
-            degree: edu.degree || '',
-            institution: edu.institution || '',
-            year: edu.year || ''
-          })) : []
-
-        // Update content with all modal data
-        const updatedContent = {
-          ...defaultContent,
-          personalInfo: {
-            name: data.name || '',
-            email: data.email || '',
-            phone: data.phone || '',
-            location: data.location || ''
-          },
-          summary: data.summary || '',
-          experience: validExperience,
-          education: validEducation,
-          skills: data.skills ? filterEmpty(data.skills) : [],
-          certifications: data.certifications ? filterEmpty(data.certifications) : [],
-          // Add support for projects and languages as custom sections
-          customSections: [
-            ...(defaultContent.customSections || []),
-            ...(data.projects && data.projects.filter((p: {name?: string}) => p.name && p.name.trim() !== '').length > 0 ? [{
-              heading: 'Projects',
-              content: data.projects
-                .filter((p: {name: string; technologies?: string; description?: string}) => p.name && p.name.trim() !== '')
-                .map((p: {name: string; technologies?: string; description?: string}) => `**${p.name}**${p.technologies ? ` (${p.technologies})` : ''}\n${p.description || ''}`).join('\n\n')
-            }] : []),
-            ...(data.languages && filterEmpty(data.languages).length > 0 ? [{
-              heading: 'Languages',
-              content: data.languages.filter((l: string) => l.trim() !== '').join(', ')
-            }] : [])
-          ]
-        }
-        setContent(updatedContent)
-
-        // Clear the initial data after using it
-        sessionStorage.removeItem('initialResumeData')
-        console.log('Resume initialized with comprehensive modal data:', updatedContent)
-      } catch (error) {
-        console.error('Error parsing initial resume data:', error)
-        sessionStorage.removeItem('initialResumeData')
-      }
+  const handleSave = async (contentToSave: ResumeContent) => {
+    // For testing without auth, skip save functionality
+    if (!user) {
+      console.log('Save skipped - no user logged in (test mode)');
+      return;
     }
 
-    // Handle pending resume data after sign in (existing functionality)
-    if (user) {
-      const pendingResume = sessionStorage.getItem('pendingResume')
-      if (pendingResume) {
-        try {
-          const resumeData = JSON.parse(pendingResume)
-          setTitle(resumeData.title || '')
-          setSelectedTemplate(resumeData.template_id || 'template1')
-          setContent(resumeData.content || defaultContent)
-          // Clear the pending resume data only after successfully loading it
-          sessionStorage.removeItem('pendingResume')
-          console.log('Resume data restored from pending session')
-        } catch (error) {
-          console.error('Error parsing pending resume data:', error)
-          sessionStorage.removeItem('pendingResume')
-        }
-      }
-    }
-  }, [user])
-
-    const atsScore = calculateATSScore(content)
-
-  // Allow anonymous users to create resumes
-  const isAnonymous = !user
-
-  const saveResume = async () => {
-    if (!title.trim()) {
-      alert('Please enter a title for your resume')
-      return
-    }
-
-    // If user is anonymous, prompt them to sign in
-    if (isAnonymous) {
-      const shouldSignIn = confirm('To save your resume, you need to sign in. Would you like to sign in now?')
-      if (shouldSignIn) {
-        // Store resume data in sessionStorage for after sign in
-        const resumeData = {
-          title: title.trim(),
-          template_id: selectedTemplate,
-          content: content,
-          ats_score: atsScore.score
-        }
-        sessionStorage.setItem('pendingResume', JSON.stringify(resumeData))
-        console.log('Stored pending resume data:', resumeData)
-        router.push('/auth/signin')
-        return
-      }
-      return
-    }
-
-    setSaving(true)
+    setIsLoading(true)
     try {
+      // Generate a title from the content
+      const title = contentToSave.personalInfo?.name 
+        ? `${contentToSave.personalInfo.name}'s Resume`
+        : 'My Resume';
+
+      const payload = {
+        title: title,
+        template_id: selectedTemplate,
+        content: contentToSave,
+        ats_score: atsScore.score || 0
+      };
+
+      console.log('Saving resume with payload:', payload);
+
       const response = await fetch('/api/resumes', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          title: title.trim(),
-          template_id: selectedTemplate,
-          content: content,
-          ats_score: atsScore.score
-        })
+        body: JSON.stringify(payload),
       })
 
       if (response.ok) {
-        const data = await response.json()
-        router.push(`/resume/${data.resume.id}`)
+        const result = await response.json()
+        console.log('Resume saved successfully:', result)
       } else {
-        throw new Error('Failed to save resume')
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error(errorData.error || 'Failed to save resume')
       }
     } catch (error) {
       console.error('Error saving resume:', error)
-      alert('Failed to save resume. Please try again.')
+      throw error // Re-throw to let RealtimeEditor handle the error
     } finally {
-      setSaving(false)
+      setIsLoading(false)
     }
   }
 
-  // AUTOSAVE: Debounced effect
-  useEffect(() => {
-    if (!title.trim()) return;
-    setAutosaveStatus('saving');
-    const handler = setTimeout(async () => {
-      try {
-        let response;
-        if (resumeId) {
-          // Update existing resume
-          response = await fetch(`/api/resumes/${resumeId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              title: title.trim(),
-              template_id: selectedTemplate,
-              content,
-              ats_score: calculateATSScore(content).score
-            })
-          });
-        } else {
-          // Create new resume
-          response = await fetch('/api/resumes', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              title: title.trim(),
-              template_id: selectedTemplate,
-              content,
-              ats_score: calculateATSScore(content).score
-            })
-          });
-        }
-        if (response.ok) {
-          const data = await response.json();
-          if (data.resume && data.resume.id) setResumeId(data.resume.id);
-          setAutosaveStatus('saved');
-        } else {
-          setAutosaveStatus('idle');
-        }
-      } catch {
-        setAutosaveStatus('idle');
-      }
-    }, 1200); // 1.2s debounce
-    return () => clearTimeout(handler);
-  }, [title, content, selectedTemplate, resumeId]);
+  const handleTemplateChange = (template: string) => {
+    console.log('Template changed from:', selectedTemplate, 'to:', template)
+    setSelectedTemplate(template)
+    setShowTemplateSelector(false)
+    // Update URL without page reload
+    const newUrl = `/resume/new?template=${template}`
+    window.history.replaceState({}, '', newUrl)
+  }
 
-  const TemplateComponent = templates[selectedTemplate as keyof typeof templates] || Template1
+  const handleDownload = async () => {
+    setIsDownloading(true)
+    setDownloadError(null)
+    setDownloadSuccess(false)
+    
+    try {
+      const fileName = content.personalInfo?.name || 'Resume'
+      await downloadResumeAsPDF(content, fileName, selectedTemplate)
+      setDownloadSuccess(true)
+      // Hide success message after 3 seconds
+      setTimeout(() => setDownloadSuccess(false), 3000)
+    } catch (error) {
+      console.error('Download failed:', error)
+      setDownloadError(error instanceof Error ? error.message : 'Failed to download PDF')
+    } finally {
+      setIsDownloading(false)
+    }
+  }
 
-  const selectedTemplateObj = [
-    { id: 'template1', name: 'Professional Classic' },
-    { id: 'template2', name: 'Modern Sidebar' },
-    { id: 'template3', name: 'Minimalist' }
-  ].find(t => t.id === selectedTemplate);
+  // Temporarily disable user check for testing
+  // if (!user) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-
-      {/* Header */}
-      <div className="bg-white shadow overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-                      {/* Mobile Header */}
-          <div className="md:hidden">
-            <div className="flex items-center justify-between py-4 min-w-0">
-              <Link
-                href="/dashboard"
-                className="flex items-center text-gray-600 hover:text-gray-900 min-w-0 flex-shrink-0"
+      
+      {/* Template Selector Modal */}
+      {showTemplateSelector && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-20 backdrop-blur-sm">
+          <div className="bg-white/95 backdrop-blur-md rounded-2xl max-w-5xl max-h-[90vh] overflow-auto shadow-xl border border-gray-300 animate-in slide-in-from-top-2">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Choose Template</h2>
+                <p className="text-sm text-gray-600 mt-1">Select a template for your resume</p>
+              </div>
+              <button
+                onClick={() => setShowTemplateSelector(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-all duration-200"
               >
-                <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2 flex-shrink-0" />
-                <span className="text-sm truncate">Back</span>
-              </Link>
-
-              <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
-                <button
-                  onClick={() => setShowMobileMenu(!showMobileMenu)}
-                  className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 flex-shrink-0"
-                >
-                  {showMobileMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                </button>
-              </div>
+                <X size={20} className="text-gray-600" />
+              </button>
             </div>
-
-            {/* Mobile Menu */}
-            {showMobileMenu && (
-              <div className="pb-4 space-y-3 overflow-hidden max-w-full">
-                <div className="flex flex-col space-y-3">
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Enter resume title..."
-                    className="text-base sm:text-lg font-bold text-black bg-transparent border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full"
-                  />
-
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      className="inline-flex items-center px-3 py-2 rounded-full bg-blue-600 text-white shadow hover:bg-blue-700 transition-colors text-sm font-semibold flex-shrink-0"
-                      onClick={() => setShowTemplateSelector((v) => !v)}
-                      type="button"
-                    >
-                      <LayoutTemplate className="w-4 h-4 mr-2" />
-                      Template
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={saveResume}
-                      disabled={saving}
-                      className="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 min-w-0"
-                      title={isAnonymous ? "Sign in to Save" : "Save Resume"}
-                    >
-                      <Save className="w-4 h-4 mr-1" />
-                      <span className="truncate text-xs sm:text-sm">
-                        {saving ? 'Saving...' : isAnonymous ? 'Sign in' : 'Save'}
-                      </span>
-                    </button>
-                    <button
-                      onClick={async () => {
-                        setDownloading(true);
-                        if (resumeId) {
-                          // Download from server endpoint
-                          const url = `/resume/${resumeId}/download?template=${selectedTemplate}`;
-                          window.open(url, '_blank');
-                        } else {
-                          // Download client-side PDF
-                          await downloadResumeAsPDF(content, title || 'resume', selectedTemplate);
-                        }
-                        setDownloading(false);
-                      }}
-                      disabled={downloading}
-                      className="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 min-w-0"
-                      type="button"
-                      title="Download PDF"
-                    >
-                      <Download className="w-4 h-4 mr-1" />
-                      <span className="truncate text-xs sm:text-sm">
-                        {downloading ? 'Downloading...' : 'PDF'}
-                      </span>
-                    </button>
-                  </div>
-                </div>
-
-                {showTemplateSelector && (
-                  <div className="mt-2">
-                    <TemplateSelector
-                      selectedTemplate={selectedTemplate}
-                      onTemplateSelect={(id) => {
-                        setSelectedTemplate(id)
-                        setShowTemplateSelector(false)
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Tablet/Desktop Header */}
-          <div className="hidden md:block">
-            <div className="flex items-center justify-between py-4">
-              {/* Left Section */}
-              <div className="flex items-center space-x-4 min-w-0 flex-1">
-                <Link
-                  href="/dashboard"
-                  className="flex items-center text-gray-600 hover:text-gray-900 flex-shrink-0"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  <span className="hidden lg:inline">Back to Dashboard</span>
-                  <span className="lg:hidden">Back</span>
-                </Link>
-
-                <div className="flex items-center space-x-4 min-w-0 flex-1">
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Enter resume title..."
-                    className="text-xl lg:text-2xl font-bold text-black bg-transparent border-none outline-none focus:ring-0 min-w-0 flex-1"
-                  />
-                  <button
-                    className="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white shadow hover:bg-blue-700 transition-colors text-sm font-medium flex-shrink-0 mr-4"
-                    onClick={() => setShowTemplateSelector((v) => !v)}
-                    type="button"
-                  >
-                    <LayoutTemplate className="w-4 h-4 mr-2" />
-                    <span>
-                      {showTemplateSelector
-                        ? 'Hide Templates'
-                        : selectedTemplateObj?.name || 'Choose Template'}
-                    </span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Right Section - Actions */}
-              <div className="flex items-center space-x-4">
-                {/* Primary Actions */}
-                <button
-                  onClick={saveResume}
-                  disabled={saving}
-                  className="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white shadow hover:bg-blue-700 transition-colors text-sm font-medium flex-shrink-0"
-                  title={isAnonymous ? "Sign in to Save" : "Save Resume"}
-                >
-                  <Save className="w-4 h-4 lg:w-5 lg:h-5" />
-                  <span className="ml-1 lg:ml-2 text-xs lg:text-sm hidden sm:inline">
-                    {saving ? 'Saving...' : isAnonymous ? 'Sign in' : 'Save'}
-                  </span>
-                </button>
-
-                <button
-                  onClick={async () => {
-                    setDownloading(true);
-                    if (resumeId) {
-                      // Download from server endpoint
-                      const url = `/resume/${resumeId}/download?template=${selectedTemplate}`;
-                      window.open(url, '_blank');
-                    } else {
-                      // Download client-side PDF
-                      await downloadResumeAsPDF(content, title || 'resume', selectedTemplate);
-                    }
-                    setDownloading(false);
-                  }}
-                  disabled={downloading}
-                  className="inline-flex items-center px-4 py-2 rounded-md bg-green-600 text-white shadow hover:bg-green-700 transition-colors text-sm font-medium flex-shrink-0"
-                  type="button"
-                  title="Download PDF"
-                >
-                  <Download className="w-4 h-4 lg:w-5 lg:h-5" />
-                  <span className="ml-1 lg:ml-2 text-xs lg:text-sm hidden sm:inline">
-                    {downloading ? 'Saving...' : 'Save & PDF'}
-                  </span>
-                </button>
-
-
-              </div>
+            <div className="p-4">
+              <TemplateSelector
+                selectedTemplate={selectedTemplate}
+                onTemplateSelect={handleTemplateChange}
+              />
             </div>
-
-            {showTemplateSelector && (
-              <div className="mt-2">
-                <TemplateSelector
-                  selectedTemplate={selectedTemplate}
-                  onTemplateSelect={(id) => {
-                    setSelectedTemplate(id)
-                    setShowTemplateSelector(false)
-                  }}
-                />
-              </div>
-            )}
           </div>
         </div>
+      )}
+
+      {/* Header */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Link 
+                href="/dashboard"
+                className="flex items-center text-gray-600 hover:text-blue-600 transition-colors"
+              >
+                <ArrowLeft size={20} className="mr-1" />
+                Back to Dashboard
+              </Link>
+              
+              <div className="h-6 w-px bg-gray-300"></div>
+              
+              <button
+                onClick={() => setShowTemplateSelector(true)}
+                className="flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <LayoutTemplate size={16} className="mr-1" />
+                Change Template
+              </button>
             </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Form Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 lg:sticky lg:top-8">
-              {isAnonymous && (
-                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                  <p className="text-sm text-blue-800">
-                    <strong>Tip:</strong> You can create your resume now and sign in later to save it.
-                  </p>
-                </div>
-              )}
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Resume Builder</h2>
-                            <ResumeForm
-                content={content}
-                onChange={setContent}
-              />
+            <div className="flex items-center space-x-3">
+              {/* Compact ATS Score Display */}
+              <CompactATSScore score={atsScore} />
+              
+              <div className="relative">
+                <button
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                  className="flex items-center px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDownloading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+                      Downloading...
+                    </>
+                  ) : (
+                    <>
+                      <Download size={16} className="mr-1" />
+                      Download PDF
+                    </>
+                  )}
+                </button>
+                
+                {/* Download Error Message */}
+                {downloadError && (
+                  <div className="absolute top-full right-0 mt-2 p-3 bg-red-50 border border-red-200 rounded-lg shadow-lg z-10 min-w-64">
+                    <div className="flex items-start gap-2">
+                      <div className="text-red-600 mt-0.5">⚠</div>
+                      <div>
+                        <p className="text-sm font-medium text-red-800">Download Failed</p>
+                        <p className="text-xs text-red-700 mt-1">{downloadError}</p>
+                        <button
+                          onClick={() => setDownloadError(null)}
+                          className="text-xs text-red-600 hover:text-red-800 mt-2 underline"
+                        >
+                          Dismiss
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
-              {/* ATS Score */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <ATSScore score={atsScore} />
-              </div>
-            </div>
-          </div>
-
-          {/* Preview */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="p-4 lg:p-8 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">Preview</h2>
-                  <button
-                    className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
-                  >
-                    <Eye className="w-3 h-3 mr-1" />
-                    Preview
-                  </button>
-                </div>
-              </div>
-
-
-
-                            <div className="p-4 lg:p-8">
-                {/* Mobile Action Buttons */}
-                <div className="md:hidden mb-4 flex flex-col gap-2">
-                  <button
-                    onClick={saveResume}
-                    disabled={saving}
-                    className="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 w-full"
-                    title={isAnonymous ? "Sign in to Save" : "Save Resume"}
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    <span className="text-sm">
-                      {saving ? 'Saving...' : isAnonymous ? 'Sign in to Save' : 'Save Resume'}
-                    </span>
-                  </button>
-                  <button
-                    onClick={async () => {
-                      setDownloading(true)
-                      // For new resumes, we need to save first before downloading
-                      if (!isAnonymous) {
-                        try {
-                          await saveResume()
-                          // After saving, the user will be redirected to the edit page
-                          // where they can download the PDF
-                        } catch (error) {
-                          console.error('Error saving resume:', error)
-                          alert('Please save the resume first, then download.')
-                        }
-                      } else {
-                        alert('Please sign in to save and download your resume.')
-                      }
-                      setDownloading(false)
-                    }}
-                    disabled={downloading}
-                    className="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 w-full"
-                    type="button"
-                    title="Download PDF"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    <span className="text-sm">
-                      {downloading ? 'Saving...' : 'Save & PDF'}
-                    </span>
-                  </button>
-                </div>
-
-                                <div className="border border-gray-200 rounded-lg overflow-hidden">
-                  <TemplateComponent content={content} />
-                </div>
+                {/* Download Success Message */}
+                {downloadSuccess && (
+                  <div className="absolute top-full right-0 mt-2 p-3 bg-green-50 border border-green-200 rounded-lg shadow-lg z-10 min-w-64">
+                    <div className="flex items-start gap-2">
+                      <div className="text-green-600 mt-0.5">✓</div>
+                      <div>
+                        <p className="text-sm font-medium text-green-800">Download Complete</p>
+                        <p className="text-xs text-green-700 mt-1">Your resume PDF has been downloaded successfully!</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
-      {/* Autosave status indicator */}
-      <div className="text-xs text-gray-500 mt-1">{autosaveStatus === 'saving' ? 'Saving...' : autosaveStatus === 'saved' ? 'All changes saved' : ''}</div>
+
+      {/* Real-time Editor */}
+      <RealtimeEditor
+        key={selectedTemplate} // Force re-render when template changes
+        initialContent={content}
+        template={selectedTemplate}
+        onSave={handleSave}
+        onContentChange={handleContentChange}
+      />
     </div>
   )
 }
 
-export default function NewResume() {
+export default function ResumeBuilder() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     }>
-      <NewResumeContent />
+      <ResumeBuilderContent />
     </Suspense>
   )
 }
