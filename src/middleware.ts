@@ -17,7 +17,18 @@ export async function middleware(request: NextRequest) {
     '/api/debug-env',
     '/api/debug-db',
     '/admin/setup',  // Allow access to admin setup page
-    '/api/admin/setup'  // Allow access to admin setup API
+    '/api/admin/setup',  // Allow access to admin setup API
+    '/about',
+    '/contact-us',
+    '/privacy-policy',
+    '/terms',
+    '/disclaimer',
+    '/blog',
+    '/careers',
+    '/help-center',
+    '/templates',
+    '/ats-score',
+    '/api/contact'  // Allow contact form submission without auth
   ]
 
   // Special case: allow /admin (login page) but not /admin/* routes
