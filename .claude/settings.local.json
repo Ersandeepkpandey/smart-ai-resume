@@ -25,7 +25,19 @@
       "Bash(npx madge:*)",
       "Bash(DEBUG=*)",
       "Bash(git add:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(npx:*)",
+      "WebFetch(domain:pdfveda.com)",
+      "Bash(set NEXT_TELEMETRY_DISABLED=1)",
+      "Bash(set NODE_OPTIONS=--max_old_space_size=4096)",
+      "Bash(set NODE_ENV=production)",
+      "Bash(powershell:*)",
+      "Bash(timeout:*)",
+      "Bash(set DEBUG=*)",
+      "Bash(ren:*)",
+      "Bash(set NODE_OPTIONS=\"--max-old-space-size=4096\")",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []
