@@ -482,7 +482,7 @@ export default function Home() {
               <li><a href="/privacy-policy" className="hover:text-blue-500 transition-colors">Privacy Policy</a></li>
               <li><a href="/terms" className="hover:text-blue-500 transition-colors">Terms & Conditions</a></li>
               <li><a href="/disclaimer" className="hover:text-blue-500 transition-colors">Disclaimer</a></li>
-              <li><a href="/blog" className="hover:text-blue-500 transition-colors">Blog</a></li>
+              <li><Link href="/blog" className="hover:text-blue-500 transition-colors">Blog</Link></li>
               <li><a href="/careers" className="hover:text-blue-500 transition-colors">Careers</a></li>
               <li><a href="/sitemap.xml" className="hover:text-blue-500 transition-colors">Sitemap</a></li>
             </ul>
