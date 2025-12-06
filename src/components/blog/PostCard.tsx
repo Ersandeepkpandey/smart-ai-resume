@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Clock, Eye, MessageCircle, Calendar } from 'lucide-react'
+import { Clock, Eye } from 'lucide-react'
 import { Post } from '@/lib/blog/types'
 import { formatDate, getRelativeTime } from '@/lib/blog/utils'
 

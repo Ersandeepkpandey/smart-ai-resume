@@ -1,14 +1,13 @@
 'use client'
 
 import { useState, useEffect, use } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, Clock, Eye, Calendar, Share2, Bookmark, Loader2 } from 'lucide-react'
 import Navigation from '@/components/Navigation'
 import { CommentSection, AuthorBio, PostCard } from '@/components/blog'
 import { Post, Comment } from '@/lib/blog/types'
-import { formatDate, getRelativeTime } from '@/lib/blog/utils'
+import { formatDate } from '@/lib/blog/utils'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -16,7 +15,6 @@ interface PageProps {
 
 export default function BlogPostPage({ params }: PageProps) {
   const { slug } = use(params)
-  const router = useRouter()
   const [post, setPost] = useState<Post | null>(null)
   const [comments, setComments] = useState<Comment[]>([])
   const [relatedPosts, setRelatedPosts] = useState<Post[]>([])

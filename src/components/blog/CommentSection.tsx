@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { MessageCircle, Send, User } from 'lucide-react'
+import { MessageCircle, Send } from 'lucide-react'
 import { Comment } from '@/lib/blog/types'
 import { getRelativeTime, validateEmail } from '@/lib/blog/utils'
 

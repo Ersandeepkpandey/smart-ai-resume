@@ -598,7 +598,7 @@ export default function EditPostPage() {
                 Delete Post
               </h3>
               <p className="text-gray-600 mb-6">
-                Are you sure you want to delete "{formData.title}"? This action
+                Are you sure you want to delete &ldquo;{formData.title}&rdquo;? This action
                 cannot be undone.
               </p>
               <div className="flex justify-end space-x-3">

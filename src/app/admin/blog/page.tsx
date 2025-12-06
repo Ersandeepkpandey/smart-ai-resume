@@ -18,7 +18,7 @@ import {
   CheckCircle,
   Archive
 } from 'lucide-react'
-import type { Post, Category, PostFilters } from '@/lib/blog/types'
+import type { Post, Category } from '@/lib/blog/types'
 
 interface PostsResponse {
   data: Post[]
@@ -405,7 +405,7 @@ export default function BlogAdminPage() {
                 Delete Post
               </h3>
               <p className="text-gray-600 mb-6">
-                Are you sure you want to delete "{postToDelete.title}"? This action
+                Are you sure you want to delete &ldquo;{postToDelete.title}&rdquo;? This action
                 cannot be undone.
               </p>
               <div className="flex justify-end space-x-3">

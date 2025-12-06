@@ -443,7 +443,7 @@ export default function CategoriesPage() {
                 Delete Category
               </h3>
               <p className="text-gray-600 mb-6">
-                Are you sure you want to delete "{categoryToDelete.name}"?
+                Are you sure you want to delete &ldquo;{categoryToDelete.name}&rdquo;?
                 {categoryToDelete.postCount > 0 && (
                   <span className="block mt-2 text-red-600">
                     Warning: This category has {categoryToDelete.postCount} post(s).

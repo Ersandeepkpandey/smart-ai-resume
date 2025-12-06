@@ -425,7 +425,7 @@ export default function TagsPage() {
                 Delete Tag
               </h3>
               <p className="text-gray-600 mb-6">
-                Are you sure you want to delete "{tagToDelete.name}"?
+                Are you sure you want to delete &ldquo;{tagToDelete.name}&rdquo;?
                 {tagToDelete.postCount > 0 && (
                   <span className="block mt-2 text-orange-600">
                     This tag is used in {tagToDelete.postCount} post(s). The tag

@@ -1,5 +1,5 @@
 import client from '@/lib/turso'
-import { Post, Category, Tag, Comment, Author, PostFilters, PaginatedResult } from './types'
+import { Post, Category, Tag, Comment, PostFilters, PaginatedResult } from './types'
 import { generateSlug, calculateReadingTime, extractExcerpt, generateId } from './utils'
 
 export async function initBlogTables(): Promise<void> {
