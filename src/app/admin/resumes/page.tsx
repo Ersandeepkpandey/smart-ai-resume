@@ -2,18 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { 
-  Search, 
-  Filter, 
-  MoreVertical, 
-  Eye, 
-  Download, 
+import {
+  Search,
+  MoreVertical,
+  Eye,
+  Download,
   Trash2,
   FileText,
   Calendar,
-  User,
-  Clock,
-  CheckCircle
+  Clock
 } from 'lucide-react';
 
 interface ResumeData {

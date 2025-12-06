@@ -1,7 +1,19 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+
+interface UserProfile {
+  id: string
+  email: string
+  fullName: string
+  avatarUrl?: string
+  role: 'user' | 'admin'
+  status: string
+  lastLogin?: string
+  createdAt: string
+  updatedAt: string
+}
 
 interface User {
   id: string
@@ -10,30 +22,44 @@ interface User {
   role: 'user' | 'admin'
   status: string
   isVerified: boolean
-  profile: {
-    id: string
-    email: string
-    fullName: string
-    avatarUrl?: string
-    role: 'user' | 'admin'
-    status: string
-    lastLogin?: string
-    createdAt: string
-    updatedAt: string
-  }
+  profile: UserProfile
+}
+
+interface AuthResult {
+  success: boolean
+  error?: string
 }
 
 interface AuthContextType {
   user: User | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
-  signUp: (email: string, password: string, fullName: string) => Promise<{ success: boolean; error?: string }>
-  signOut: () => void
-  updateUser: (userData: Partial<User>) => void
   isSigningOut: boolean
+  signIn: (email: string, password: string) => Promise<AuthResult>
+  signUp: (email: string, password: string, fullName: string) => Promise<AuthResult>
+  signOut: () => Promise<void>
+  updateUser: (userData: Partial<User>) => void
 }
 
+const PUBLIC_PATHS = [
+  '/',
+  '/auth/signin',
+  '/auth/signup',
+  '/templates',
+  '/ats-score',
+  '/help-center',
+  '/contact-us',
+  '/privacy-policy',
+  '/about',
+  '/blog',
+  '/careers',
+  '/resume/new',
+]
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+function isPublicPath(pathname: string): boolean {
+  return PUBLIC_PATHS.some(path => pathname === path || pathname.startsWith(path))
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
@@ -41,14 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isSigningOut, setIsSigningOut] = useState(false)
   const router = useRouter()
 
-  useEffect(() => {
-    // Check for existing session on mount
-    verifySession()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-    const verifySession = async () => {
-    // Skip session verification if we're in the process of signing out
+  const verifySession = useCallback(async () => {
     if (isSigningOut) {
       setLoading(false)
       return
@@ -58,65 +77,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await fetch('/api/auth/verify')
 
       if (response.ok) {
-        const userData = await response.json()
-        setUser(userData.user)
+        const data = await response.json()
+        setUser(data.user)
       } else {
-        // Session is invalid, but don't redirect on public pages
         const currentPath = window.location.pathname
-        const publicPaths = ['/', '/auth/signin', '/auth/signup', '/templates', '/ats-score', '/help-center', '/contact-us', '/privacy-policy', '/about', '/blog', '/careers', '/resume/new']
-        const isPublicPath = publicPaths.some(path => currentPath === path || currentPath.startsWith(path))
-
-        if (!isPublicPath) {
+        if (!isPublicPath(currentPath)) {
           router.push('/auth/signin')
         }
       }
-    } catch (error) {
-      console.error('Session verification error:', error)
-      // Don't redirect on public pages even on error
+    } catch {
       const currentPath = window.location.pathname
-      const publicPaths = ['/', '/auth/signin', '/auth/signup', '/templates', '/ats-score', '/help-center', '/contact-us', '/privacy-policy', '/about', '/blog', '/careers', '/resume/new']
-      const isPublicPath = publicPaths.some(path => currentPath === path || currentPath.startsWith(path))
-
-      if (!isPublicPath) {
+      if (!isPublicPath(currentPath)) {
         router.push('/auth/signin')
       }
     } finally {
       setLoading(false)
     }
-  }
+  }, [isSigningOut, router])
 
-  const signIn = async (email: string, password: string) => {
+  useEffect(() => {
+    verifySession()
+  }, [verifySession])
+
+  const signIn = async (email: string, password: string): Promise<AuthResult> => {
     try {
       const response = await fetch('/api/auth/signin', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       })
 
       const data = await response.json()
 
       if (response.ok) {
-        // Session is automatically set via cookie
         setUser(data.user)
         return { success: true }
-      } else {
-        return { success: false, error: data.error }
       }
-    } catch (error) {
-      console.error('Sign in error:', error)
+
+      return { success: false, error: data.error }
+    } catch {
       return { success: false, error: 'An error occurred during sign in' }
     }
   }
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string): Promise<AuthResult> => {
     try {
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, fullName }),
       })
 
@@ -124,30 +132,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (response.ok) {
         return { success: true }
-      } else {
-        return { success: false, error: data.error }
       }
-    } catch (error) {
-      console.error('Sign up error:', error)
+
+      return { success: false, error: data.error }
+    } catch {
       return { success: false, error: 'An error occurred during sign up' }
     }
   }
 
-      const signOut = async () => {
-    // Set signing out flag to prevent session verification
+  const signOut = async (): Promise<void> => {
     setIsSigningOut(true)
-
-    // Clear user state immediately to prevent any race conditions
     setUser(null)
 
     try {
-      const response = await fetch('/api/auth/signout', { method: 'POST' })
-      if (!response.ok) {
-        throw new Error(`Sign out failed: ${response.status}`)
-      }
-    } catch (error) {
-      console.error('Sign out error:', error)
-      // Even if the API call fails, we should still clear the local state
+      await fetch('/api/auth/signout', { method: 'POST' })
+    } catch {
+      // Continue with sign out even if API fails
     }
 
     router.push('/auth/signin')
@@ -159,14 +159,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const value = {
+  const value: AuthContextType = {
     user,
     loading,
+    isSigningOut,
     signIn,
     signUp,
     signOut,
     updateUser,
-    isSigningOut,
   }
 
   return (
@@ -176,7 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function useAuth() {
+export function useAuth(): AuthContextType {
   const context = useContext(AuthContext)
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider')

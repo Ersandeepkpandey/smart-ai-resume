@@ -183,20 +183,12 @@ export default function CreateResumeModal({ isOpen, onClose }: CreateResumeModal
     }))
   }
 
-          const handleSubmit = () => {
+  const handleSubmit = () => {
     try {
-      // Store the initial data in sessionStorage to be used in the resume builder
       sessionStorage.setItem('initialResumeData', JSON.stringify(formData))
-      console.log('Stored initial resume data:', formData)
-
-      // Close modal first
       onClose()
-
-      // Navigate using Next.js router
       router.push('/resume/new')
-    } catch (error) {
-      console.error('Error saving initial data:', error)
-      // Close modal and fallback navigation
+    } catch {
       onClose()
       window.location.href = '/resume/new'
     }
@@ -220,18 +212,10 @@ export default function CreateResumeModal({ isOpen, onClose }: CreateResumeModal
 
   const handleSkip = () => {
     try {
-      // Clear any existing initial data
       sessionStorage.removeItem('initialResumeData')
-      console.log('Cleared initial resume data')
-
-      // Close modal first
       onClose()
-
-      // Navigate using Next.js router
       router.push('/resume/new')
-    } catch (error) {
-      console.error('Error during skip navigation:', error)
-      // Close modal and fallback navigation
+    } catch {
       onClose()
       window.location.href = '/resume/new'
     }

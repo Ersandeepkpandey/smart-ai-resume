@@ -2,17 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { 
-  Search, 
-  Filter, 
-  MoreVertical, 
-  Edit, 
-  Trash2, 
+import {
+  Search,
+  MoreVertical,
+  Edit,
+  Trash2,
   CheckCircle,
   XCircle,
-  Mail,
-  Calendar,
-  Shield,
   User
 } from 'lucide-react';
 

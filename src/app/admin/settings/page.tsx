@@ -2,12 +2,11 @@
 
 import { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { 
-  Settings as SettingsIcon, 
-  Mail, 
-  Database, 
-  Shield, 
-  Bell,
+import {
+  Settings as SettingsIcon,
+  Mail,
+  Database,
+  Shield,
   Save,
   RefreshCw,
   AlertCircle

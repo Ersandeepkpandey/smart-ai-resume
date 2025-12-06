@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { FileDown, Layers, RotateCw, Scissors, Edit, Lock, Image, Maximize2, Crop, FileText, Minimize2 } from 'lucide-react'
+import { FileDown, Layers, RotateCw, Scissors, Edit, Lock, Image, Maximize2, Crop, Minimize2 } from 'lucide-react'
 
 export default function PDFVedaBanner() {
   const tools = [

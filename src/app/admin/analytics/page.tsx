@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { 
-  TrendingUp, 
-  Users, 
-  FileText, 
-  Calendar,
+import {
+  TrendingUp,
+  Users,
+  FileText,
   BarChart3,
   PieChart,
   Activity,

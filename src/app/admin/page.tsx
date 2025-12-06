@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Shield, Lock, Mail, AlertCircle } from 'lucide-react';
 
 interface Stats {

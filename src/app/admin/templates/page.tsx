@@ -2,16 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { 
-  Plus, 
-  Edit3, 
-  Trash2, 
-  Eye, 
-  Copy, 
-  Settings,
+import {
+  Plus,
+  Edit3,
+  Trash2,
+  Eye,
+  Copy,
   FileText,
-  Palette,
-  Code,
   Save,
   X
 } from 'lucide-react';
