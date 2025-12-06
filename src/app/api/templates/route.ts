@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import client from '@/lib/turso';
 
 // GET - Fetch all active templates
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const result = await client.execute(`
       SELECT 

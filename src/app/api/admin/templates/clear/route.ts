@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import client from '@/lib/turso';
 
 // POST - Clear all templates (for development only)
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
     console.log('Clearing all templates...');
     
@@ -24,6 +24,6 @@ export async function POST(req: NextRequest) {
 }
 
 // GET - Clear all templates (for easy testing)
-export async function GET(req: NextRequest) {
-  return POST(req);
+export async function GET() {
+  return POST();
 }
