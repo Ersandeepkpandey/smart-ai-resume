@@ -1,14 +1,13 @@
 'use client'
 
 import { useState, useEffect, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { ResumeContent, calculateATSScore, ATSScore as ATSScoreType } from '@/lib/ats-scorer'
 import TemplateSelector from '@/components/TemplateSelector'
 import RealtimeEditor from '@/components/RealtimeEditor'
-import ATSScore from '@/components/ATSScore'
 import CompactATSScore from '@/components/CompactATSScore'
-import { Save, Download, Eye, ArrowLeft, LayoutTemplate, Menu, X } from 'lucide-react'
+import { Download, ArrowLeft, LayoutTemplate, X } from 'lucide-react'
 import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 import { downloadResumeAsPDF } from '@/lib/pdf-export'
@@ -42,13 +41,11 @@ const defaultContent: ResumeContent = {
 
 function ResumeBuilderContent() {
   const { user } = useAuth()
-  const router = useRouter()
   const searchParams = useSearchParams()
   const templateFromUrl = searchParams.get('template') || 'template-1756037150032'
-  
+
   const [content, setContent] = useState<ResumeContent>(defaultContent)
   const [selectedTemplate, setSelectedTemplate] = useState<string>(templateFromUrl)
-  const [isLoading, setIsLoading] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
   const [downloadError, setDownloadError] = useState<string | null>(null)
   const [downloadSuccess, setDownloadSuccess] = useState(false)
@@ -85,7 +82,6 @@ function ResumeBuilderContent() {
       return;
     }
 
-    setIsLoading(true)
     try {
       // Generate a title from the content
       const title = contentToSave.personalInfo?.name 
@@ -119,8 +115,6 @@ function ResumeBuilderContent() {
     } catch (error) {
       console.error('Error saving resume:', error)
       throw error // Re-throw to let RealtimeEditor handle the error
-    } finally {
-      setIsLoading(false)
     }
   }
 

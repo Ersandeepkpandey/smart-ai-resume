@@ -4,14 +4,11 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { ResumeContent, calculateATSScore, ATSScore as ATSScoreType } from '@/lib/ats-scorer';
 import ResumeForm from './ResumeForm';
 import ResumePreview from './ResumePreview';
-import ATSScore from './ATSScore';
-import { 
-  PanelLeftClose, 
-  PanelLeftOpen, 
-  Save, 
+import {
+  Save,
   RefreshCw,
   Eye,
-  EyeOff 
+  EyeOff
 } from 'lucide-react';
 
 interface RealtimeEditorProps {
@@ -39,12 +36,12 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-export default function RealtimeEditor({ 
-  initialContent, 
-  template, 
-  resumeId,
+export default function RealtimeEditor({
+  initialContent,
+  template,
+  resumeId: _resumeId,
   onSave,
-  onContentChange 
+  onContentChange
 }: RealtimeEditorProps) {
   const [content, setContent] = useState<ResumeContent>(initialContent);
   const [isPreviewVisible, setIsPreviewVisible] = useState(true);
@@ -53,7 +50,7 @@ export default function RealtimeEditor({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [atsScore, setAtsScore] = useState<ATSScoreType>({
+  const [, setAtsScore] = useState<ATSScoreType>({
     score: 0,
     suggestions: [],
     keywords: [],

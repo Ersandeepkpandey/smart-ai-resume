@@ -324,14 +324,14 @@ export default function Home() {
             <div className="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow border-2 border-blue-100">
               <div className="text-3xl mb-3">🔷</div>
               <h3 className="text-lg font-bold text-gray-900 mb-2">Google Resume Template</h3>
-              <p className="text-gray-600 text-sm mb-3">Optimized for Google's hiring process. Perfect for SWE, PM, UX roles at Google, YouTube, Cloud</p>
+              <p className="text-gray-600 text-sm mb-3">Optimized for Google&apos;s hiring process. Perfect for SWE, PM, UX roles at Google, YouTube, Cloud</p>
               <div className="text-xs text-blue-600 font-semibold">L3-L8 Compatible • Googleyness Focused</div>
             </div>
             
             <div className="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow border-2 border-orange-100">
               <div className="text-3xl mb-3">📦</div>
               <h3 className="text-lg font-bold text-gray-900 mb-2">Amazon Resume Template</h3>
-              <p className="text-gray-600 text-sm mb-3">Built for Amazon's Leadership Principles. Ideal for SDE, TPM, Operations roles at Amazon, AWS</p>
+              <p className="text-gray-600 text-sm mb-3">Built for Amazon&apos;s Leadership Principles. Ideal for SDE, TPM, Operations roles at Amazon, AWS</p>
               <div className="text-xs text-orange-600 font-semibold">STAR Format • Leadership Principles</div>
             </div>
             
@@ -345,7 +345,7 @@ export default function Home() {
             <div className="bg-white rounded-xl p-6 shadow hover:shadow-lg transition-shadow border-2 border-gray-200">
               <div className="text-3xl mb-3">🍎</div>
               <h3 className="text-lg font-bold text-gray-900 mb-2">Apple Resume Template</h3>
-              <p className="text-gray-600 text-sm mb-3">Crafted for Apple's design excellence. Perfect for Hardware, Software, Design roles at Apple</p>
+              <p className="text-gray-600 text-sm mb-3">Crafted for Apple&apos;s design excellence. Perfect for Hardware, Software, Design roles at Apple</p>
               <div className="text-xs text-gray-600 font-semibold">Design Excellence • Innovation</div>
             </div>
             
